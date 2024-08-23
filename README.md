@@ -10,7 +10,7 @@ Pembuatan user :
 # Sales Order (SO)
 - SO akan dibuat ketika pembeli telah mengirimkan PO (Purchase Order)
 Isi SO berupa : 
-Nama Customer, Alamat Customer, Tanggal PO Customer, No PO Customer, No SO (Bisa dilakukan revisi jika diperlukan).
+Nama Customer, Alamat Customer, Tanggal PO Customer, No PO Customer, No SO (Bisa dilakukan revisi jika diperlukan & nomor SO terbuat secara otomatis dan unique).
 
 Detail barang yang di PO :
 Qty(Quantity), Barang, Harga, Jumlah

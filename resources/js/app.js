@@ -3,6 +3,8 @@ import { Livewire } from '../../vendor/livewire/livewire/dist/livewire.esm';
 Livewire.start()
 
 import './bootstrap';
+import swal from 'sweetalert2';
+
 
 
 // Import Chart.js
@@ -35,6 +37,9 @@ Chart.defaults.plugins.tooltip.caretSize = 0;
 Chart.defaults.plugins.tooltip.caretPadding = 20;
 Chart.defaults.plugins.tooltip.cornerRadius = 8;
 Chart.defaults.plugins.tooltip.padding = 8;
+
+window.Swal = swal;
+
 
 // Function that generates a gradient for line charts
 export const chartAreaGradient = (ctx, chartArea, colorStops) => {
