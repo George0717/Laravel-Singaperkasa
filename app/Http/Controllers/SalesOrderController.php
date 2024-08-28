@@ -119,7 +119,7 @@ class SalesOrderController extends Controller
             'po_date' => 'required|date',
             'po_number' => 'required|string|max:50',
             'discount' => 'nullable|numeric',
-            'discount_type' => 'nullable|string|in:percent,currency',
+            'discount_type' => 'nullable|string|in:%,currency',
             'vat' => 'nullable|numeric',
             'down_payment' => 'nullable|numeric',
             'payment_type' => 'required|string',

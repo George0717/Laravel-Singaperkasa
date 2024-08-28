@@ -5,7 +5,7 @@
         <h1 class="text-2xl font-semibold mb-6 text-gray-800">Sales Order Details</h1>
 
         <div class="bg-white p-6 rounded-lg shadow-md">
-            <table class="table-auto w-full border-collapse">
+            <table class="table-auto w-full border-collapse mb-6">
                 <tbody>
                     <tr class="hover:bg-gray-100">
                         <td class="px-4 py-2 text-gray-700 border-b"><strong>Customer Name:</strong></td>
@@ -29,7 +29,7 @@
                     </tr>
                     <tr class="hover:bg-gray-100">
                         <td class="px-4 py-2 text-gray-700 border-b"><strong>Discount:</strong></td>
-                        <td class="px-4 py-2 text-gray-800 border-b">{{ 'Rp ' . number_format($salesOrder->discount, 0, ',', '.') }}</td>
+                        <td class="px-4 py-2 text-gray-800 border-b">{{ number_format($salesOrder->discount, 0, ',', '.') }} {{ $salesOrder->discount_type }}</td>
                     </tr>
                     <tr class="hover:bg-gray-100">
                         <td class="px-4 py-2 text-gray-700 border-b"><strong>Down Payment:</strong></td>
@@ -51,12 +51,35 @@
                         <td class="px-4 py-2 text-gray-700 border-b"><strong>PO Photo:</strong></td>
                         <td class="px-4 py-2 text-gray-800 border-b">
                             @if($salesOrder->po_photo)
-                                <img src="{{ asset('storage/' . $salesOrder->po_photo) }}" alt="PO Photo" style="max-width: 300px;">
+                                <img src="{{ asset('storage/' . $salesOrder->po_photo) }}" alt="PO Photo" class="max-w-xs rounded-lg shadow-md">
                             @else
                                 <span>No photo available</span>
                             @endif
                         </td>
                     </tr>
+                </tbody>
+            </table>
+
+            {{-- Section for item details --}}
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">Item Details</h2>
+            <table class="table-auto w-full border-collapse">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="px-4 py-2 text-left text-gray-700">Item Name</th>
+                        <th class="px-4 py-2 text-left text-gray-700">Quantity</th>
+                        <th class="px-4 py-2 text-left text-gray-700">Price</th>
+                        <th class="px-4 py-2 text-left text-gray-700">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($salesOrder->details as $detail)
+                        <tr class="hover:bg-gray-100">
+                            <td class="px-4 py-2 text-gray-700 border-b">{{ $detail->item_name }}</td>
+                            <td class="px-4 py-2 text-gray-700 border-b">{{ $detail->quantity }}</td>
+                            <td class="px-4 py-2 text-gray-700 border-b">{{ 'Rp ' . number_format($detail->price, 0, ',', '.') }}</td>
+                            <td class="px-4 py-2 text-gray-700 border-b">{{ 'Rp ' . number_format($detail->quantity * $detail->price, 0, ',', '.') }}</td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
 
@@ -66,16 +89,4 @@
             </div>
         </div>
     </div>
-
-    {{-- Skeleton loading --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const skeletons = document.querySelectorAll('.skeleton');
-            setTimeout(() => {
-                skeletons.forEach(skeleton => {
-                    skeleton.classList.remove('skeleton');
-                });
-            }, 1500); // Adjust timing as needed
-        });
-    </script>
 @endsection
