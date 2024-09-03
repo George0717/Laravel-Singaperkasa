@@ -65,6 +65,10 @@
             color: #ffffff;
         }
 
+        #sidebar-toggle:active {
+            opacity: 1;
+        }
+
         /* Button primary styling */
         .btn-primary {
             display: inline-block;

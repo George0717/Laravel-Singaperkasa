@@ -12,6 +12,7 @@ use App\Http\Controllers\JobController;
 use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\JadwalKirimController;
 use App\Http\Controllers\SalesOrderController;
+use App\Http\Controllers\SuratJalanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +36,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/dashboard/analytics', [DashboardController::class, 'analytics'])->name('analytics');
     Route::get('/dashboard/fintech', [DashboardController::class, 'fintech'])->name('fintech');
 
-    // Routes for Sales Orders
 // Sales Order Routes
 Route::get('/sales_orders', [SalesOrderController::class, 'index'])->name('SalesOrders.index');
 Route::get('/sales_orders/create', [SalesOrderController::class, 'create'])->name('salesOrders.create');
@@ -56,5 +56,15 @@ Route::put('/jadwalKirim/{jadwalKirim}', [JadwalKirimController::class, 'update'
 Route::delete('/jadwalKirim/{jadwalKirim}', [JadwalKirimController::class, 'destroy'])->name('jadwalKirim.destroy');
 Route::get('/pdf/generate/jadwalKirim/{jadwalKirim}', [JadwalKirimController::class, 'printPDF'])->name('pdf.generate');
 Route::get('/sales-order-details', [JadwalKirimController::class, 'showSalesOrderDetails'])->name('salesOrder.details');
+
+// Surat Jalan Routes
+Route::get('/suratJalan', [SuratJalanController::class, 'index'])->name('suratJalan.index');
+Route::get('/suratJalan/create', [SuratJalanController::class, 'create'])->name('suratJalan.create');
+Route::post('/suratJalan', [SuratJalanController::class, 'store'])->name('suratJalan.store');
+Route::get('/suratJalan/{suratJalan}', [SuratJalanController::class, 'show'])->name('suratJalan.show');
+Route::get('/suratJalan/{suratJalan}/edit', [SuratJalanController::class, 'edit'])->name('suratJalan.edit');
+Route::put('/suratJalan/{suratJalan}', [SuratJalanController::class, 'update'])->name('suratJalan.update');
+Route::delete('/suratJalan/{suratJalan}', [SuratJalanController::class, 'destroy'])->name('suratJalan.destroy');
+Route::get('/pdf/generate/suratJalan/{suratJalan}', [SuratJalanController::class, 'generatePDF'])->name('suratJalan.generate');
 
 });

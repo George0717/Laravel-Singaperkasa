@@ -1,10 +1,11 @@
 <div class="sidebar">
     <div class="p-4">
-        <h2 class="text-xl font-bold text-white mb-4">Dashboard</h2>
+        <h2 class="text-xl font-bold text-white mb-5"> </h2>
         <nav>
             <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
             <a href="{{ route('SalesOrders.index') }}" class="{{ request()->routeIs('sales_orders.*') ? 'active' : '' }}">Sales Orders</a>
             <a href="{{ route('JadwalKirim.index') }}" class="{{ request()->routeIs('sales_orders.*') ? 'active' : '' }}">Jadwal Kirim</a>
+            <a href="{{ route('suratJalan.index') }}" class="{{ request()->routeIs('sales_orders.*') ? 'active' : '' }}">Surat Jalan</a>
         </nav>
     </div>
 </div>

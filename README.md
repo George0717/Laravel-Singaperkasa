@@ -31,9 +31,11 @@ Dokumen bisa di cetak berupa PDF
 Dicetak berupa PDF
 
 # Surat Jalan
-- Nama Customer, alamat, nama pabrik, no surat jalan(bisa dilakukan revisi), tanggal pengiriman, plat angkutan.
+- Nama Customer, alamat, nama pabrik, no surat jalan(berbentuk berurutan dari 000001 sampai seterusnya sesuai dengan jumlah data) (Di dapat dari nomor Sales Order) 
+- tanggal pengiriman.
+- plat angkutan.
 Isi surat jalan :
-- Qty + Nama Barang
+- Qty + Nama Barang (di dapatkan dari nomor SO) = jumlahnya bisa diubah dan ketika diubah maka yang tersimpan di dalam Sales Order akan berkurang
 - Tanda tangan + Nama Staff
 - Tanda tangan + Cap Toko
 Dicetak berupa PDF
