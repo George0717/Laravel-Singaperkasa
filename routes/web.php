@@ -10,6 +10,7 @@ use App\Http\Controllers\MemberController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\CampaignController;
+use App\Http\Controllers\JadwalKirimController;
 use App\Http\Controllers\SalesOrderController;
 
 /*
@@ -45,5 +46,15 @@ Route::put('/sales_orders/{salesOrder}', [SalesOrderController::class, 'update']
 Route::delete('/sales_orders/{salesOrder}', [SalesOrderController::class, 'destroy'])->name('salesOrders.destroy');
 Route::get('/sales_orders/{salesOrder}/print-pdf', [SalesOrderController::class, 'printPDF'])->name('SalesOrders.printPDF');
 
+// Jadwal Kirim Routes
+Route::get('/jadwalKirim', [JadwalKirimController::class, 'index'])->name('JadwalKirim.index');
+Route::get('/jadwalKirim/create', [JadwalKirimController::class, 'create'])->name('jadwalKirim.create');
+Route::post('/jadwalKirim', [JadwalKirimController::class, 'store'])->name('jadwalKirim.store');
+Route::get('/jadwalKirim/{jadwalKirim}', [JadwalKirimController::class, 'show'])->name('jadwalKirim.show');
+Route::get('/jadwalKirim/{jadwalKirim}/edit', [JadwalKirimController::class, 'edit'])->name('jadwalKirim.edit');
+Route::put('/jadwalKirim/{jadwalKirim}', [JadwalKirimController::class, 'update'])->name('jadwalKirim.update');
+Route::delete('/jadwalKirim/{jadwalKirim}', [JadwalKirimController::class, 'destroy'])->name('jadwalKirim.destroy');
+Route::get('/pdf/generate/jadwalKirim/{jadwalKirim}', [JadwalKirimController::class, 'printPDF'])->name('pdf.generate');
+Route::get('/sales-order-details', [JadwalKirimController::class, 'showSalesOrderDetails'])->name('salesOrder.details');
 
 });

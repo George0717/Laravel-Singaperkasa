@@ -4,6 +4,7 @@
         <nav>
             <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
             <a href="{{ route('SalesOrders.index') }}" class="{{ request()->routeIs('sales_orders.*') ? 'active' : '' }}">Sales Orders</a>
+            <a href="{{ route('JadwalKirim.index') }}" class="{{ request()->routeIs('sales_orders.*') ? 'active' : '' }}">Jadwal Kirim</a>
         </nav>
     </div>
 </div>

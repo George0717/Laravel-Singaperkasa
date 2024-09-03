@@ -6,9 +6,10 @@
     <a href="{{ route('salesOrders.create') }}" class="btn btn-primary mb-4" onclick="confirmCreate(event)">Create New Sales Order</a>
 
     <!-- Search Inputs -->
-    <div class="mb-4">
+    <div class="mb-4 flex items-center space-x-2">
         <input type="text" id="search-name" class="form-input w-full mb-2" placeholder="Search by Customer Name">
         <input type="date" id="search-date" class="form-input w-full" placeholder="Search by PO Date">
+        <button id="reset-button" class="btn btn- mb-2">Reset</button>
     </div>
 
     <table class="min-w-full divide-y divide-gray-200 table-responsive overflow-x-auto">
@@ -71,6 +72,39 @@
             });
         });
     });
+
+    $(document).ready(function() {
+    function filterSalesOrders() {
+        var nameQuery = $('#search-name').val().toLowerCase();
+        var dateQuery = $('#search-date').val(); // Directly use the date format
+
+        $('#sales-orders-table tr').each(function() {
+            var name = $(this).find('td[data-name]').text().toLowerCase();
+            var date = $(this).find('td[data-date]').attr('data-date'); // Get the actual date attribute
+
+            var nameMatch = name.indexOf(nameQuery) > -1;
+            var dateMatch = date === dateQuery; // Exact match for date
+
+            $(this).toggle(nameMatch && dateMatch);
+        });
+    }
+
+    $('#filter-button').on('click', function() {
+        filterSalesOrders();
+    });
+
+    $('#reset-button').on('click', function() {
+        $('#search-name').val('');
+        $('#search-date').val('');
+        $('#sales-orders-table tr').show();
+    });
+
+    $('#search-name, #search-date').on('keyup change', function() {
+        filterSalesOrders();
+    });
+});
+
+
 
     function confirmCreate(event) {
         event.preventDefault();
