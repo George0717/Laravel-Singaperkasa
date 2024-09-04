@@ -12,6 +12,7 @@ use App\Http\Controllers\JobController;
 use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\JadwalKirimController;
 use App\Http\Controllers\SalesOrderController;
+use App\Http\Controllers\StockController;
 use App\Http\Controllers\SuratJalanController;
 
 /*
@@ -66,5 +67,9 @@ Route::get('/suratJalan/{suratJalan}/edit', [SuratJalanController::class, 'edit'
 Route::put('/suratJalan/{suratJalan}', [SuratJalanController::class, 'update'])->name('suratJalan.update');
 Route::delete('/suratJalan/{suratJalan}', [SuratJalanController::class, 'destroy'])->name('suratJalan.destroy');
 Route::get('/pdf/generate/suratJalan/{suratJalan}', [SuratJalanController::class, 'generatePDF'])->name('suratJalan.generate');
+
+// Stock Barang
+Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
+Route::get('/stock/{id}', [StockController::class, 'show'])->name('stock.show');
 
 });
