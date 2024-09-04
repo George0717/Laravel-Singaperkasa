@@ -37,15 +37,15 @@ class SuratJalanController extends Controller
 
 
     public function create()
-{
-    $salesOrders = SalesOrder::with('details')->get();
-    return view('pages.SuratJalan.create', compact('salesOrders'));
-}
-
+    {
+        $salesOrders = SalesOrder::with('details')->get();
+        $nextSuratJalanNumber = $this->generateSuratJalanNumber(); // Panggil method untuk generate nomor
+        return view('pages.SuratJalan.create', compact('salesOrders', 'nextSuratJalanNumber'));
+    }
 
     public function store(Request $request)
     {
-        DB::transaction(function () use ($request) {
+        $suratJalan = DB::transaction(function () use ($request) {
             $salesOrder = SalesOrder::findOrFail($request->sales_order_id);
 
             // Create Surat Jalan
@@ -68,10 +68,25 @@ class SuratJalanController extends Controller
                 $salesOrderDetail->quantity -= $item['quantity'];
                 $salesOrderDetail->save();
             }
+
+            return $suratJalan;
         });
+
+        return response()->json([
+            'status' => 'success',
+            'no_surat_jalan' => $suratJalan->no_surat_jalan,
+        ]);
 
         return redirect()->route('suratJalan.index');
     }
+
+    // private function generateSuratJalanNumber()
+    // {
+    //     $latestSuratJalan = SuratJalan::latest('id')->first();
+    //     $nextNumber = $latestSuratJalan ? sprintf('%06d', $latestSuratJalan->id + 1) : '000001';
+    //     return $nextNumber;
+    // }
+
 
     public function show(SuratJalan $suratJalan)
     {
@@ -131,5 +146,19 @@ class SuratJalanController extends Controller
         $latest = SuratJalan::latest('id')->first();
         $nextNumber = $latest ? sprintf('%06d', $latest->id + 1) : '000001';
         return $nextNumber;
+    }
+
+    public function getSalesOrderDetails(Request $request)
+    {
+        $salesOrder = SalesOrder::findOrFail($request->sales_order_id);
+
+        // Buat nomor surat jalan jika belum ada
+        $suratJalanNumber = $this->generateSuratJalanNumber();
+
+        return response()->json([
+            'no_surat_jalan' => $suratJalanNumber,
+            'sales_order' => $salesOrder,
+            'details' => $salesOrder->details,
+        ]);
     }
 }

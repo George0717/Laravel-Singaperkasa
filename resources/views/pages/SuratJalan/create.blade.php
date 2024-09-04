@@ -47,6 +47,11 @@
             @enderror
         </div>
 
+        <!-- Nomor Surat Jalan -->
+        <div class="form-group">
+            <label for="nomor_surat_jalan">Nomor Surat Jalan</label>
+            <input type="text" class="form-control" id="nomor_surat_jalan" name="nomor_surat_jalan" value="{{ $nextSuratJalanNumber }}" readonly>
+        </div>
         <!-- Detail Surat Jalan -->
         <div id="surat-jalan-details" class="overflow-x-auto mt-6">
             <div id="details-container" class="flex flex-wrap gap-4">
@@ -67,7 +72,6 @@
     </form>
 </div>
 
-<!-- Tailwind CSS CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -80,15 +84,18 @@
                     type: 'GET',
                     data: { sales_order_id: salesOrderId },
                     success: function(data) {
+                        // Update nomor surat jalan
+                        var suratJalanNumber = data.no_surat_jalan || 'Nomor belum tersedia';
+                        $('#nomor-surat-jalan-text').text(suratJalanNumber);
+
+                        // Display sales order and items details
                         if (data.sales_order) {
-                            var suratJalanNumber = data.surat_jalan_number;
                             var suratJalanHtml = `
                                 <div class="bg-white shadow-lg rounded-lg p-6 border border-gray-200 mb-4 transform transition-transform duration-500 animate-slide-in-left">
                                     <h2 class="text-xl font-semibold mb-2">Detail Surat Jalan</h2>
                                     <p class="text-gray-700"><strong>Nama Pelanggan:</strong> ${data.sales_order.customer_name}</p>
                                     <p class="text-gray-700"><strong>Alamat Pelanggan:</strong> ${data.sales_order.customer_address}</p>
-                                    <p class="text-gray-700"><strong>Nama Pabrik:</strong> ${data.sales_order.factory_name}</p>
-                                    <p class="text-gray-700"><strong>Nomor Surat Jalan:</strong> ${suratJalanNumber}</p>
+                                    <p class="text-gray-700"><strong>Dikirim Oleh:</strong> PT. Singa Perkasa Abadi</p>
                                 </div>
                             `;
 
@@ -97,7 +104,7 @@
                                 detailsHtml += `
                                     <div class="bg-white shadow-lg rounded-lg p-6 border border-gray-200 mb-4 transform transition-transform duration-500 animate-slide-in-left">
                                         <h2 class="text-lg font-semibold mb-2">${detail.item_name}</h2>
-                                        <p class="text-gray-700">Jumlah: <input type="number" name="items[${detail.id}][quantity]" value="${detail.quantity}" min="1" class="form-input w-full" /></p>
+                                        <p class="text-gray-700">Jumlah: <input type="number" name="items[${detail.id}][quantity]" value="${detail.quantity}" min="1" max="${detail.quantity}" class="form-input w-full" /></p>
                                         <p class="text-gray-700">Harga: Rp ${parseFloat(detail.price).toLocaleString()}</p>
                                         <p class="text-gray-700">Total: Rp ${parseFloat(detail.quantity * detail.price).toLocaleString()}</p>
                                     </div>
@@ -116,6 +123,7 @@
                 });
             } else {
                 $('#details-container').empty();
+                $('#nomor-surat-jalan-text').text('Nomor belum tersedia');
             }
         });
     });

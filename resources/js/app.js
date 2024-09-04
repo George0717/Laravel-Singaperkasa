@@ -42,7 +42,11 @@ Chart.defaults.plugins.tooltip.padding = 8;
 
 window.Swal = swal;
 
-Livewire.start()
+try {
+  Livewire.start();
+} catch (error) {
+  console.error('Error starting Livewire:', error);
+}
 
 // Function that generates a gradient for line charts
 export const chartAreaGradient = (ctx, chartArea, colorStops) => {
