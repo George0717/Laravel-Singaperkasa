@@ -37,10 +37,11 @@ class SuratJalanController extends Controller
 
 
     public function create()
-    {
-        $salesOrders = SalesOrder::all();
-        return view('pages.SuratJalan.create', compact('salesOrders'));
-    }
+{
+    $salesOrders = SalesOrder::with('details')->get();
+    return view('pages.SuratJalan.create', compact('salesOrders'));
+}
+
 
     public function store(Request $request)
     {

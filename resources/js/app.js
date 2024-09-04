@@ -1,9 +1,11 @@
 import { Livewire } from '../../vendor/livewire/livewire/dist/livewire.esm';
  
-Livewire.start()
 
 import './bootstrap';
 import swal from 'sweetalert2';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import 'slick-carousel/slick/slick.min.js';
 
 
 
@@ -40,6 +42,7 @@ Chart.defaults.plugins.tooltip.padding = 8;
 
 window.Swal = swal;
 
+Livewire.start()
 
 // Function that generates a gradient for line charts
 export const chartAreaGradient = (ctx, chartArea, colorStops) => {
