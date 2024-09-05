@@ -26,19 +26,40 @@ class JadwalKirimController extends Controller
     {
         $salesOrderId = $request->input('sales_order_id');
         Log::info('Fetching details for Sales Order ID: ' . $salesOrderId); // Log the request
-
-        $salesOrder = SalesOrder::with('details')->find($salesOrderId); // Adjusted relationship method
-
+    
+        // Validate that salesOrderId is a valid number
+        if (!is_numeric($salesOrderId)) {
+            Log::error('Invalid Sales Order ID: ' . $salesOrderId); // Log invalid ID
+            return response()->json(['error' => 'Invalid Sales Order ID'], 400);
+        }
+    
+        // Fetch the SalesOrder with its details
+        $salesOrder = SalesOrder::with('details')->find($salesOrderId);
+    
         if (!$salesOrder) {
             Log::error('Sales Order not found: ' . $salesOrderId); // Log error if not found
             return response()->json(['error' => 'Sales Order not found'], 404);
         }
-
+    
+        // Return the Sales Order and its details
         return response()->json([
-            'sales_order' => $salesOrder,
-            'sales_order_details' => $salesOrder->details, // Return both general info and details
+            'sales_order' => [
+                'id' => $salesOrder->id,
+                'so_number' => $salesOrder->so_number,
+                'customer_name' => $salesOrder->customer_name,
+                'customer_address' => $salesOrder->customer_address,
+            ],
+            'sales_order_details' => $salesOrder->details->map(function ($detail) {
+                return [
+                    'id' => $detail->id,
+                    'item_name' => $detail->item_name,
+                    'quantity' => $detail->quantity,
+                    'price' => $detail->price,
+                ];
+            }),
         ]);
     }
+    
 
     public function store(Request $request)
     {

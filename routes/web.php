@@ -3,13 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataFeedController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\MemberController;
-use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\JobController;
-use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\JadwalKirimController;
 use App\Http\Controllers\SalesOrderController;
 use App\Http\Controllers\StockController;
@@ -67,6 +60,9 @@ Route::get('/suratJalan/{suratJalan}/edit', [SuratJalanController::class, 'edit'
 Route::put('/suratJalan/{suratJalan}', [SuratJalanController::class, 'update'])->name('suratJalan.update');
 Route::delete('/suratJalan/{suratJalan}', [SuratJalanController::class, 'destroy'])->name('suratJalan.destroy');
 Route::get('/pdf/generate/suratJalan/{suratJalan}', [SuratJalanController::class, 'generatePDF'])->name('suratJalan.generate');
+Route::get('suratJalan/{suratJalan}/kirim', [SuratJalanController::class, 'kirim'])->name('suratJalan.kirim');
+Route::get('/suratJalan/{suratJalan}/terkirim', [SuratJalanController::class, 'terkirim'])->name('suratJalan.terkirim');
+
 
 // Stock Barang
 Route::get('/stock', [StockController::class, 'index'])->name('stock.index');

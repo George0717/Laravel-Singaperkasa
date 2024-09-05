@@ -12,7 +12,7 @@
         </div>
     @endif
 
-    <form action="{{ route('suratJalan.store') }}" method="POST" class="bg-white p-8 shadow-md rounded-lg">
+    <form action="{{ route('suratJalan.store') }}" method="post" class="bg-white p-8 shadow-md rounded-lg" enctype="multipart/form-data">
         @csrf
 
         <!-- Pemilihan Sales Order -->
@@ -31,9 +31,9 @@
 
         <!-- Tanggal Pengiriman -->
         <div class="mb-4">
-            <label for="delivery_date" class="block text-sm font-medium text-gray-700">Tanggal Pengiriman</label>
-            <input type="date" id="delivery_date" name="delivery_date" class="form-input mt-1 block w-full" required>
-            @error('delivery_date')
+            <label for="tanggal_pengiriman" class="block text-sm font-medium text-gray-700">Tanggal Pengiriman</label>
+            <input type="date" id="tanggal_pengiriman" name="tanggal_pengiriman" class="form-input mt-1 block w-full" required>
+            @error('tanggal_pengiriman')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
         </div>
@@ -52,6 +52,7 @@
             <label for="nomor_surat_jalan">Nomor Surat Jalan</label>
             <input type="text" class="form-control" id="nomor_surat_jalan" name="nomor_surat_jalan" value="{{ $nextSuratJalanNumber }}" readonly>
         </div>
+
         <!-- Detail Surat Jalan -->
         <div id="surat-jalan-details" class="overflow-x-auto mt-6">
             <div id="details-container" class="flex flex-wrap gap-4">
@@ -84,37 +85,29 @@
                     type: 'GET',
                     data: { sales_order_id: salesOrderId },
                     success: function(data) {
-                        // Update nomor surat jalan
-                        var suratJalanNumber = data.no_surat_jalan || 'Nomor belum tersedia';
-                        $('#nomor-surat-jalan-text').text(suratJalanNumber);
+                        var suratJalanHtml = `
+                            <div class="bg-white shadow-lg rounded-lg p-6 border border-gray-200 mb-4 transform transition-transform duration-500 animate-slide-in-left">
+                                <h2 class="text-xl font-semibold mb-2">Detail Surat Jalan</h2>
+                                <p class="text-gray-700"><strong>Nama Pelanggan:</strong> ${data.sales_order.customer_name}</p>
+                                <p class="text-gray-700"><strong>Alamat Pelanggan:</strong> ${data.sales_order.customer_address}</p>
+                                <p class="text-gray-700"><strong>Dikirim Oleh:</strong> PT. Singa Perkasa Abadi</p>
+                            </div>
+                        `;
 
-                        // Display sales order and items details
-                        if (data.sales_order) {
-                            var suratJalanHtml = `
+                        var detailsHtml = '';
+                        data.sales_order_details.forEach(function(detail) {
+                            detailsHtml += `
                                 <div class="bg-white shadow-lg rounded-lg p-6 border border-gray-200 mb-4 transform transition-transform duration-500 animate-slide-in-left">
-                                    <h2 class="text-xl font-semibold mb-2">Detail Surat Jalan</h2>
-                                    <p class="text-gray-700"><strong>Nama Pelanggan:</strong> ${data.sales_order.customer_name}</p>
-                                    <p class="text-gray-700"><strong>Alamat Pelanggan:</strong> ${data.sales_order.customer_address}</p>
-                                    <p class="text-gray-700"><strong>Dikirim Oleh:</strong> PT. Singa Perkasa Abadi</p>
+                                    <h2 class="text-lg font-semibold mb-2">${detail.item_name}</h2>
+                                    <p class="text-gray-700">Jumlah: <input type="number" name="items[${detail.id}][quantity]" value="1" min="1" max="${detail.quantity}" class="form-input w-full" /></p>
+                                    <input type="hidden" name="items[${detail.id}][id]" value="${detail.id}" />
+                                    <p class="text-gray-700">Harga: Rp ${parseFloat(detail.price).toLocaleString()}</p>
+                                    <p class="text-gray-700">Total: Rp ${parseFloat(detail.quantity * detail.price).toLocaleString()}</p>
                                 </div>
                             `;
+                        });
 
-                            var detailsHtml = '';
-                            data.sales_order_details.forEach(function(detail) {
-                                detailsHtml += `
-                                    <div class="bg-white shadow-lg rounded-lg p-6 border border-gray-200 mb-4 transform transition-transform duration-500 animate-slide-in-left">
-                                        <h2 class="text-lg font-semibold mb-2">${detail.item_name}</h2>
-                                        <p class="text-gray-700">Jumlah: <input type="number" name="items[${detail.id}][quantity]" value="${detail.quantity}" min="1" max="${detail.quantity}" class="form-input w-full" /></p>
-                                        <p class="text-gray-700">Harga: Rp ${parseFloat(detail.price).toLocaleString()}</p>
-                                        <p class="text-gray-700">Total: Rp ${parseFloat(detail.quantity * detail.price).toLocaleString()}</p>
-                                    </div>
-                                `;
-                            });
-
-                            $('#details-container').html(suratJalanHtml + detailsHtml);
-                        } else {
-                            $('#details-container').html('<p class="text-red-500">Sales Order tidak ditemukan.</p>');
-                        }
+                        $('#details-container').html(suratJalanHtml + detailsHtml);
                     },
                     error: function(xhr, status, error) {
                         console.error('Kesalahan AJAX:', status, error);

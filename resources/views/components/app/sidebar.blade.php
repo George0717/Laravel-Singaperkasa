@@ -6,6 +6,7 @@
             <a href="{{ route('SalesOrders.index') }}" class="{{ request()->routeIs('sales_orders.*') ? 'active' : '' }}">Sales Orders</a>
             <a href="{{ route('JadwalKirim.index') }}" class="{{ request()->routeIs('sales_orders.*') ? 'active' : '' }}">Jadwal Kirim</a>
             <a href="{{ route('suratJalan.index') }}" class="{{ request()->routeIs('sales_orders.*') ? 'active' : '' }}">Surat Jalan</a>
+            <a href="{{ route('stock.index') }}" class="{{ request()->routeIs('sales_orders.*') ? 'active' : '' }}">Stock Barang</a>
         </nav>
     </div>
 </div>

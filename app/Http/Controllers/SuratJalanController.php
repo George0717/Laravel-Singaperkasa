@@ -9,6 +9,8 @@ use App\Models\SuratJalanDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class SuratJalanController extends Controller
 {
@@ -43,41 +45,55 @@ class SuratJalanController extends Controller
         return view('pages.SuratJalan.create', compact('salesOrders', 'nextSuratJalanNumber'));
     }
 
+
     public function store(Request $request)
     {
-        $suratJalan = DB::transaction(function () use ($request) {
-            $salesOrder = SalesOrder::findOrFail($request->sales_order_id);
-
-            // Create Surat Jalan
-            $suratJalan = SuratJalan::create([
-                'sales_order_id' => $request->sales_order_id,
-                'plat_angkutan' => $request->plat_angkutan,
-                'tanggal_pengiriman' => $request->tanggal_pengiriman,
-                'no_surat_jalan' => $this->generateSuratJalanNumber(),
+        try {
+            $validatedData = $request->validate([
+                'sales_order_id' => 'required|exists:sales_orders,id',
+                'plat_angkutan' => 'required|string|max:255',
+                'tanggal_pengiriman' => 'required|date',
+                'items' => 'required|array',
+                'items.*.id' => 'required|exists:sales_order_details,id',
+                'items.*.quantity' => 'required|integer|min:1',
             ]);
 
-            foreach ($request->items as $item) {
-                $suratJalanDetail = SuratJalanDetail::create([
-                    'surat_jalan_id' => $suratJalan->id,
-                    'sales_order_detail_id' => $item['id'],
-                    'quantity' => $item['quantity'],
+            // Convert tanggal_pengiriman to Carbon instance
+            $tanggalPengiriman = Carbon::parse($validatedData['tanggal_pengiriman']);
+
+            $suratJalan = DB::transaction(function () use ($validatedData, $tanggalPengiriman) {
+                $salesOrder = SalesOrder::findOrFail($validatedData['sales_order_id']);
+
+                $suratJalan = SuratJalan::create([
+                    'sales_order_id' => $validatedData['sales_order_id'],
+                    'plat_angkutan' => $validatedData['plat_angkutan'],
+                    'tanggal_pengiriman' => $tanggalPengiriman->format('Y-m-d'),
+                    'no_surat_jalan' => $this->generateSuratJalanNumber(),
                 ]);
 
-                // Reduce quantity in Sales Order
-                $salesOrderDetail = SalesOrderDetail::find($item['id']);
-                $salesOrderDetail->quantity -= $item['quantity'];
-                $salesOrderDetail->save();
-            }
+                foreach ($validatedData['items'] as $item) {
+                    SuratJalanDetail::create([
+                        'surat_jalan_id' => $suratJalan->id,
+                        'sales_order_detail_id' => $item['id'],
+                        'quantity' => $item['quantity'],
+                    ]);
 
-            return $suratJalan;
-        });
+                    $salesOrderDetail = SalesOrderDetail::find($item['id']);
+                    $salesOrderDetail->quantity -= $item['quantity'];
+                    $salesOrderDetail->save();
+                }
 
-        return response()->json([
-            'status' => 'success',
-            'no_surat_jalan' => $suratJalan->no_surat_jalan,
-        ]);
+                return $suratJalan;
+            });
 
-        return redirect()->route('suratJalan.index');
+            return redirect()->route('suratJalan.index')->with('success', 'Surat Jalan berhasil disimpan!');
+        } catch (\Exception $e) {
+            // Log the exception
+            Log::error('Error storing Surat Jalan: ' . $e->getMessage());
+
+            // Redirect back with error message
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan Surat Jalan.');
+        }
     }
 
     // private function generateSuratJalanNumber()
@@ -128,11 +144,55 @@ class SuratJalanController extends Controller
         return redirect()->route('suratJalan.index');
     }
 
+    public function kirim(SuratJalan $suratJalan)
+    {
+        try {
+            DB::transaction(function () use ($suratJalan) {
+                // Mark Surat Jalan as sent
+                $suratJalan->update(['status' => 'terkirim']);
+
+                // Restore stock
+                foreach ($suratJalan->suratJalanDetails as $detail) {
+                    $salesOrderDetail = SalesOrderDetail::find($detail->sales_order_detail_id);
+                    $salesOrderDetail->quantity += $detail->quantity;
+                    $salesOrderDetail->save();
+                }
+            });
+
+            // Redirect ke halaman Surat Jalan terkirim
+            return redirect()->route('suratJalan.terkirim')->with('success', 'Surat Jalan telah berhasil dikirim.');
+        } catch (\Exception $e) {
+            Log::error('Error sending Surat Jalan: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengirim Surat Jalan.');
+        }
+    }
+
+    public function terkirim()
+    {
+        Log::info('Terkirim method is being called.');
+        $suratJalans = SuratJalan::where('status', 'terkirim')->paginate(10);
+        return view('pages.SuratJalan.terkirim', compact('suratJalans'));
+    }
+
+
+
     public function destroy(SuratJalan $suratJalan)
     {
-        $suratJalan->delete();
-        return redirect()->route('suratJalan.index');
+        DB::transaction(function () use ($suratJalan) {
+            // Restore stock if not sent
+            foreach ($suratJalan->suratJalanDetails as $detail) {
+                $salesOrderDetail = SalesOrderDetail::find($detail->sales_order_detail_id);
+                $salesOrderDetail->quantity += $detail->quantity;
+                $salesOrderDetail->save();
+            }
+
+            $suratJalan->delete();
+        });
+
+        return redirect()->route('suratJalan.index')->with('success', 'Surat Jalan berhasil dihapus dan stok dikembalikan!');
     }
+
+
 
     public function generatePDF(SuratJalan $suratJalan)
     {
