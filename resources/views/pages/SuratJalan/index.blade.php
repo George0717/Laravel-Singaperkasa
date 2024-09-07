@@ -59,9 +59,6 @@
                         <a href="{{ route('suratJalan.edit', $suratJalan) }}"
                             class="text-green-600 hover:text-green-900 transition duration-300 ease-in-out ml-4"
                             onclick="konfirmasiEdit(event, {{ $suratJalan->id }})">Edit</a>
-                        <a href="{{ route('suratJalan.kirim', $suratJalan) }}"
-                            class="text-yellow-600 hover:text-yellow-900 transition duration-300 ease-in-out ml-4"
-                            onclick="konfirmasiKirim(event, {{ $suratJalan->id }})">Kirim</a>
                         <form action="{{ route('suratJalan.destroy', $suratJalan) }}" method="POST" class="inline"
                             id="form-hapus-{{ $suratJalan->id }}">
                             @csrf
@@ -125,24 +122,6 @@
             }
         });
     }
-
-    function konfirmasiKirim(event, suratJalanId) {
-    event.preventDefault();
-    Swal.fire({
-        title: 'Apakah Anda yakin?',
-        text: "Apakah Anda ingin mengirim Surat Jalan ini?",
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Ya, kirim!',
-        cancelButtonText: 'Batal'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = "{{ url('suratJalan') }}/" + suratJalanId + "/terkirim";
-        }
-    });
-}
 
     function konfirmasiEdit(event, suratJalanId) {
         event.preventDefault();

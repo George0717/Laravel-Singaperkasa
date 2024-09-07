@@ -60,8 +60,7 @@ Route::get('/suratJalan/{suratJalan}/edit', [SuratJalanController::class, 'edit'
 Route::put('/suratJalan/{suratJalan}', [SuratJalanController::class, 'update'])->name('suratJalan.update');
 Route::delete('/suratJalan/{suratJalan}', [SuratJalanController::class, 'destroy'])->name('suratJalan.destroy');
 Route::get('/pdf/generate/suratJalan/{suratJalan}', [SuratJalanController::class, 'generatePDF'])->name('suratJalan.generate');
-Route::get('suratJalan/{suratJalan}/kirim', [SuratJalanController::class, 'kirim'])->name('suratJalan.kirim');
-Route::get('/suratJalan/{suratJalan}/terkirim', [SuratJalanController::class, 'terkirim'])->name('suratJalan.terkirim');
+
 
 
 // Stock Barang

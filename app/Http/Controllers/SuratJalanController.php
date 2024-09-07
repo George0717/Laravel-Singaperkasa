@@ -144,38 +144,6 @@ class SuratJalanController extends Controller
         return redirect()->route('suratJalan.index');
     }
 
-    public function kirim(SuratJalan $suratJalan)
-    {
-        try {
-            DB::transaction(function () use ($suratJalan) {
-                // Mark Surat Jalan as sent
-                $suratJalan->update(['status' => 'terkirim']);
-
-                // Restore stock
-                foreach ($suratJalan->suratJalanDetails as $detail) {
-                    $salesOrderDetail = SalesOrderDetail::find($detail->sales_order_detail_id);
-                    $salesOrderDetail->quantity += $detail->quantity;
-                    $salesOrderDetail->save();
-                }
-            });
-
-            // Redirect ke halaman Surat Jalan terkirim
-            return redirect()->route('suratJalan.terkirim')->with('success', 'Surat Jalan telah berhasil dikirim.');
-        } catch (\Exception $e) {
-            Log::error('Error sending Surat Jalan: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengirim Surat Jalan.');
-        }
-    }
-
-    public function terkirim()
-    {
-        Log::info('Terkirim method is being called.');
-        $suratJalans = SuratJalan::where('status', 'terkirim')->paginate(10);
-        return view('pages.SuratJalan.terkirim', compact('suratJalans'));
-    }
-
-
-
     public function destroy(SuratJalan $suratJalan)
     {
         DB::transaction(function () use ($suratJalan) {
