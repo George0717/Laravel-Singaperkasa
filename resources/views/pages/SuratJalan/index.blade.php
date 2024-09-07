@@ -136,7 +136,7 @@
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "{{ url('surat_jalan') }}/" + suratJalanId + "/edit";
+                window.location.href = "{{ url('suratJalan') }}/" + suratJalanId + "/edit";
             }
         });
     }

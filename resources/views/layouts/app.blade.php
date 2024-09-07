@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -21,7 +21,6 @@
     @livewireStyles
 
     <style>
-        /* Sidebar animation and styling */
         .sidebar {
             transition: transform 0.3s ease;
             transform: translateX(-100%);
@@ -33,6 +32,8 @@
             top: 0;
             left: 0;
             z-index: 40;
+            overflow-y: auto;
+            /* Agar bisa scroll jika terlalu panjang */
         }
 
         .sidebar-open .sidebar {
@@ -66,9 +67,17 @@
             color: #ffffff;
         }
 
-        #sidebar-toggle:active {
-            opacity: 1;
+        #dropdown-menu {
+            display: none;
+            background-color: #2d3748;
+            /* Tailwind gray-800 */
         }
+
+        .hidden {
+            display: none;
+        }
+
+
 
         /* Button primary styling */
         .btn-primary {

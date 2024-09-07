@@ -112,37 +112,48 @@ class SuratJalanController extends Controller
 
     public function edit(SuratJalan $suratJalan)
     {
+        // Muat relasi salesOrderDetails ke dalam suratJalan
+        $suratJalan->load('suratJalanDetails.salesOrderDetail');
+        
+        // Ambil daftar sales orders untuk dropdown
         $salesOrders = SalesOrder::all();
-        return view('pages.SuratJalan.edit', compact('suratJalan', 'salesOrders'));
+    
+        // Ambil nomor surat jalan saat ini atau generate yang baru jika belum ada
+        $nextSuratJalanNumber = $suratJalan->no_surat_jalan ?? $this->generateSuratJalanNumber();
+    
+        return view('pages.SuratJalan.edit', compact('suratJalan', 'salesOrders', 'nextSuratJalanNumber'));
     }
 
     public function update(Request $request, SuratJalan $suratJalan)
     {
         DB::transaction(function () use ($request, $suratJalan) {
+            // Update Surat Jalan
             $suratJalan->update([
                 'plat_angkutan' => $request->plat_angkutan,
                 'tanggal_pengiriman' => $request->tanggal_pengiriman,
+                'no_surat_jalan' => $request->nomor_surat_jalan, // Tambahkan ini
             ]);
-
+    
             // Remove existing details
             $suratJalan->suratJalanDetails()->delete();
-
+    
             foreach ($request->items as $item) {
                 SuratJalanDetail::create([
                     'surat_jalan_id' => $suratJalan->id,
                     'sales_order_detail_id' => $item['id'],
                     'quantity' => $item['quantity'],
                 ]);
-
+    
                 // Update Sales Order quantity
                 $salesOrderDetail = SalesOrderDetail::find($item['id']);
                 $salesOrderDetail->quantity -= $item['quantity'];
                 $salesOrderDetail->save();
             }
         });
-
+    
         return redirect()->route('suratJalan.index');
     }
+    
 
     public function destroy(SuratJalan $suratJalan)
     {
