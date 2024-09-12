@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataFeedController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\JadwalKirimController;
 use App\Http\Controllers\SalesOrderController;
 use App\Http\Controllers\StockController;
@@ -61,10 +62,22 @@ Route::put('/suratJalan/{suratJalan}', [SuratJalanController::class, 'update'])-
 Route::delete('/suratJalan/{suratJalan}', [SuratJalanController::class, 'destroy'])->name('suratJalan.destroy');
 Route::get('/pdf/generate/suratJalan/{suratJalan}', [SuratJalanController::class, 'generatePDF'])->name('suratJalan.generate');
 
-
-
 // Stock Barang
 Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
 Route::get('/stock/{id}', [StockController::class, 'show'])->name('stock.show');
+
+// Invoice
+Route::get('/invoice', [InvoiceController::class, 'index'])->name('invoice.index');
+Route::get('/invoice/create', [InvoiceController::class, 'create'])->name('invoice.create');
+Route::post('/invoice', [InvoiceController::class, 'store'])->name('invoice.store');
+Route::get('/invoice/{invoice}', [InvoiceController::class, 'show'])->name('invoice.show');
+Route::get('/invoice/{invoice}/edit', [InvoiceController::class, 'edit'])->name('invoice.edit');
+Route::put('/invoice/{invoice}', [InvoiceController::class, 'update'])->name('invoice.update');
+Route::delete('/invoice/{invoice}', [InvoiceController::class, 'destroy'])->name('invoice.destroy');
+Route::get('/pdf/generate/invoice/{invoice}', [InvoiceController::class, 'generatePDF'])->name('invoice.generate');
+Route::get('/sales-order-data/{id}', [InvoiceController::class, 'getSalesOrderData']);
+
+
+
 
 });

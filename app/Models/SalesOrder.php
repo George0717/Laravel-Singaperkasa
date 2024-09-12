@@ -63,4 +63,9 @@ class SalesOrder extends Model
     {
         return $this->belongsTo(User::class, 'deleted_by');
     }
+
+    public function shipments()
+{
+    return $this->hasMany(Shipment::class, 'sales_order_id');
+}
 }
