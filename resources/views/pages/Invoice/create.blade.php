@@ -92,7 +92,6 @@
             </div>
         </div>
 
-
         <!-- Tombol Simpan -->
         <div class="text-center mt-6">
             <button type="submit" class="btn btn-primary hover:bg-blue-600 transition duration-300 ease-in-out">
@@ -135,8 +134,11 @@
                                 ? data.items.map(item => {
                                     const qtyShipped = item.quantity < 0 ? Math.abs(item.quantity) : item.quantity_shipped || 0;
                                     const qty = item.quantity < 0 ? 0 : item.quantity;
-                                    const status = qty === 0 && qtyShipped > 0 && qtyShipped === item.quantity_total
-                                        ? 'Sudah Terkirim'
+
+                                    const status = qty === 0 
+                                        ? 'Semua barang berhasil dikirim' 
+                                        : qtyShipped > 0 && qtyShipped === item.quantity_total 
+                                        ? 'Sudah Terkirim' 
                                         : item.status || 'N/A';
 
                                     return `
@@ -172,36 +174,19 @@
                                         <p><strong>No PO Customer:</strong> ${data.po_number || 'N/A'}</p>
                                     </div>
                                 </div>
-                                <div class="card mb-4 border-primary">
-                                    <div class="card-header bg-primary text-white">
-                                        <h5 class="mb-0">Surat Jalan Details</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        ${itemsHtml}
-                                    </div>
-                                </div>
-                                <div class="card mb-4 border-primary">
-                                    <div class="card-header bg-primary text-white">
-                                        <h5 class="mb-0">Shipment Schedule</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        ${shipmentsHtml}
-                                    </div>
-                                </div>
                             `;
 
-                            $('#sales-order-details').html(detailsHtml);
+                            $('#sales-order-details').html(detailsHtml + itemsHtml + shipmentsHtml);
                         } else {
-                            $('#sales-order-details').html('<p>No details available.</p>');
+                            $('#sales-order-details').html('<p>No data found.</p>');
                         }
                     },
-                    error: function(xhr, status, error) {
-                        console.error('Error fetching sales order data:', status, error);
-                        $('#sales-order-details').html('<p class="text-red-500">Error fetching details.</p>');
+                    error: function() {
+                        $('#sales-order-details').html('<p>An error occurred while retrieving data.</p>');
                     }
                 });
             } else {
-                $('#sales-order-details').html('<p>Please select a sales order.</p>');
+                $('#sales-order-details').empty();
             }
         });
     });
