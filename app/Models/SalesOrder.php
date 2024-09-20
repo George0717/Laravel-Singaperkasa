@@ -26,6 +26,7 @@ class SalesOrder extends Model
         'vat',
         'grand_total',
         'payment_schedule_type',
+        'payment_type',
         'due_date',
         'created_by',
         'updated_by',

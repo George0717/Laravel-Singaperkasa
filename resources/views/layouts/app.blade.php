@@ -157,11 +157,6 @@
         .card {
             transition: all 0.3s ease;
         }
-
-        .card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
     </style>
 </head>
 

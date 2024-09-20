@@ -41,8 +41,9 @@ Isi surat jalan :
 Dicetak berupa PDF
 
 # Invoice 
-- Nama customer, Alamat Customer, Tanggal PO Customer, No PO Customer, Nama Pabrik, Alamat Pabrik, Alamat, Telpon, No Invoice (Bisa revisi)
+- Nama customer(Sales Order), Alamat Customer(Sales Order), Tanggal PO Customer(Sales Order), No PO Customer(Sales Order), Nama Pabrik(Surat Jalan), Alamat Pabrik(Surat Jalan), Alamat (Sales Order), Telpon, No Invoice (Bisa revisi)
 
+(Berasal dari Surat Jalan)
 No Surat Jalan :
 Qty, Barang, Harga, Jumlah
 No Surat Jalan :
@@ -53,8 +54,9 @@ Sub Total :
 - Uang Muka (Jika ada)
 - PPN (isi ppn bisa berubah)
 
-Grand Total 
-Jadwal pembayaran : Jenis pembayaran / waktu pembayaran 
+Grand Total (Sales Order)
+Jadwal pembayaran (Sales order)
+Jadwal pembayaran (Sales order)
 <!-- Cash, Debit/Kredit, Transfer/30 Hari setelah barang diterima -->
 Dokumen bisa di cetak berupa PDF
 

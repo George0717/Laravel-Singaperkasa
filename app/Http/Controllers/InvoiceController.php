@@ -16,15 +16,10 @@ class InvoiceController extends Controller
         return view('pages.Invoice.index', compact('invoices'));
     }
 
-    // Method untuk form create invoice
-    // InvoiceController.php
 
     public function create()
     {
-        // Ambil semua sales orders
         $salesOrders = SalesOrder::all();
-
-        // Dapatkan nomor invoice terbaru
         $latestInvoice = Invoice::orderBy('created_at', 'desc')->first();
         $invoiceNumber = 'INVOICE00001';
 
@@ -35,9 +30,6 @@ class InvoiceController extends Controller
 
         return view('pages.Invoice.create', compact('salesOrders', 'invoiceNumber'));
     }
-
-    // Method untuk menyimpan invoice baru
-    // InvoiceController.php
 
     public function store(Request $request)
     {
@@ -50,7 +42,7 @@ class InvoiceController extends Controller
             'down_payment' => 'nullable|numeric',
             'vat' => 'nullable|numeric',
             'grand_total' => 'required|numeric',
-            'payment_schedule_type' => 'required|string',
+            'payment_type' => 'required|string',
         ], [
             'sales_order_id.required' => 'Sales Order harus dipilih.',
             'invoice_number.required' => 'Nomor Invoice wajib diisi.',
@@ -92,7 +84,7 @@ class InvoiceController extends Controller
             'down_payment' => 'nullable|numeric',
             'vat' => 'nullable|numeric',
             'grand_total' => 'required|numeric',
-            'payment_schedule_type' => 'required|string',
+            'payment_type' => 'required|string',
         ], [
             'sales_order_id.required' => 'Sales Order harus dipilih.',
             'invoice_number.required' => 'Nomor Invoice wajib diisi.',
@@ -123,6 +115,12 @@ class InvoiceController extends Controller
             return response()->json(['message' => 'Sales Order tidak ditemukan'], 404);
         }
 
+        $subtotal = $salesOrder->details->sum('price'); // Hitung subtotal
+        $discount = $salesOrder->discount ?? 0; // Ambil discount
+        $downPayment = $salesOrder->down_payment ?? 0; // Ambil down payment
+        $vat = $salesOrder->vat ?? 0; // Ambil VAT
+        $grandTotal = $subtotal - $discount + $vat; // Hitung grand total
+
         $itemsStatus = $salesOrder->details->map(function ($detail) {
             $status = $detail->quantity > $detail->quantity_shipped ? 'Belum sepenuhnya dikirim' : 'Semua barang telah dikirim';
             return [
@@ -131,20 +129,24 @@ class InvoiceController extends Controller
                 'quantity_shipped' => $detail->quantity_shipped,
                 'status' => $status,
             ];
-        })->toArray();  // Ensure it's an array
+        })->toArray();
 
         return response()->json([
             'customer_name' => $salesOrder->customer_name,
             'customer_address' => $salesOrder->customer_address,
+            'payment_type' => $salesOrder->payment_type,
             'po_date' => $salesOrder->po_date,
             'po_number' => $salesOrder->po_number,
-            'factory_name' => $salesOrder->factory_name,
-            'factory_address' => $salesOrder->factory_address,
             'address' => $salesOrder->address,
             'phone' => $salesOrder->phone,
+            'subtotal' => $subtotal,
+            'discount' => $discount,
+            'down_payment' => $downPayment,
+            'vat' => $vat,
+            'grand_total' => $grandTotal,
             'items' => $itemsStatus,
-            'shipments' => [],  // Ensure this is an array
             'due_date' => $salesOrder->due_date,
         ]);
     }
+
 }
