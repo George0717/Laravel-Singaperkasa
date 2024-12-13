@@ -25,6 +25,11 @@ class SuratJalan extends Model
     {
         return $this->hasMany(SuratJalanDetail::class);
     }
+
+    public function shipments()
+    {
+        return $this->hasMany(Shipment::class, 'sales_order_id');
+    }
 }
 
 

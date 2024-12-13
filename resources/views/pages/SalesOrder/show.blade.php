@@ -2,91 +2,109 @@
 
 @section('content')
     <div class="container mx-auto px-4">
-        <h1 class="text-2xl font-semibold mb-6 text-gray-800">Sales Order Details</h1>
+        <h1 class="text-xl font-bold mb-4 text-gray-800">Sales Order Details</h1>
 
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <table class="table-auto w-full border-collapse mb-6">
-                <tbody>
-                    <tr class="hover:bg-gray-100">
-                        <td class="px-4 py-2 text-gray-700 border-b"><strong>Customer Name:</strong></td>
-                        <td class="px-4 py-2 text-gray-800 border-b">{{ $salesOrder->customer_name }}</td>
-                    </tr>
-                    <tr class="hover:bg-gray-100">
-                        <td class="px-4 py-2 text-gray-700 border-b"><strong>Customer Address:</strong></td>
-                        <td class="px-4 py-2 text-gray-800 border-b">{{ $salesOrder->customer_address }}</td>
-                    </tr>
-                    <tr class="hover:bg-gray-100">
-                        <td class="px-4 py-2 text-gray-700 border-b"><strong>PO Date:</strong></td>
-                        <td class="px-4 py-2 text-gray-800 border-b">{{ $salesOrder->po_date->translatedFormat('j F Y') }}</td>
-                    </tr>
-                    <tr class="hover:bg-gray-100">
-                        <td class="px-4 py-2 text-gray-700 border-b"><strong>PO Number:</strong></td>
-                        <td class="px-4 py-2 text-gray-800 border-b">{{ $salesOrder->po_number }}</td>
-                    </tr>
-                    <tr class="hover:bg-gray-100">
-                        <td class="px-4 py-2 text-gray-700 border-b"><strong>SO Number:</strong></td>
-                        <td class="px-4 py-2 text-gray-800 border-b">{{ $salesOrder->so_number }}</td>
-                    </tr>
-                    <tr class="hover:bg-gray-100">
-                        <td class="px-4 py-2 text-gray-700 border-b"><strong>Discount:</strong></td>
-                        <td class="px-4 py-2 text-gray-800 border-b">{{ number_format($salesOrder->discount, 0, ',', '.') }} {{ $salesOrder->discount_type }}</td>
-                    </tr>
-                    <tr class="hover:bg-gray-100">
-                        <td class="px-4 py-2 text-gray-700 border-b"><strong>Down Payment:</strong></td>
-                        <td class="px-4 py-2 text-gray-800 border-b">{{ 'Rp ' . number_format($salesOrder->down_payment, 0, ',', '.') }}</td>
-                    </tr>
-                    <tr class="hover:bg-gray-100">
-                        <td class="px-4 py-2 text-gray-700 border-b"><strong>Pajak:</strong></td>
-                        <td class="px-4 py-2 text-gray-800 border-b">{{ number_format($salesOrder->vat, 0, ',', '.') }} %</td>
-                    </tr>
-                    <tr class="hover:bg-gray-100">
-                        <td class="px-4 py-2 text-gray-700 border-b"><strong>Grand Total:</strong></td>
-                        <td class="px-4 py-2 text-gray-800 border-b">{{ 'Rp ' . number_format($salesOrder->grand_total, 0, ',', '.') }}</td>
-                    </tr>
-                    <tr class="hover:bg-gray-100">
-                        <td class="px-4 py-2 text-gray-700 border-b"><strong>Tipe Pembayaran:</strong></td>
-                        <td class="px-4 py-2 text-gray-800 border-b">{{ $salesOrder->payment_type }}</td>
-                    </tr>
-                    <tr class="hover:bg-gray-100">
-                        <td class="px-4 py-2 text-gray-700 border-b"><strong>PO Photo:</strong></td>
-                        <td class="px-4 py-2 text-gray-800 border-b">
-                            @if($salesOrder->po_photo)
-                                <img src="{{ asset('storage/' . $salesOrder->po_photo) }}" alt="PO Photo" class="max-w-xs rounded-lg shadow-md">
-                            @else
-                                <span>No photo available</span>
-                            @endif
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="bg-white shadow rounded-lg p-4">
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div class="text-sm">
+                    <span class="font-semibold text-gray-600">Customer Name:</span>
+                    <p class="text-gray-800">{{ $salesOrder->customer_name }}</p>
+                </div>
+                <div class="text-sm">
+                    <span class="font-semibold text-gray-600">Customer Address:</span>
+                    <p class="text-gray-800">{{ $salesOrder->customer_address }}</p>
+                </div>
+                <div class="text-sm">
+                    <span class="font-semibold text-gray-600">PO Date:</span>
+                    <p class="text-gray-800">{{ $salesOrder->po_date->translatedFormat('j F Y') }}</p>
+                </div>
+                <div class="text-sm">
+                    <span class="font-semibold text-gray-600">PO Number:</span>
+                    <p class="text-gray-800">{{ $salesOrder->po_number }}</p>
+                </div>
+                <div class="text-sm">
+                    <span class="font-semibold text-gray-600">SO Number:</span>
+                    <p class="text-gray-800">{{ $salesOrder->so_number }}</p>
+                </div>
+                <div class="text-sm">
+                    <span class="font-semibold text-gray-600">Discount:</span>
+                    <p class="text-gray-800">{{ number_format($salesOrder->discount, 0, ',', '.') }} {{ $salesOrder->discount_type }}</p>
+                </div>
+                <div class="text-sm">
+                    <span class="font-semibold text-gray-600">Down Payment:</span>
+                    <p class="text-gray-800">{{ 'Rp ' . number_format($salesOrder->down_payment, 0, ',', '.') }}</p>
+                </div>
+                <div class="text-sm">
+                    <span class="font-semibold text-gray-600">Pajak:</span>
+                    <p class="text-gray-800">{{ number_format($salesOrder->vat, 0, ',', '.') }} %</p>
+                </div>
+                <div class="text-sm">
+                    <span class="font-semibold text-gray-600">Grand Total:</span>
+                    <p class="text-gray-800">{{ 'Rp ' . number_format($salesOrder->grand_total, 0, ',', '.') }}</p>
+                </div>
+                <div class="text-sm">
+                    <span class="font-semibold text-gray-600">Payment Type:</span>
+                    <p class="text-gray-800">{{ $salesOrder->payment_type }}</p>
+                </div>
+                <div class="text-sm sm:col-span-2">
+                    <span class="font-semibold text-gray-600">PO Photo:</span>
+                    @if($salesOrder->po_photo)
+                        <button class="text-blue-500 hover:underline mt-2" onclick="openModal()">Lihat Foto</button>
+                        
+                        <!-- Modal -->
+                        <div id="photoModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden" onclick="closeModal(event)">
+                            <div class="bg-white rounded-lg shadow-lg p-4 max-w-lg w-full relative" onclick="event.stopPropagation()">
+                                <img src="{{ asset('storage/' . $salesOrder->po_photo) }}" alt="PO Photo" 
+                                     class="w-[400px] h-[200px] object-cover rounded-lg">
+                            </div>
+                        </div>
+                    @else
+                        <p class="text-gray-500">No photo available</p>
+                    @endif
+                </div>
+            </div>
+        </div>
 
-            {{-- Section for item details --}}
-            <h2 class="text-xl font-semibold mb-4 text-gray-800">Item Details</h2>
-            <table class="table-auto w-full border-collapse">
+        <h2 class="text-lg font-bold mt-8 mb-4 text-gray-800">Item Details</h2>
+
+        <div class="bg-white shadow rounded-lg overflow-x-auto">
+            <table class="table-auto w-full text-sm">
                 <thead>
-                    <tr class="bg-gray-200">
-                        <th class="px-4 py-2 text-left text-gray-700">Item Name</th>
-                        <th class="px-4 py-2 text-left text-gray-700">Quantity</th>
-                        <th class="px-4 py-2 text-left text-gray-700">Price</th>
-                        <th class="px-4 py-2 text-left text-gray-700">Total</th>
+                    <tr class="bg-gray-200 text-left">
+                        <th class="px-4 py-2 text-gray-700">Item Name</th>
+                        <th class="px-4 py-2 text-gray-700">Quantity</th>
+                        <th class="px-4 py-2 text-gray-700">Price</th>
+                        <th class="px-4 py-2 text-gray-700">Total</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($salesOrder->details as $detail)
-                        <tr class="hover:bg-gray-100">
-                            <td class="px-4 py-2 text-gray-700 border-b">{{ $detail->item_name }}</td>
-                            <td class="px-4 py-2 text-gray-700 border-b">{{ $detail->quantity }}</td>
-                            <td class="px-4 py-2 text-gray-700 border-b">{{ 'Rp ' . number_format($detail->price, 0, ',', '.') }}</td>
-                            <td class="px-4 py-2 text-gray-700 border-b">{{ 'Rp ' . number_format($detail->quantity * $detail->price, 0, ',', '.') }}</td>
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="px-4 py-2 text-gray-800">{{ $detail->item_name }}</td>
+                            <td class="px-4 py-2 text-gray-800">{{ $detail->quantity }}</td>
+                            <td class="px-4 py-2 text-gray-800">{{ 'Rp ' . number_format($detail->price, 0, ',', '.') }}</td>
+                            <td class="px-4 py-2 text-gray-800">{{ 'Rp ' . number_format($detail->quantity * $detail->price, 0, ',', '.') }}</td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
+        </div>
 
-            <div class="mt-6">
-                <a href="{{ route('SalesOrders.index') }}" class="btn btn-secondary bg-gray-700 text-white hover:bg-gray-900">Back to List</a>
-                <a href="{{ route('SalesOrders.printPDF', $salesOrder->id) }}" class="btn btn-primary bg-blue-700 text-white hover:bg-blue-900 px-4 py-2 rounded">Print PDF</a>
-            </div>
+        <div class="flex justify-between items-center mt-6">
+            <a href="{{ route('SalesOrders.index') }}" class="text-sm text-gray-700 hover:underline">Back to List</a>
+            <a href="{{ route('SalesOrders.printPDF', $salesOrder->id) }}" class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">Print PDF</a>
         </div>
     </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('photoModal').classList.remove('hidden');
+        }
+
+        function closeModal(event) {
+            if (event.target.id === 'photoModal') {
+                document.getElementById('photoModal').classList.add('hidden');
+            }
+        }
+    </script>
 @endsection

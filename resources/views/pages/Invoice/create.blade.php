@@ -155,11 +155,12 @@
                             const shipmentsHtml = Array.isArray(data.shipments) && data.shipments.length > 0
                                 ? data.shipments.map(shipment => `
                                     <div class="bg-white shadow-lg rounded-lg p-6 border border-gray-200 mb-4">
-                                        <h6 class="text-lg font-semibold text-primary">No Surat Jalan: ${shipment.surat_jalan_number || 'N/A'}</h6>
-                                        <p><strong>Tanggal Kirim:</strong> ${shipment.shipping_date || 'N/A'}</p>
-                                        <p><strong>Alamat Pengiriman:</strong> ${shipment.delivery_address || 'N/A'}</p>
+                                        <h6 class="text-lg font-semibold text-primary">No Surat Jalan: ${shipment.no_surat_jalan || 'N/A'}</h6>
+                                        <p><strong>Tanggal Kirim:</strong> ${shipment.tanggal_pengiriman || 'N/A'}</p>
+                                        <p><strong>Tanggal Kirim:</strong> ${shipment.plat_angkutan|| 'N/A'}</p>
+                                        <p><strong>Tanggal Kirim:</strong> ${shipment.quantity || 'N/A'}</p>
                                     </div>
-                                `).join('') : '<p>No shipments found.</p>';
+                                `).join('') : '<p>Tidak ada pengiriman</p>';
 
                             // Generate details HTML
                             const detailsHtml = `
@@ -171,22 +172,22 @@
                                         <p><strong>Nama Customer:</strong> ${data.customer_name || 'N/A'}</p>
                                         <p><strong>Alamat Customer:</strong> ${data.customer_address || 'N/A'}</p>
                                         <p><strong>Tanggal PO Customer:</strong> ${data.po_date || 'N/A'}</p>
-                                        <p><strong>No PO Customer:</strong> ${data.po_number || 'N/A'}</p>
                                     </div>
                                 </div>
+                                <h5 class="text-lg font-semibold text-primary mt-6">Items</h5>
+                                ${itemsHtml}
+                                <h5 class="text-lg font-semibold text-primary mt-6">Pengiriman</h5>
+                                ${shipmentsHtml}
                             `;
 
-                            $('#sales-order-details').html(detailsHtml + itemsHtml + shipmentsHtml);
+                            $('#sales-order-details').html(detailsHtml);
                         } else {
                             $('#sales-order-details').html('<p>No data found.</p>');
                         }
-                    },
-                    error: function() {
-                        $('#sales-order-details').html('<p>An error occurred while retrieving data.</p>');
                     }
                 });
             } else {
-                $('#sales-order-details').empty();
+                $('#sales-order-details').html('');
             }
         });
     });
