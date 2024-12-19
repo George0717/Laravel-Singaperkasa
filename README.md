@@ -27,7 +27,7 @@ Dokumen bisa di cetak berupa PDF
 # Jadwal Kirim
 - Pilih Customer 
 - Pilih nomor SO
-- Pilih tanggal + Qty + Barang (Sesuai SO) + Keterangan
+- Pilih tanggal + Qty + Barang (Sesuai SO) + Tujuan tempat + Keterangan
 Dicetak berupa PDF
 
 # Surat Jalan

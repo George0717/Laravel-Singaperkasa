@@ -22,36 +22,31 @@
 </style>
 
 <div class="container mx-auto px-4">
-    <!-- Tombol Kembali -->
-    <div class="mb-4">
-        <a href="{{ route('suratJalan.index') }}" class="btn btn-secondary">Kembali ke Daftar Surat Jalan</a>
-    </div>
-
-    <!-- Tombol Generate PDF -->
-    <div class="mb-4">
+    <!-- Kembali ke Daftar Surat Jalan & Unduh PDF Buttons -->
+    <div class="mb-4 flex justify-between">
+        <a href="{{ route('suratJalan.index') }}" class="btn btn-secondary">Kembali</a>
         <a href="{{ route('suratJalan.generate', $suratJalan->id) }}" class="btn btn-primary">Unduh PDF</a>
     </div>
 
     <!-- Animasi Loading -->
     <div id="loading-surat-jalan" class="skeleton p-4 rounded-lg mb-4">
         <h2 class="text-2xl font-semibold skeleton mb-2">Memuat Surat Jalan...</h2>
-        <div class="grid grid-cols-2 gap-4">
-            <div class="skeleton h-6 w-full"></div>
-            <div class="skeleton h-6 w-full"></div>
-        </div>
+        <div class="skeleton h-6 w-full mb-2"></div>
+        <div class="skeleton h-6 w-full"></div>
     </div>
 
     <!-- Konten Surat Jalan -->
     <div id="surat-jalan-content" class="hidden">
         <h2 class="text-2xl font-semibold mb-4">Detail Surat Jalan</h2>
 
-        <div class="mb-4">
+        <div class="space-y-4">
             <p><strong>Nama Customer:</strong> {{ $suratJalan->salesOrder->customer_name }}</p>
+            <p><strong>Alamat Pelanggan:</strong> {{ $suratJalan->salesOrder->customer_address }}</p>
             <p><strong>Nomor Surat Jalan:</strong> {{ $suratJalan->no_surat_jalan }}</p>
             <p><strong>Tanggal Pengiriman:</strong> {{ \Carbon\Carbon::parse($suratJalan->tanggal_pengiriman)->translatedFormat('d F Y') }}</p>
         </div>
 
-        <!-- Tabel Barang -->
+        <!-- Daftar Barang -->
         <h3 class="text-xl font-semibold mb-2">Daftar Barang</h3>
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 table-auto">
@@ -85,4 +80,5 @@
         document.getElementById('surat-jalan-content').classList.remove('hidden');
     });
 </script>
+
 @endsection

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('sales_order_id')->constrained('sales_orders')->onDelete('cascade');
             $table->date('delivery_date');
             $table->text('keterangan')->nullable();
+            $table->text('tujuan_pengiriman')->nullable();
             $table->timestamps();
         });
     }

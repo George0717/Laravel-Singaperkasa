@@ -3,10 +3,15 @@
 @section('content')
     <div class="container mx-auto px-4">
         <h1 class="text-2xl font-semibold mb-4">Create Sales Order</h1>
+        <a href="{{ route('SalesOrders.index') }}" class="inline-block mb-4 text-blue-600 hover:text-blue-800">
+            <button class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md shadow-sm">
+                &larr; Back to Sales Orders
+            </button>
+        </a>
 
         <form action="{{ route('salesOrders.store') }}" method="POST" id="sales-order-form" enctype="multipart/form-data"> @csrf
             <div class="mb-4">
-                <label for="customer_name" class="block text-sm font-medium text-gray-700">Customer Name</label>
+                <label for="customer_name" class="block text-sm font-medium text-gray-700">Nama Customer</label>
                 <input type="text" id="customer_name" name="customer_name" value="{{ old('customer_name') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50" required>
                 @error('customer_name')
                     <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
@@ -14,7 +19,7 @@
             </div>
 
             <div class="mb-4">
-                <label for="customer_address" class="block text-sm font-medium text-gray-700">Customer Address</label>
+                <label for="customer_address" class="block text-sm font-medium text-gray-700">Alamat Customer</label>
                 <textarea id="customer_address" name="customer_address" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50" required>{{ old('customer_address') }}</textarea>
                 @error('customer_address')
                     <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
@@ -22,7 +27,7 @@
             </div>
 
             <div class="mb-4">
-                <label for="po_date" class="block text-sm font-medium text-gray-700">PO Date</label>
+                <label for="po_date" class="block text-sm font-medium text-gray-700">Tanggal PO</label>
                 <input type="date" id="po_date" name="po_date" value="{{ old('po_date') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50" required>
                 @error('po_date')
                     <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
@@ -30,7 +35,7 @@
             </div>
 
             <div class="mb-4">
-                <label for="po_number" class="block text-sm font-medium text-gray-700">PO Number</label>
+                <label for="po_number" class="block text-sm font-medium text-gray-700">Nomor PO</label>
                 <input type="text" id="po_number" name="po_number" value="{{ old('po_number') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50" required>
                 @error('po_number')
                     <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
@@ -38,13 +43,13 @@
             </div>
 
             <div class="mb-4">
-                <label for="so_number" class="block text-sm font-medium text-gray-700">SO Number</label>
-                <input type="text" id="so_number" name="so_number" value="{{ $soNumber }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50" disabled>
+                <label for="so_number" class="block text-sm font-medium text-gray-700">Nomor SO</label>
+                <input type="text" id="so_number" name="so_number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50" placeholder="No.Surat/Nama Perusahaan/Bulan/Tahun">
             </div>
 
              <!-- File Upload -->
              <div class="mb-4">
-                <label for="po_photo" class="block text-sm font-medium text-gray-700">PO Photo</label>
+                <label for="po_photo" class="block text-sm font-medium text-gray-700">Photo PO</label>
                 <input type="file" id="po_photo" name="po_photo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                 @error('po_photo')
                     <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
@@ -56,7 +61,7 @@
                 <div id="items-container">
                     <!-- Items will be dynamically added here -->
                 </div>
-                <button type="button" id="add-item" class="btn btn-secondary">Add Item</button>
+                <button type="button" id="add-item" class="btn btn-secondary">Tambah Barang</button>
             </div>
 
             <!-- Additional Fields -->
@@ -175,9 +180,9 @@
                 itemRow.innerHTML = `
                     <div class="grid grid-cols-4 gap-4">
                         <div>
-                            <label for="item_name_${itemCount}" class="block text-sm font-medium text-gray-700">Item Name</label>
+                            <label for="item_name_${itemCount}" class="block text-sm font-medium text-gray-700">Nama Barang</label>
                             <select id="item_name_${itemCount}" name="item_name[]" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm item-name">
-                                <option value="">Select an item</option>
+                                <option value="">Pilih Barang</option>
                                 ${Object.keys(itemOptions).map(item => `<option value="${item}" data-price="${itemOptions[item]}">${item}</option>`).join('')}
                             </select>
                         </div>
@@ -186,11 +191,11 @@
                             <input type="number" id="item_qty_${itemCount}" name="item_qty[]" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm item-qty" step="0.01" required>
                         </div>
                         <div>
-                            <label for="item_price_${itemCount}" class="block text-sm font-medium text-gray-700">Price (IDR)</label>
+                            <label for="item_price_${itemCount}" class="block text-sm font-medium text-gray-700">Harga</label>
                             <input type="number" id="item_price_${itemCount}" name="item_price[]" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm item-price" step="0.01" required>
                         </div>
                         <div>
-                            <label for="item_total_${itemCount}" class="block text-sm font-medium text-gray-700">Total (IDR)</label>
+                            <label for="item_total_${itemCount}" class="block text-sm font-medium text-gray-700">Total</label>
                             <input type="text" id="item_total_${itemCount}" name="item_total[]" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm item-total" readonly>
                         </div>
                     </div>

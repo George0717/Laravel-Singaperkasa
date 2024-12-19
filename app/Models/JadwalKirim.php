@@ -13,6 +13,7 @@ class JadwalKirim extends Model
         'sales_order_id',
         'delivery_date',
         'keterangan',
+        'tujuan_pengiriman',
     ];
 
     public function salesOrder()

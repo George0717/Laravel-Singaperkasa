@@ -38,7 +38,15 @@
             @enderror
         </div>
 
-        <!-- Keterangan -->
+        <!-- Tujuan Pengiriman -->
+        <div class="mb-4">
+            <label for="keterangan" class="block text-sm font-medium text-gray-700">Tujuan Pengiriman</label>
+            <input id="keterangan" name="keterangan" rows="4" class="form-textarea mt-1 block w-full"></input>
+            @error('keterangan')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+        {{-- Keterangan --}}
         <div class="mb-4">
             <label for="keterangan" class="block text-sm font-medium text-gray-700">Keterangan</label>
             <textarea id="keterangan" name="keterangan" rows="4" class="form-textarea mt-1 block w-full"></textarea>
@@ -68,7 +76,6 @@
 </div>
 
 <!-- Tailwind CSS CDN -->
-<script src="https://cdn.tailwindcss.com"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {

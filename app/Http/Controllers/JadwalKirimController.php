@@ -65,8 +65,9 @@ class JadwalKirimController extends Controller
     {
         $request->validate([
             'sales_order_id' => 'required|exists:sales_orders,id',
-            'delivery_date' => 'required|date',
+            'delivery_date' => 'required|date|after_or_equal:today',
             'keterangan' => 'nullable|string',
+            'tujuan_pengiriman' => 'nullable|string',
         ]);
 
         JadwalKirim::create($request->all());
@@ -84,8 +85,9 @@ class JadwalKirimController extends Controller
     {
         $request->validate([
             'sales_order_id' => 'required|exists:sales_orders,id',
-            'delivery_date' => 'required|date',
+            'delivery_date' => 'required|date|after_or_equal:today',
             'keterangan' => 'nullable|string',
+            'tujuan_pengiriman' => 'nullable|string',
         ]);
 
         $jadwalKirim->update($request->all());
