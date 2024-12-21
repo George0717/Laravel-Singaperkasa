@@ -69,4 +69,9 @@ class SalesOrder extends Model
 {
     return $this->hasMany(Shipment::class, 'sales_order_id');
 }
+
+public function jadwalKirim()
+{
+    return $this->hasOne(JadwalKirim::class);
+}
 }

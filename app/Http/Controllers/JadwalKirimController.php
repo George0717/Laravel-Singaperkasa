@@ -18,8 +18,8 @@ class JadwalKirimController extends Controller
 
     public function create()
     {
-        $salesOrders = SalesOrder::all();
-        return view('pages.JadwalKirim.create', compact('salesOrders'));
+        $salesOrders = SalesOrder::whereDoesntHave('jadwalKirim')->get();
+return view('pages.JadwalKirim.create', compact('salesOrders'));
     }
 
     public function showSalesOrderDetails(Request $request)
@@ -74,6 +74,11 @@ class JadwalKirimController extends Controller
             'keterangan' => 'nullable|string',
             'tujuan_pengiriman' => 'nullable|string',
         ]);
+        $salesOrder = SalesOrder::find($request->sales_order_id);
+
+        if (JadwalKirim::where('sales_order_id', $salesOrder->id)->exists()) {
+            return redirect()->back()->withErrors(['error' => 'Jadwal Kirim untuk nomor SO ini sudah dibuat.']);
+        }
 
         JadwalKirim::create($request->all());
 

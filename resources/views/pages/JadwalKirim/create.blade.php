@@ -46,7 +46,8 @@
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
         </div>
-        {{-- Keterangan --}}
+
+        <!-- Keterangan -->
         <div class="mb-4">
             <label for="keterangan" class="block text-sm font-medium text-gray-700">Keterangan</label>
             <textarea id="keterangan" name="keterangan" rows="4" class="form-textarea mt-1 block w-full"></textarea>
@@ -57,6 +58,9 @@
 
         <!-- Detail Sales Order -->
         <div id="sales-order-details" class="overflow-x-auto mt-6">
+            <div id="loading-indicator" class="hidden text-center my-4">
+                <span>Memuat detail...</span>
+            </div>
             <div id="details-container" class="flex flex-wrap gap-4">
                 <!-- Kartu akan dimasukkan di sini secara dinamis -->
             </div>
@@ -75,18 +79,19 @@
     </form>
 </div>
 
-<!-- Tailwind CSS CDN -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
         $('#sales_order_id').on('change', function() {
             var salesOrderId = $(this).val();
             if (salesOrderId) {
+                $('#loading-indicator').removeClass('hidden'); // Tampilkan indikator loading
                 $.ajax({
                     url: '{{ route('salesOrder.details') }}',
                     type: 'GET',
                     data: { sales_order_id: salesOrderId },
                     success: function(data) {
+                        $('#loading-indicator').addClass('hidden'); // Sembunyikan indikator loading
                         if (data.sales_order) {
                             var vat = parseFloat(data.sales_order.vat);
                             var vatHtml = vat > 0
@@ -108,16 +113,20 @@
                             `;
 
                             var detailsHtml = '';
-                            data.sales_order_details.forEach(function(detail) {
-                                detailsHtml += `
-                                    <div class="bg-white shadow-lg rounded-lg p-6 border border-gray-200 mb-4 transform transition-transform duration-500 animate-slide-in-left">
-                                        <h2 class="text-lg font-semibold mb-2">${detail.item_name}</h2>
-                                        <p class="text-gray-700">Jumlah: ${detail.quantity}</p>
-                                        <p class="text-gray-700">Harga: Rp ${parseFloat(detail.price).toLocaleString()}</p>
-                                        <p class="text-gray-700">Total: Rp ${parseFloat(detail.quantity * detail.price).toLocaleString()}</p>
-                                    </div>
-                                `;
-                            });
+                            if (data.sales_order_details.length > 0) {
+                                data.sales_order_details.forEach(function(detail) {
+                                    detailsHtml += `
+                                        <div class="bg-white shadow-lg rounded-lg p-6 border border-gray-200 mb-4 transform transition-transform duration-500 animate-slide-in-left">
+                                            <h2 class="text-lg font-semibold mb-2">${detail.item_name}</h2>
+                                            <p class="text-gray-700">Jumlah: ${detail.quantity}</p>
+                                            <p class="text-gray-700">Harga: Rp ${parseFloat(detail.price).toLocaleString()}</p>
+                                            <p class="text-gray-700">Total: Rp ${parseFloat(detail.quantity * detail.price).toLocaleString()}</p>
+                                        </div>
+                                    `;
+                                });
+                            } else {
+                                detailsHtml = '<p class="text-gray-500">Tidak ada item pada sales order ini.</p>';
+                            }
 
                             $('#details-container').html(salesOrderHtml + detailsHtml);
                         } else {
@@ -125,6 +134,7 @@
                         }
                     },
                     error: function(xhr, status, error) {
+                        $('#loading-indicator').addClass('hidden'); // Sembunyikan indikator loading
                         console.error('Kesalahan AJAX:', status, error);
                         $('#details-container').html('<p class="text-red-500">Kesalahan saat mengambil detail.</p>');
                     }
@@ -150,6 +160,11 @@
 
     .animate-slide-in-left {
         animation: slide-in-left 0.5s ease-out;
+    }
+
+    #loading-indicator {
+        font-size: 1.2rem;
+        color: #158843;
     }
 </style>
 @endsection
