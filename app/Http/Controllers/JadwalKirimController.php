@@ -48,6 +48,11 @@ class JadwalKirimController extends Controller
                 'so_number' => $salesOrder->so_number,
                 'customer_name' => $salesOrder->customer_name,
                 'customer_address' => $salesOrder->customer_address,
+                'po_number' => $salesOrder->po_number,
+                'discount' => $salesOrder->discount,
+                'down_payment' => $salesOrder->down_payment,
+                'grand_total' => $salesOrder->grand_total,
+                'discount_type' => $salesOrder->discount_type,
             ],
             'sales_order_details' => $salesOrder->details->map(function ($detail) {
                 return [
