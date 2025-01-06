@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataFeedController;
 use App\Http\Controllers\DashboardController;
@@ -76,6 +77,8 @@ Route::put('/invoice/{invoice}', [InvoiceController::class, 'update'])->name('in
 Route::delete('/invoice/{invoice}', [InvoiceController::class, 'destroy'])->name('invoice.destroy');
 Route::get('/pdf/generate/invoice/{invoice}', [InvoiceController::class, 'generatePDF'])->name('invoice.generate');
 Route::get('/sales-order-data/{id}', [InvoiceController::class, 'getSalesOrderData']);
+
+Route::get('/activity-log', [ActivityLogController::class, 'index'])->name('activity.log');
 
 
 

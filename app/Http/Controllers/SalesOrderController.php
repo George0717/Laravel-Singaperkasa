@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\JadwalKirim;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderDetail;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class SalesOrderController extends Controller
 {
@@ -30,7 +33,7 @@ class SalesOrderController extends Controller
             'customer_address' => 'required|string',
             'po_date' => 'required|date',
             'po_number' => 'required|string|max:50',
-            'so_number' => 'required|string|max:50',
+            'so_number' => 'string|max:50|nullable',
             'discount' => 'nullable|numeric',
             'discount_type' => 'nullable|string|in:percent,currency',
             'vat' => 'nullable|numeric',
@@ -43,18 +46,52 @@ class SalesOrderController extends Controller
             'po_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
+        // Generate nomor SO otomatis
+        $romanMonths = [
+            1 => 'I',
+            2 => 'II',
+            3 => 'III',
+            4 => 'IV',
+            5 => 'V',
+            6 => 'VI',
+            7 => 'VII',
+            8 => 'VIII',
+            9 => 'IX',
+            10 => 'X',
+            11 => 'XI',
+            12 => 'XII',
+        ];
+        $currentMonth = Carbon::now()->format('m');
+        $currentYear = Carbon::now()->format('Y');
+        $romanMonth = $romanMonths[(int)$currentMonth]; // Konversi angka bulan ke Romawi
+        $companyName = "SPA";
+        $lastOrder = SalesOrder::whereYear('created_at', $currentYear)
+            ->whereMonth('created_at', $currentMonth)
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $newNumber = $lastOrder ? ((int)Str::before($lastOrder->so_number, '/') + 1) : 1;
+        $soNumber = sprintf('%02d/%s/%s/%s', $newNumber, strtoupper($companyName), $romanMonth, $currentYear);
+
+        // Pastikan tidak ada duplikasi
+        while (SalesOrder::where('so_number', $soNumber)->exists()) {
+            $newNumber++;
+            $soNumber = sprintf('%02d/%s/%s/%s', $newNumber, strtoupper($companyName), $romanMonth, $currentYear);
+        }
+
         $salesOrder = new SalesOrder();
         $salesOrder->customer_name = $validated['customer_name'];
         $salesOrder->customer_address = $validated['customer_address'];
         $salesOrder->po_date = $validated['po_date'];
         $salesOrder->po_number = $validated['po_number'];
-        $salesOrder->so_number = $validated['so_number'];
+        $salesOrder->so_number = $soNumber;
         $salesOrder->discount = $validated['discount'];
         $salesOrder->discount_type = $validated['discount_type'];
         $salesOrder->vat = $validated['vat'];
         $salesOrder->down_payment = $validated['down_payment'];
         $salesOrder->payment_type = $validated['payment_type'];
         $salesOrder->due_date = $validated['due_date'];
+        JadwalKirim::where('sales_order_id', $salesOrder->id)->delete();
 
         if ($request->hasFile('po_photo')) {
             $path = $request->file('po_photo')->store('po_photos', 'public');

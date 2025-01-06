@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class SalesOrder extends Model
 {
@@ -20,7 +22,6 @@ class SalesOrder extends Model
         'po_date',
         'po_photo',
         'po_number',
-        'so_number',
         'discount',
         'down_payment',
         'vat',
@@ -74,4 +75,5 @@ public function jadwalKirim()
 {
     return $this->hasOne(JadwalKirim::class);
 }
+
 }

@@ -3,53 +3,68 @@
 @section('content')
 <div class="container mx-auto px-4">
     <h1 class="text-2xl font-semibold mb-4">Pesanan Penjualan</h1>
-    <a href="{{ route('salesOrders.create') }}" class="btn btn-primary mb-4" onclick="confirmCreate(event)">Buat Pesanan Penjualan Baru</a>
+    <a href="{{ route('salesOrders.create') }}" class="btn btn-primary mb-4" onclick="confirmCreate(event)">Buat Pesanan
+        Penjualan Baru</a>
 
     <!-- Search Inputs -->
     <div class="mb-4 flex items-center space-x-2">
-        <input type="text" id="search-name" class="form-input w-full mb-2" placeholder="Cari Berdasarkan Nama Pelanggan">
+        <input type="text" id="search-name" class="form-input w-full mb-2"
+            placeholder="Cari Berdasarkan Nama Pelanggan">
         <input type="date" id="search-date" class="form-input w-full" placeholder="Cari Berdasarkan Tanggal PO">
         <button id="reset-button" class="btn btn- mb-2">Reset</button>
     </div>
 
     <table class="min-w-full divide-y divide-gray-200 table-responsive overflow-x-auto">
-       <thead class="bg-gray-50">
-    <tr>
-        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Pelanggan</th>
-        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor SO</th>
-        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor PO</th>
-        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Grand Total</th>
-        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal PO</th>
-        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-    </tr>
-</thead>
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Nama
+                    Pelanggan</th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor SO
+                </th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor PO
+                </th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Grand Total
+                </th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal PO
+                </th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+            </tr>
+        </thead>
         <tbody class="bg-white divide-y divide-gray-200" id="sales-orders-table">
             @foreach ($salesOrders as $order)
             <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center" data-name="{{ $order->customer_name }}">{{ $order->customer_name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center"
+                    data-name="{{ $order->customer_name }}">{{ $order->customer_name }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $order->so_number }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $order->po_number }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ 'Rp ' . number_format($order->grand_total, 0, ',', '.') }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center" data-date="{{ $order->po_date->format('Y-m-d') }}">{{ $order->po_date->translatedFormat('j F Y') }}</td>                
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ 'Rp ' .
+                    number_format($order->grand_total, 0, ',', '.') }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center"
+                    data-date="{{ $order->po_date->format('Y-m-d') }}">{{ $order->po_date->translatedFormat('j F Y') }}
+                </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <!-- Dropdown button -->
                     <div class="dropdown">
-                        <button class="btn btn-primary dropdown-toggle" type="button" id="actionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="actionsDropdown"
+                            data-bs-toggle="dropdown" aria-expanded="false">
                             Actions
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="actionsDropdown">
                             <li><a class="dropdown-item" href="{{ route('salesOrders.show', $order) }}">Lihat</a></li>
-                            <li><a class="dropdown-item" href="{{ route('salesOrders.edit', $order) }}">Edit</a></li>
+                            <li><a class="dropdown-item" href="{{ route('salesOrders.edit', $order) }}"
+                                    onclick="confirmEdit(event, {{ $order->id }})">Edit</a></li>
                             <li>
-                                <form action="{{ route('salesOrders.destroy', $order) }}" method="POST" class="d-inline" id="delete-form-{{ $order->id }}">
+                                <form action="{{ route('salesOrders.destroy', $order) }}" method="POST" class="d-inline"
+                                    id="delete-form-{{ $order->id }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="dropdown-item text-danger">Hapus</button>
+                                    <button type="submit" class="dropdown-item text-danger"
+                                        onclick="confirmDelete(event, {{ $order->id }})">Hapus</button>
                                 </form>
                             </li>
                         </ul>
                     </div>
-                </td>                
+                </td>
             </tr>
             @endforeach
         </tbody>
@@ -146,21 +161,23 @@
         });
     }
 
-    function confirmDelete(orderId) {
-        Swal.fire({
-            title: 'Apakah Anda Yakin?',
-            text: "Apakah Anda ingin menghapus pesanan penjualan ini?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('delete-form-' + orderId).submit();
-            }
-        });
-    }
+    function confirmDelete(event, orderId) {
+    event.preventDefault();
+    Swal.fire({
+        title: 'Konfirmasi Hapus',
+        text: "Apakah Anda yakin ingin menghapus pesanan penjualan ini?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('delete-form-' + orderId).submit();
+        }
+    });
+}
+
 </script>
 @endsection

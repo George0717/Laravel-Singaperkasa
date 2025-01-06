@@ -3,7 +3,8 @@
 @section('content')
 <div class="container mx-auto px-4">
     <h1 class="text-2xl font-semibold mb-4">Jadwal Kirim</h1>
-    <a href="{{ route('jadwalKirim.create') }}" class="btn btn-primary mb-4" onclick="confirmCreate(event)">Tambah Jadwal Kirim</a>
+    <a href="{{ route('jadwalKirim.create') }}" class="btn btn-primary mb-4" onclick="confirmCreate(event)">Tambah
+        Jadwal Kirim</a>
 
     <!-- Filter Inputs -->
     <div class="mb-4 flex flex-wrap items-center space-x-2">
@@ -26,25 +27,41 @@
             <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor SO</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Kirim</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Kirim
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan
+                </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
             </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200" id="jadwal-kirims-table">
             @foreach ($jadwalKirims as $jadwalKirim)
             <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" data-customer="{{ strtolower($jadwalKirim->salesOrder->customer_name) }}">{{ $jadwalKirim->salesOrder->customer_name }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" data-so="{{ strtolower($jadwalKirim->salesOrder->so_number) }}">{{ $jadwalKirim->salesOrder->so_number }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" data-date="{{ $jadwalKirim->delivery_date }}">{{ \Carbon\Carbon::parse($jadwalKirim->delivery_date)->translatedFormat('j F Y') }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                    data-customer="{{ strtolower($jadwalKirim->salesOrder->customer_name ?? 'N/A') }}">
+                    {{ $jadwalKirim->salesOrder->customer_name ?? 'N/A' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    data-so="{{ strtolower($jadwalKirim->salesOrder->so_number ?? 'N/A') }}">
+                    {{ $jadwalKirim->salesOrder->so_number ?? 'N/A' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    data-date="{{ $jadwalKirim->delivery_date }}">
+                    {{ \Carbon\Carbon::parse($jadwalKirim->delivery_date)->translatedFormat('j F Y') }}
+                </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $jadwalKirim->keterangan }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <a href="{{ route('jadwalKirim.show', $jadwalKirim->id) }}" class="text-blue-600 hover:text-blue-900 transition duration-300 ease-in-out">View</a>
-                    <a href="{{ route('jadwalKirim.edit', $jadwalKirim->id) }}" class="text-green-600 hover:text-green-900 transition duration-300 ease-in-out ml-4" onclick="confirmEdit(event, {{ $jadwalKirim->id }})">Edit</a>
-                    <form action="{{ route('jadwalKirim.destroy', $jadwalKirim->id) }}" method="POST" class="inline" id="delete-form-{{ $jadwalKirim->id }}">
+                    <a href="{{ route('jadwalKirim.show', $jadwalKirim->id) }}"
+                        class="text-blue-600 hover:text-blue-900 transition duration-300 ease-in-out">View</a>
+                    <a href="{{ route('jadwalKirim.edit', $jadwalKirim->id) }}"
+                        class="text-green-600 hover:text-green-900 transition duration-300 ease-in-out ml-4"
+                        onclick="confirmEdit(event, {{ $jadwalKirim->id }})">Edit</a>
+                    <form action="{{ route('jadwalKirim.destroy', $jadwalKirim->id) }}" method="POST" class="inline"
+                        id="delete-form-{{ $jadwalKirim->id }}">
                         @csrf
                         @method('DELETE')
-                        <button type="button" onclick="confirmDelete({{ $jadwalKirim->id }})" class="text-red-600 hover:text-red-900 transition duration-300 ease-in-out ml-4">Delete</button>
+                        <button type="button" onclick="confirmDelete({{ $jadwalKirim->id }})"
+                            class="text-red-600 hover:text-red-900 transition duration-300 ease-in-out ml-4">Delete</button>
                     </form>
                 </td>
             </tr>

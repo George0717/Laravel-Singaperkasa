@@ -1,7 +1,8 @@
 # User
 - Multi User :
 Super Admin => Bisa mengakses semuanya dan melakukan monitoring
-Admin => Akses dilakukan oleh personalia untuk membuat user
+Admin => Akses dilakukan oleh personalia untuk membuat dan menghapus user dan bisa menjalankan semua fitur
+Sales => hanya bisa mengakses sales order
 
 Pembuatan user : 
 - User akan dibuat berdasarkan role => Role akan menyesuaikan sehingga akses akan dibatasi.
