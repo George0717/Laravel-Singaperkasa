@@ -84,7 +84,7 @@ class SuperAdminJadwalKirimController extends Controller
 
         JadwalKirim::create($request->all());
 
-        return redirect()->route('JadwalKirim.index')->with('success', 'Jadwal Kirim berhasil ditambahkan.');
+        return redirect()->route('superAdmin.JadwalKirim.index')->with('success', 'Jadwal Kirim berhasil ditambahkan.');
     }
 
     public function edit(JadwalKirim $jadwalKirim)
@@ -104,7 +104,7 @@ class SuperAdminJadwalKirimController extends Controller
        
         $jadwalKirim->update($request->all());
 
-        return redirect()->route('JadwalKirim.index')->with('success', 'Jadwal Kirim berhasil diperbarui.');
+        return redirect()->route('superAdmin.JadwalKirim.index')->with('success', 'Jadwal Kirim berhasil diperbarui.');
     }
 
     public function show(JadwalKirim $jadwalKirim)
@@ -116,7 +116,7 @@ class SuperAdminJadwalKirimController extends Controller
     {
         $jadwalKirim->delete();
 
-        return redirect()->route('JadwalKirim.index')->with('success', 'Jadwal Kirim berhasil dihapus.');
+        return redirect()->route('superAdmin.JadwalKirim.index')->with('success', 'Jadwal Kirim berhasil dihapus.');
     }
 
     public function printPDF(JadwalKirim $jadwalKirim)

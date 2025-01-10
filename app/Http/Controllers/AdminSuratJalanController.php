@@ -108,7 +108,7 @@ public function store(Request $request)
             return $suratJalan;
         });
 
-        return redirect()->route('suratJalan.index')->with('success', 'Surat Jalan berhasil disimpan!');
+        return redirect()->route('admin.suratJalan.index')->with('success', 'Surat Jalan berhasil disimpan!');
     } catch (\Exception $e) {
         // Log error jika ada
         Log::error('Error storing Surat Jalan: ' . $e->getMessage());
@@ -120,14 +120,14 @@ public function store(Request $request)
 
     public function show(SuratJalan $suratJalan)
     {
-        $suratJalan->load('suratJalanDetails.salesOrderDetail');
+        $suratJalan->load('admin.suratJalanDetails.salesOrderDetail');
         return view('admin.SuratJalan.show', compact('suratJalan'));
     }
 
     public function edit(SuratJalan $suratJalan)
     {
         // Muat relasi salesOrderDetails ke dalam suratJalan
-        $suratJalan->load('suratJalanDetails.salesOrderDetail');
+        $suratJalan->load('admin.suratJalanDetails.salesOrderDetail');
 
         // Ambil daftar sales orders untuk dropdown
         $salesOrders = SalesOrder::all();
@@ -174,7 +174,7 @@ public function store(Request $request)
             }
         });
 
-        return redirect()->route('suratJalan.index');
+        return redirect()->route('admin.suratJalan.index');
     }
 
 
@@ -191,14 +191,14 @@ public function store(Request $request)
             $suratJalan->delete();
         });
 
-        return redirect()->route('suratJalan.index')->with('success', 'Surat Jalan berhasil dihapus dan stok dikembalikan!');
+        return redirect()->route('admin.suratJalan.index')->with('success', 'Surat Jalan berhasil dihapus dan stok dikembalikan!');
     }
 
 
 
     public function generatePDF(SuratJalan $suratJalan)
     {
-        $suratJalan->load('suratJalanDetails.salesOrderDetail');
+        $suratJalan->load('admin.suratJalanDetails.salesOrderDetail');
         $pdf = FacadePdf::loadView('admin.suratJalan.pdf', compact('suratJalan'));
         return $pdf->download('surat_jalan_' . $suratJalan->no_surat_jalan . '.pdf');
     }

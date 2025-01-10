@@ -5,7 +5,7 @@
 
 <div class="container mx-auto px-4">
     <h1 class="text-2xl font-semibold mb-4">Surat Jalan</h1>
-    <a href="{{ route('suratJalan.create') }}" class="btn btn-primary mb-4" onclick="konfirmasiBuat(event)">Buat Surat
+    <a href="{{ route('superAdmin.suratJalan.create') }}" class="btn btn-primary mb-4" onclick="konfirmasiBuat(event)">Buat Surat
         Jalan Baru</a>
 
     <!-- Pencarian -->
@@ -25,7 +25,7 @@
             </div>
             <div class="flex items-end space-x-2">
                 <button type="submit" class="btn btn-primary w-full">Cari</button>
-                <a href="{{ route('suratJalan.index') }}" id="tombol-reset" class="btn btn-secondary w-full">Reset</a>
+                <a href="{{ route('superAdmin.suratJalan.index') }}" id="tombol-reset" class="btn btn-secondary w-full">Reset</a>
             </div>
         </form>
     </div>

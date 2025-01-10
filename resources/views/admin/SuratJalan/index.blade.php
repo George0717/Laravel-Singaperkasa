@@ -24,7 +24,7 @@
             </div>
             <div class="flex items-end space-x-2">
                 <button type="submit" class="btn btn-primary w-full">Cari</button>
-                <a href="{{ route('suratJalan.index') }}" id="tombol-reset" class="btn btn-secondary w-full">Reset</a>
+                <a href="{{ route('admin.suratJalan.index') }}" id="tombol-reset" class="btn btn-secondary w-full">Reset</a>
             </div>
         </form>
     </div>
@@ -118,7 +118,7 @@
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "{{ route('suratJalan.create') }}";
+                window.location.href = "{{ route('admin.suratJalan.create') }}";
             }
         });
     }

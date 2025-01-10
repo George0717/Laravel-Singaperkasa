@@ -56,7 +56,7 @@
                     <a href="{{ route('admin.jadwalKirim.edit', $jadwalKirim->id) }}"
                         class="text-green-600 hover:text-green-900 transition duration-300 ease-in-out ml-4"
                         onclick="confirmEdit(event, {{ $jadwalKirim->id }})">Edit</a>
-                    <form action="{{ route('jadwalKirim.destroy', $jadwalKirim->id) }}" method="POST" class="inline"
+                    <form action="{{ route('admin.jadwalKirim.destroy', $jadwalKirim->id) }}" method="POST" class="inline"
                         id="delete-form-{{ $jadwalKirim->id }}">
                         @csrf
                         @method('DELETE')
@@ -124,7 +124,7 @@
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "{{ route('jadwalKirim.create') }}";
+                window.location.href = "{{ route('admin.jadwalKirim.create') }}";
             }
         });
     }

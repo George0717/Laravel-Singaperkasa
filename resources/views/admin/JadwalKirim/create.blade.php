@@ -87,7 +87,7 @@
             if (salesOrderId) {
                 $('#loading-indicator').removeClass('hidden'); // Tampilkan indikator loading
                 $.ajax({
-                    url: '{{ route('salesOrder.details') }}',
+                    url: '{{ route('admin.salesOrder.details') }}',
                     type: 'GET',
                     data: { sales_order_id: salesOrderId },
                     success: function(data) {

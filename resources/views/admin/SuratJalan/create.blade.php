@@ -12,7 +12,7 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.suratJalan.store') }}" method="post" class="bg-white p-8 shadow-md rounded-lg" enctype="multipart/form-data">
+    <form action="{{ route('admin.suratJalan.store') }}" method="POST" class="bg-white p-8 shadow-md rounded-lg" enctype="multipart/form-data">
         @csrf
 
         <!-- Pemilihan Sales Order -->
@@ -80,7 +80,7 @@
             var salesOrderId = $(this).val();
             if (salesOrderId) {
                 $.ajax({
-                    url: '{{ route('salesOrder.details') }}',
+                    url: '{{ route('admin.salesOrder.details') }}',
                     type: 'GET',
                     data: { sales_order_id: salesOrderId },
                     success: function(data) {

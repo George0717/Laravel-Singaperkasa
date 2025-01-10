@@ -68,7 +68,7 @@
             </button>
         </div>
 
-        <a href="{{ route('suratJalan.index') }}" class="text-blue-600 hover:text-blue-900 transition duration-300 ease-in-out">
+        <a href="{{ route('superAdmin.suratJalan.index') }}" class="text-blue-600 hover:text-blue-900 transition duration-300 ease-in-out">
             &lt; Kembali ke Daftar
         </a>
     </form>
@@ -81,7 +81,7 @@
             var salesOrderId = $(this).val();
             if (salesOrderId) {
                 $.ajax({
-                    url: '{{ route('salesOrder.details') }}',
+                    url: '{{ route('superAdmin.salesOrder.details') }}',
                     type: 'GET',
                     data: { sales_order_id: salesOrderId },
                     success: function(data) {

@@ -89,7 +89,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Surat Jalan Routes
         Route::get('/superAdmin/suratJalan', [SuperAdminSuratJalanController::class, 'index'])->name('superAdmin.suratJalan.index');
         Route::get('/superAdmin/suratJalan/create', [SuperAdminSuratJalanController::class, 'create'])->name('superAdmin.suratJalan.create');
-        Route::post('/superAdmin/suratJalan', [SuperAdminSuratJalanController::class, 'store'])->name('superAdmin.suratJalan.store');
+        Route::post('/superAdmin/suratJalan/store', [SuperAdminSuratJalanController::class, 'store'])->name('superAdmin.suratJalan.store');
         Route::get('/superAdmin/suratJalan/{suratJalan}', [SuperAdminSuratJalanController::class, 'show'])->name('superAdmin.suratJalan.show');
         Route::get('/suratJalan/{suratJalan}/edit', [SuperAdminSuratJalanController::class, 'edit'])->name('superAdmin.suratJalan.edit');
         Route::put('/superAdmin/suratJalan/{suratJalan}', [SuperAdminSuratJalanController::class, 'update'])->name('superAdmin.suratJalan.update');
