@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.superAdmin')
 
 @section('content')
 <div class="container mx-auto my-8">
@@ -68,9 +68,9 @@
         
 
         <div class="mt-6 text-right">
-            <a href="{{ route('invoice.generatePDF', $invoice->id) }}" class="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Download PDF</a>
-            <a href="{{ route('invoice.generateXLS', $invoice->id) }}" class="inline-block px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 ml-4">Download XLS</a>
-            <a href="{{ route('invoice.index') }}" class="inline-block px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">Kembali</a>
+            <a href="{{ route('superAdmin.invoice.generatePDF', $invoice->id) }}" class="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Download PDF</a>
+            <a href="{{ route('superAdmin.invoice.generateXLS', $invoice->id) }}" class="inline-block px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 ml-4">Download XLS</a>
+            <a href="{{ route('superAdmin.invoice.index') }}" class="inline-block px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">Kembali</a>
         </div>
     </div>
 </div>

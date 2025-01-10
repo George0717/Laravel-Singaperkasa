@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Detail Jadwal Kirim')
 @section('content')
 <div class="container mx-auto px-4 py-6">
@@ -56,10 +56,10 @@
         </section>
 
         <div class="mt-8 flex justify-between">
-            <a href="{{ route('pdf.generate', ['jadwalKirim' => $jadwalKirim->id]) }}" class="btn btn-primary">
+            <a href="{{ route('admin.pdf.generate', ['jadwalKirim' => $jadwalKirim->id]) }}" class="btn btn-primary">
                 Cetak PDF
             </a>
-            <a href="{{ route('JadwalKirim.index') }}" class="text-blue-500 hover:text-blue-700">
+            <a href="{{ route('admin.JadwalKirim.index') }}" class="text-blue-500 hover:text-blue-700">
                 &lt; Kembali ke Daftar
             </a>
         </div>

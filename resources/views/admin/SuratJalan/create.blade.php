@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Buat Surat Jalan')
 @section('content')
 <div class="container mx-auto px-4 py-6">
@@ -12,7 +12,7 @@
         </div>
     @endif
 
-    <form action="{{ route('suratJalan.store') }}" method="post" class="bg-white p-8 shadow-md rounded-lg" enctype="multipart/form-data">
+    <form action="{{ route('admin.suratJalan.store') }}" method="post" class="bg-white p-8 shadow-md rounded-lg" enctype="multipart/form-data">
         @csrf
 
         <!-- Pemilihan Sales Order -->
@@ -67,7 +67,7 @@
             </button>
         </div>
 
-        <a href="{{ route('suratJalan.index') }}" class="text-blue-600 hover:text-blue-900 transition duration-300 ease-in-out">
+        <a href="{{ route('admin.suratJalan.index') }}" class="text-blue-600 hover:text-blue-900 transition duration-300 ease-in-out">
             &lt; Kembali ke Daftar
         </a>
     </form>

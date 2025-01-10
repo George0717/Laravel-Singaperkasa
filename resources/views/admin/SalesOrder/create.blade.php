@@ -1,15 +1,15 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Buat Sales Order')
 @section('content')
     <div class="container mx-auto px-4">
         <h1 class="text-2xl font-semibold mb-4">Buat Sales Order</h1>
-        <a href="{{ route('SalesOrders.index') }}" class="inline-block mb-4 text-blue-600 hover:text-blue-800">
+        <a href="{{ route('admin.SalesOrders.index') }}" class="inline-block mb-4 text-blue-600 hover:text-blue-800">
             <button class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md shadow-sm">
                 &larr; Back to Sales Orders
             </button>
         </a>
 
-        <form action="{{ route('salesOrders.store') }}" method="POST" id="sales-order-form" enctype="multipart/form-data"> @csrf
+        <form action="{{ route('admin.salesOrders.store') }}" method="POST" id="sales-order-form" enctype="multipart/form-data"> @csrf
             <div class="mb-4">
                 <label for="customer_name" class="block text-sm font-medium text-gray-700">Nama Customer</label>
                 <input type="text" id="customer_name" name="customer_name" value="{{ old('customer_name') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50" required>

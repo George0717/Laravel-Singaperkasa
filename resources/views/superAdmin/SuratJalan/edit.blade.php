@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.superAdmin')
 @section('title', 'Edit Surat Jalan')
 @section('content')
 <div class="container mx-auto px-4 py-6">
@@ -12,7 +12,7 @@
     </div>
     @endif
 
-    <form action="{{ route('suratJalan.update', $suratJalan->id) }}" method="post"
+    <form action="{{ route('superAdmin.suratJalan.update', $suratJalan->id) }}" method="post"
         class="bg-white p-8 shadow-md rounded-lg" enctype="multipart/form-data">
         @csrf
         @method('PUT')

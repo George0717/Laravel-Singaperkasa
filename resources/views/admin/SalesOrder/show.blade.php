@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
     <div class="container mx-auto px-4">
@@ -95,8 +95,8 @@
         </div>
 
         <div class="flex justify-between items-center mt-6">
-            <a href="{{ route('SalesOrders.index') }}" class="text-sm text-gray-700 hover:underline">Kembali ke Daftar</a>
-            <a href="{{ route('SalesOrders.printPDF', $salesOrder->id) }}" class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">Cetak PDF</a>
+            <a href="{{ route('admin.SalesOrders.index') }}" class="text-sm text-gray-700 hover:underline">Kembali ke Daftar</a>
+            <a href="{{ route('admin.SalesOrders.printPDF', $salesOrder->id) }}" class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">Cetak PDF</a>
         </div>
     </div>
 

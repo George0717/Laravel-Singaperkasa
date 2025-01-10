@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.superAdmin')
 @section('title', 'Edit Slaes Order')
 @section('content')
 <div class="container mx-auto p-4">
@@ -6,7 +6,7 @@
     <div class="flex flex-wrap -mx-4">
         <!-- Form Column -->
         <div class="w-full lg:w-2/3 px-4">
-            <form action="{{ route('salesOrders.update', $salesOrder->id) }}" method="POST" enctype="multipart/form-data"> @csrf
+            <form action="{{ route('superAdmin.salesOrders.update', $salesOrder->id) }}" method="POST" enctype="multipart/form-data"> @csrf
                 @method('put')
 
                 <div class="mb-4">

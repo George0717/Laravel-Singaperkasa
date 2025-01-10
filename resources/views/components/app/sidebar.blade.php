@@ -4,9 +4,9 @@
         <nav>
             <a href="{{ route('SalesOrders.dashboard') }}" class="{{ request()->routeIs('SalesOrders.dashboard') ? 'active' : '' }}">Dashboard</a>
             <a href="{{ route('SalesOrders.index') }}" class="{{ request()->routeIs('SalesOrders.index') ? 'active' : '' }}">Sales Orders</a>
-            <a href="{{ route('JadwalKirim.index') }}" class="{{ request()->routeIs('JadwalKirim.index') ? 'active' : '' }}">Jadwal Kirim</a>
+            {{-- <a href="{{ route('JadwalKirim.index') }}" class="{{ request()->routeIs('JadwalKirim.index') ? 'active' : '' }}">Jadwal Kirim</a>
             <a href="{{ route('suratJalan.index') }}" class="{{ request()->routeIs('suratJalan.index') ? 'active' : '' }}">Surat Jalan</a>
-            <a href="{{ route('invoice.index') }}" class="{{ request()->routeIs('invoice.index') ? 'active' : '' }}">Invoice</a>
+            <a href="{{ route('invoice.index') }}" class="{{ request()->routeIs('invoice.index') ? 'active' : '' }}">Invoice</a> --}}
         </nav>
     </div>
 </div>

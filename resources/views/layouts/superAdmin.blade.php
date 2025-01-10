@@ -162,12 +162,12 @@
     </style>
 </head>
 
-<body class="font-inter antialiased bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400"
+<body class="font-inter antialiased bg-gray-100 text-gray-600"
     :class="{ 'sidebar-open': sidebarOpen }" x-data="{ sidebarOpen: false }"
     x-init="$watch('sidebarOpen', value => localStorage.setItem('sidebar-open', value))">
 
     <!-- Sidebar Component -->
-    @include('components.app.sidebar')
+    @include('components.app.superAdminSide')
 
     <!-- Overlay -->
     <div id="overlay" class="overlay fixed inset-0 bg-black"></div>

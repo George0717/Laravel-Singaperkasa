@@ -1,4 +1,5 @@
-@extends('layouts.app')
+@extends('layouts.superAdmin')
+
 
 @section('content')
 
@@ -9,7 +10,7 @@
 
     <!-- Pencarian -->
     <div class="mb-4">
-        <form method="GET" action="{{ route('suratJalan.index') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <form method="GET" action="{{ route('superAdmin.suratJalan.index') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
                 <label for="cari-customer" class="block text-sm font-medium text-gray-700">Nama Customer</label>
                 <input type="text" name="customer_name" id="cari-customer"
@@ -54,12 +55,12 @@
                         \Carbon\Carbon::parse($suratJalan->tanggal_pengiriman)->translatedFormat('d F Y') }}</td>
 
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <a href="{{ route('suratJalan.show', $suratJalan) }}"
+                        <a href="{{ route('superAdmin.suratJalan.show', $suratJalan) }}"
                             class="text-blue-600 hover:text-blue-900 transition duration-300 ease-in-out">Lihat</a>
-                        <a href="{{ route('suratJalan.edit', $suratJalan) }}"
+                        <a href="{{ route('superAdmin.suratJalan.edit', $suratJalan) }}"
                             class="text-green-600 hover:text-green-900 transition duration-300 ease-in-out ml-4"
                             onclick="konfirmasiEdit(event, {{ $suratJalan->id }})">Edit</a>
-                        <form action="{{ route('suratJalan.destroy', $suratJalan) }}" method="POST" class="inline"
+                        <form action="{{ route('superAdmin.suratJalan.destroy', $suratJalan) }}" method="POST" class="inline"
                             id="form-hapus-{{ $suratJalan->id }}">
                             @csrf
                             @method('DELETE')
@@ -118,7 +119,7 @@
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "{{ route('suratJalan.create') }}";
+                window.location.href = "{{ route('superAdmin.suratJalan.create') }}";
             }
         });
     }

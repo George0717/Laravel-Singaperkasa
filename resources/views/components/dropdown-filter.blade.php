@@ -4,7 +4,7 @@
 
 <div class="relative inline-flex" x-data="{ open: false }">
     <button
-        class="btn px-2.5 bg-white dark:bg-gray-800 border-gray-200 hover:border-gray-300 dark:border-gray-700/60 dark:hover:border-gray-600 text-gray-400 dark:text-gray-500"
+        class="btn px-2.5 bg-white border-gray-200 hover:border-gray-300 text-gray-400"
         aria-haspopup="true"
         @click.prevent="open = !open"
         :aria-expanded="open"
@@ -15,7 +15,7 @@
         </svg>
     </button>
     <div
-        class="origin-top-right z-10 absolute top-full left-0 right-auto min-w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700/60 pt-1.5 rounded-lg shadow-lg overflow-hidden mt-1 {{$align === 'right' ? 'md:left-auto md:right-0' : 'md:left-0 md:right-auto'}}"                
+        class="origin-top-right z-10 absolute top-full left-0 right-auto min-w-56 bg-white border border-gray-200 pt-1.5 rounded-lg shadow-lg overflow-hidden mt-1 {{$align === 'right' ? 'md:left-auto md:right-0' : 'md:left-0 md:right-auto'}}"                
         @click.outside="open = false"
         @keydown.escape.window="open = false"
         x-show="open"
@@ -27,7 +27,7 @@
         x-transition:leave-end="opacity-0"
         x-cloak                
     >
-        <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase pt-1.5 pb-2 px-3">Filters</div>
+        <div class="text-xs font-semibold text-gray-400 uppercase pt-1.5 pb-2 px-3">Filters</div>
         <ul class="mb-4">
             <li class="py-1 px-3">
                 <label class="flex items-center">
@@ -66,13 +66,13 @@
                 </label>
             </li>
         </ul>
-        <div class="py-2 px-3 border-t border-gray-200 dark:border-gray-700/60 bg-gray-50 dark:bg-gray-700/20">
+        <div class="py-2 px-3 border-t border-gray-200 bg-gray-50">
             <ul class="flex items-center justify-between">
                 <li>
-                    <button class="btn-xs bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-red-500">Clear</button>
+                    <button class="btn-xs bg-white border-gray-200 hover:border-gray-300 text-red-500">Clear</button>
                 </li>
                 <li>
-                    <button class="btn-xs bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300" @click="open = false" @focusout="open = false">Apply</button>
+                    <button class="btn-xs bg-white border-gray-200 hover:border-gray-300 text-gray-800" @click="open = false" @focusout="open = false">Apply</button>
                 </li>
             </ul>
         </div>

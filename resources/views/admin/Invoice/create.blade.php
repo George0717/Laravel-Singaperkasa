@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Create Invoice')
 
@@ -15,7 +15,7 @@
     @endif
 
     <!-- Form untuk membuat invoice -->
-    <form action="{{ route('invoice.store') }}" method="POST" class="bg-white p-8 shadow-lg rounded-lg space-y-6">
+    <form action="{{ route('admin.invoice.store') }}" method="POST" class="bg-white p-8 shadow-lg rounded-lg space-y-6">
         @csrf
 
         <!-- Nomor Invoice -->
@@ -94,7 +94,7 @@
         </div>
 
         <div class="text-center mt-4">
-            <a href="{{ route('invoice.index') }}"
+            <a href="{{ route('admin.invoice.index') }}"
                 class="text-blue-600 hover:text-blue-900 transition ease-in-out duration-300">
                 &lt; Back to List
             </a>

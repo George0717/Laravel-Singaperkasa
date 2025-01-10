@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Edit Invoice')
 
@@ -15,7 +15,7 @@
     @endif
 
     <!-- Form untuk mengedit invoice -->
-    <form action="{{ route('invoice.update', $invoice->id) }}" method="POST" class="bg-white p-8 shadow-lg rounded-lg space-y-6">
+    <form action="{{ route('admin.invoice.update', $invoice->id) }}" method="POST" class="bg-white p-8 shadow-lg rounded-lg space-y-6">
         @csrf
         @method('PUT')
 
@@ -97,7 +97,7 @@
         </div>
 
         <div class="text-center mt-4">
-            <a href="{{ route('invoice.index') }}"
+            <a href="{{ route('admin.invoice.index') }}"
                 class="text-blue-600 hover:text-blue-900 transition ease-in-out duration-300">
                 &lt; Back to List
             </a>

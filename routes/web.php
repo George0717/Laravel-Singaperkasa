@@ -1,7 +1,12 @@
 <?php
 
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminInvoiceController;
+use App\Http\Controllers\AdminJadwalKirimController;
+use App\Http\Controllers\AdminSalesOrderController;
+use App\Http\Controllers\AdminSuratJalanController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DataFeedController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\JadwalKirimController;
@@ -13,6 +18,8 @@ use App\Http\Controllers\SuperAdminJadwalKirimController;
 use App\Http\Controllers\SuperAdminSalesOrderController;
 use App\Http\Controllers\SuperAdminSuratJalanController;
 use App\Http\Controllers\SuratJalanController;
+use App\Http\Controllers\UserManagementAdminController;
+use App\Http\Controllers\UserManagementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,19 +32,30 @@ use App\Http\Controllers\SuratJalanController;
 |
 */
 
-Route::redirect('/', 'login');
+Route::get('/', function () {
+    return view('auth.login');
+});
+
+Route::get('/dashboard', function () {
+    return view('pages.dashboard.dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // Route for the getting the data feed
-    Route::get('/json-data-feed', [DataFeedController::class, 'getDataFeed'])->name('json_data_feed');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/analytics', [DashboardController::class, 'analytics'])->name('analytics');
     Route::get('/dashboard/fintech', [DashboardController::class, 'fintech'])->name('fintech');
 
     // Rute untuk super-admin (mengelola semua pengguna)
-    Route::middleware(['auth', 'super-admin'])->group(function () {
+    Route::middleware(['auth', 'super-admin'])->prefix('super-admin')->group(function () {
         Route::get('/superAdmin/dashboard', [SuperAdminController::class, 'index'])->name('superAdmin.dashboard');
         Route::get('/superAdmin/users', [SuperAdminController::class, 'users'])->name('superAdmin.users');
         Route::get('/superAdmin/users/create', [SuperAdminController::class, 'create'])->name('superAdmin.users.create');
@@ -89,7 +107,78 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/superAdmin/pdf/generate/invoice/{invoice}', [SuperAdminInvoiceController::class, 'generatePDF'])->name('superAdmin.invoice.generatePDF');
         Route::get('/superAdmin/invoice/{invoice}/xls', [SuperAdminInvoiceController::class, 'generateXLS'])->name('superAdmin.invoice.generateXLS');
         Route::get('/superAdmin/sales-order-data/{id}', [SuperAdminInvoiceController::class, 'getSalesOrderData']);
+
+        // Halaman untuk melihat semua pengguna
+        Route::get('superAdmin/users', [UserManagementController::class, 'index'])->name('superAdmin.users.index');
+        Route::get('superAdmin/users/create', [UserManagementController::class, 'create'])->name('superAdmin.users.create');
+        Route::post('superAdmin/users/store', [UserManagementController::class, 'store'])->name('superAdmin.users.store');
+        Route::get('superAdmin/users/{id}/edit', [UserManagementController::class, 'edit'])->name('superAdmin.users.edit');
+        Route::put('superAdmin/users/{id}', [UserManagementController::class, 'update'])->name('superAdmin.users.update');
+        Route::delete('superAdmin/users/{id}', [UserManagementController::class, 'destroy'])->name('superAdmin.users.destroy');
     });
+
+    Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+        Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+        Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
+        Route::get('/admin/users/create', [AdminController::class, 'create'])->name('admin.users.create');
+        Route::post('/admin/users/store', [AdminController::class, 'store'])->name('admin.users.store');
+        Route::get('/admin/users/{id}/edit', [AdminController::class, 'edit'])->name('admin.users.edit');
+        Route::put('/admin/users/{id}', [AdminController::class, 'update'])->name('admin.users.update');
+        Route::delete('/admin/users/{id}', [AdminController::class, 'destroy'])->name('admin.users.destroy');
+
+        // Sales Order
+        Route::get('/admin/sales_orders', [AdminSalesOrderController::class, 'index'])->name('admin.SalesOrders.index');
+        Route::get('/admin/sales_orders/create', [AdminSalesOrderController::class, 'create'])->name('admin.salesOrders.create');
+        Route::post('/admin/sales_orders', [AdminSalesOrderController::class, 'store'])->name('admin.salesOrders.store');
+        Route::get('/admin/sales_orders/{salesOrder}', [AdminSalesOrderController::class, 'show'])->name('admin.salesOrders.show');
+        Route::get('/admin/sales_orders/{salesOrder}/edit', [AdminSalesOrderController::class, 'edit'])->name('admin.salesOrders.edit');
+        Route::put('/admin/sales_orders/{salesOrder}', [AdminSalesOrderController::class, 'update'])->name('admin.salesOrders.update');
+        Route::delete('/admin/sales_orders/{salesOrder}', [AdminSalesOrderController::class, 'destroy'])->name('admin.salesOrders.destroy');
+        Route::get('/admin/sales_orders/{salesOrder}/print-pdf', [AdminSalesOrderController::class, 'printPDF'])->name('admin.SalesOrders.printPDF');
+        Route::get('/admin/dashboard', [AdminSalesOrderController::class, 'dashboard'])->name('admin.SalesOrders.dashboard');
+
+        // Jadwal Kirim
+        Route::get('/admin/jadwalKirim', [AdminJadwalKirimController::class, 'index'])->name('admin.JadwalKirim.index');
+        Route::get('/admin/jadwalKirim/create', [AdminJadwalKirimController::class, 'create'])->name('admin.jadwalKirim.create');
+        Route::post('/admin/jadwalKirim', [AdminJadwalKirimController::class, 'store'])->name('admin.jadwalKirim.store');
+        Route::get('/admin/jadwalKirim/{jadwalKirim}', [AdminJadwalKirimController::class, 'show'])->name('admin.jadwalKirim.show');
+        Route::get('/admin/jadwalKirim/{jadwalKirim}/edit', [AdminJadwalKirimController::class, 'edit'])->name('admin.jadwalKirim.edit');
+        Route::put('/admin/jadwalKirim/{jadwalKirim}', [AdminJadwalKirimController::class, 'update'])->name('admin.jadwalKirim.update');
+        Route::delete('/admin/jadwalKirim/{jadwalKirim}', [AdminJadwalKirimController::class, 'destroy'])->name('admin.jadwalKirim.destroy');
+        Route::get('/admin/pdf/generate/jadwalKirim/{jadwalKirim}', [AdminJadwalKirimController::class, 'printPDF'])->name('admin.pdf.generate');
+        Route::get('/admin/sales-order-details', [AdminJadwalKirimController::class, 'showSalesOrderDetails'])->name('admin.salesOrder.details');
+
+        // Surat Jalan Routes
+        Route::get('/admin/suratJalan', [AdminSuratJalanController::class, 'index'])->name('admin.suratJalan.index');
+        Route::get('/admin/suratJalan/create', [AdminSuratJalanController::class, 'create'])->name('admin.suratJalan.create');
+        Route::post('/admin/suratJalan', [AdminSuratJalanController::class, 'store'])->name('admin.suratJalan.store');
+        Route::get('/admin/suratJalan/{suratJalan}', [AdminSuratJalanController::class, 'show'])->name('admin.suratJalan.show');
+        Route::get('/suratJalan/{suratJalan}/edit', [AdminSuratJalanController::class, 'edit'])->name('admin.suratJalan.edit');
+        Route::put('/admin/suratJalan/{suratJalan}', [AdminSuratJalanController::class, 'update'])->name('admin.suratJalan.update');
+        Route::delete('/admin/suratJalan/{suratJalan}', [AdminSuratJalanController::class, 'destroy'])->name('admin.suratJalan.destroy');
+        Route::get('/admin/pdf/generate/suratJalan/{suratJalan}', [AdminSuratJalanController::class, 'generatePDF'])->name('admin.suratJalan.generate');
+
+        // Invoice
+        Route::get('/admin/invoice', [AdminInvoiceController::class, 'index'])->name('admin.invoice.index');
+        Route::get('/admin/invoice/create', [AdminInvoiceController::class, 'create'])->name('admin.invoice.create');
+        Route::post('/admin/invoice', [AdminInvoiceController::class, 'store'])->name('admin.invoice.store');
+        Route::get('/admin/invoice/{invoice}', [AdminInvoiceController::class, 'show'])->name('admin.invoice.show');
+        Route::get('/admin/invoice/{invoice}/edit', [AdminInvoiceController::class, 'edit'])->name('admin.invoice.edit');
+        Route::put('/admin/invoice/{invoice}', [AdminInvoiceController::class, 'update'])->name('admin.invoice.update');
+        Route::delete('/admin/invoice/{invoice}', [AdminInvoiceController::class, 'destroy'])->name('admin.invoice.destroy');
+        Route::get('/admin/pdf/generate/invoice/{invoice}', [AdminInvoiceController::class, 'generatePDF'])->name('admin.invoice.generatePDF');
+        Route::get('/admin/invoice/{invoice}/xls', [AdminInvoiceController::class, 'generateXLS'])->name('admin.invoice.generateXLS');
+        Route::get('/admin/sales-order-data/{id}', [AdminInvoiceController::class, 'getSalesOrderData']);
+
+        // Halaman untuk melihat semua pengguna
+        Route::get('admin/users', [UserManagementAdminController::class, 'index'])->name('admin.users.index');
+        Route::get('admin/users/create', [UserManagementAdminController::class, 'create'])->name('admin.users.create');
+        Route::post('admin/users/store', [UserManagementAdminController::class, 'store'])->name('admin.users.store');
+        Route::get('admin/users/{id}/edit', [UserManagementAdminController::class, 'edit'])->name('admin.users.edit');
+        Route::put('admin/users/{id}', [UserManagementAdminController::class, 'update'])->name('admin.users.update');
+        Route::delete('admin/users/{id}', [UserManagementAdminController::class, 'destroy'])->name('admin.users.destroy');
+    });
+    
 
     // Sales Order Routes
     Route::get('/sales_orders', [SalesOrderController::class, 'index'])->name('SalesOrders.index');
@@ -101,42 +190,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/sales_orders/{salesOrder}', [SalesOrderController::class, 'destroy'])->name('salesOrders.destroy');
     Route::get('/sales_orders/{salesOrder}/print-pdf', [SalesOrderController::class, 'printPDF'])->name('SalesOrders.printPDF');
     Route::get('/dashboard', [SalesOrderController::class, 'dashboard'])->name('SalesOrders.dashboard');
-
-
-    // Jadwal Kirim Routes
-    Route::get('/jadwalKirim', [JadwalKirimController::class, 'index'])->name('JadwalKirim.index');
-    Route::get('/jadwalKirim/create', [JadwalKirimController::class, 'create'])->name('jadwalKirim.create');
-    Route::post('/jadwalKirim', [JadwalKirimController::class, 'store'])->name('jadwalKirim.store');
-    Route::get('/jadwalKirim/{jadwalKirim}', [JadwalKirimController::class, 'show'])->name('jadwalKirim.show');
-    Route::get('/jadwalKirim/{jadwalKirim}/edit', [JadwalKirimController::class, 'edit'])->name('jadwalKirim.edit');
-    Route::put('/jadwalKirim/{jadwalKirim}', [JadwalKirimController::class, 'update'])->name('jadwalKirim.update');
-    Route::delete('/jadwalKirim/{jadwalKirim}', [JadwalKirimController::class, 'destroy'])->name('jadwalKirim.destroy');
-    Route::get('/pdf/generate/jadwalKirim/{jadwalKirim}', [JadwalKirimController::class, 'printPDF'])->name('pdf.generate');
-    Route::get('/sales-order-details', [JadwalKirimController::class, 'showSalesOrderDetails'])->name('salesOrder.details');
-
-    // Surat Jalan Routes
-    Route::get('/suratJalan', [SuratJalanController::class, 'index'])->name('suratJalan.index');
-    Route::get('/suratJalan/create', [SuratJalanController::class, 'create'])->name('suratJalan.create');
-    Route::post('/suratJalan', [SuratJalanController::class, 'store'])->name('suratJalan.store');
-    Route::get('/suratJalan/{suratJalan}', [SuratJalanController::class, 'show'])->name('suratJalan.show');
-    Route::get('/suratJalan/{suratJalan}/edit', [SuratJalanController::class, 'edit'])->name('suratJalan.edit');
-    Route::put('/suratJalan/{suratJalan}', [SuratJalanController::class, 'update'])->name('suratJalan.update');
-    Route::delete('/suratJalan/{suratJalan}', [SuratJalanController::class, 'destroy'])->name('suratJalan.destroy');
-    Route::get('/pdf/generate/suratJalan/{suratJalan}', [SuratJalanController::class, 'generatePDF'])->name('suratJalan.generate');
-
-    // Stock Barang
-    Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
-    Route::get('/stock/{id}', [StockController::class, 'show'])->name('stock.show');
-
-    // Invoice
-    Route::get('/invoice', [InvoiceController::class, 'index'])->name('invoice.index');
-    Route::get('/invoice/create', [InvoiceController::class, 'create'])->name('invoice.create');
-    Route::post('/invoice', [InvoiceController::class, 'store'])->name('invoice.store');
-    Route::get('/invoice/{invoice}', [InvoiceController::class, 'show'])->name('invoice.show');
-    Route::get('/invoice/{invoice}/edit', [InvoiceController::class, 'edit'])->name('invoice.edit');
-    Route::put('/invoice/{invoice}', [InvoiceController::class, 'update'])->name('invoice.update');
-    Route::delete('/invoice/{invoice}', [InvoiceController::class, 'destroy'])->name('invoice.destroy');
-    Route::get('/pdf/generate/invoice/{invoice}', [InvoiceController::class, 'generatePDF'])->name('invoice.generatePDF');
-    Route::get('/invoice/{invoice}/xls', [InvoiceController::class, 'generateXLS'])->name('invoice.generateXLS');
-    Route::get('/sales-order-data/{id}', [InvoiceController::class, 'getSalesOrderData']);
 });
+
+
+
+
+require __DIR__ . '/auth.php';

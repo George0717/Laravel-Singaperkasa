@@ -1,9 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Jadwal Kirim')
 @section('content')
 <div class="container mx-auto px-4">
     <h1 class="text-2xl font-semibold mb-4">Jadwal Kirim</h1>
-    <a href="{{ route('jadwalKirim.create') }}" class="btn btn-primary mb-4" onclick="confirmCreate(event)">Tambah
+    <a href="{{ route('admin.jadwalKirim.create') }}" class="btn btn-primary mb-4" onclick="confirmCreate(event)">Tambah
         Jadwal Kirim</a>
 
     <!-- Filter Inputs -->
@@ -51,9 +51,9 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $jadwalKirim->keterangan }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <a href="{{ route('jadwalKirim.show', $jadwalKirim->id) }}"
+                    <a href="{{ route('admin.jadwalKirim.show', $jadwalKirim->id) }}"
                         class="text-blue-600 hover:text-blue-900 transition duration-300 ease-in-out">View</a>
-                    <a href="{{ route('jadwalKirim.edit', $jadwalKirim->id) }}"
+                    <a href="{{ route('admin.jadwalKirim.edit', $jadwalKirim->id) }}"
                         class="text-green-600 hover:text-green-900 transition duration-300 ease-in-out ml-4"
                         onclick="confirmEdit(event, {{ $jadwalKirim->id }})">Edit</a>
                     <form action="{{ route('jadwalKirim.destroy', $jadwalKirim->id) }}" method="POST" class="inline"

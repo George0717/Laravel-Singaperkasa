@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Invoice')
 @section('content')
 <div class="container mx-auto px-4 py-6">
@@ -112,7 +112,7 @@
     }).then((result) => {
         if (result.isConfirmed && action === 'View') {
             // Redirect to the show page for this invoice
-            window.location.href = `/invoice/${invoiceId}`;
+            window.location.href = `/admin/invoice/${invoiceId}`;
         }
     });
 }
@@ -149,7 +149,7 @@
     }).then((result) => {
         if (result.isConfirmed) {
             // Redirect to the edit page
-            window.location.href = `/invoice/${id}/edit`;
+            window.location.href = `/admin/invoice/${id}/edit`;
         }
     });
 }
@@ -164,7 +164,7 @@
             confirmButtonColor: '#158843'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "{{ route('invoice.create') }}";
+                window.location.href = "{{ route('admin.invoice.create') }}";
             }
         });
     });

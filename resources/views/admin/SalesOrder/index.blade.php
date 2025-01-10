@@ -1,9 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Sales Order')
 @section('content')
 <div class="container mx-auto px-4">
     <h1 class="text-2xl font-semibold mb-4">Pesanan Penjualan</h1>
-    <a href="{{ route('salesOrders.create') }}" class="btn btn-primary mb-4" onclick="confirmCreate(event)">Buat Pesanan
+    <a href="{{ route('admin.salesOrders.create') }}" class="btn btn-primary mb-4" onclick="confirmCreate(event)">Buat Pesanan
         Penjualan Baru</a>
 
     <!-- Search Inputs -->
@@ -50,11 +50,11 @@
                             Aksi
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="actionsDropdown">
-                            <li><a class="dropdown-item" href="{{ route('salesOrders.show', $order) }}">Lihat</a></li>
-                            <li><a class="dropdown-item" href="{{ route('salesOrders.edit', $order) }}"
+                            <li><a class="dropdown-item" href="{{ route('admin.salesOrders.show', $order) }}">Lihat</a></li>
+                            <li><a class="dropdown-item" href="{{ route('admin.salesOrders.edit', $order) }}"
                                     onclick="confirmEdit(event, {{ $order->id }})">Edit</a></li>
                             <li>
-                                <form action="{{ route('salesOrders.destroy', $order) }}" method="POST" class="d-inline"
+                                <form action="{{ route('admin.salesOrders.destroy', $order) }}" method="POST" class="d-inline"
                                     id="delete-form-{{ $order->id }}">
                                     @csrf
                                     @method('DELETE')

@@ -5,11 +5,11 @@
                 {{-- Previous Page Link --}}
                 <li class="ml-3 first:ml-0">
                     @if ($paginator->onFirstPage())
-                        <span class="btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600">
+                        <span class="btn bg-white border-gray-200 text-gray-300">
                             {!! __('pagination.previous') !!}
                         </span>
                     @else
-                        <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
+                        <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="btn bg-white border-gray-200 hover:border-gray-300 text-gray-800">
                             {!! __('pagination.previous') !!}
                         </a>
                     @endif
@@ -18,11 +18,11 @@
                 {{-- Next Page Link --}}
                 <li class="ml-3 first:ml-0">
                     @if ($paginator->hasMorePages())
-                        <a href="{{ $paginator->nextPageUrl() }}" rel="next" class="btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
+                        <a href="{{ $paginator->nextPageUrl() }}" rel="next" class="btn bg-white border-gray-200 hover:border-gray-300 text-gray-800">
                             {!! __('pagination.next') !!}
                         </a>
                     @else
-                        <span class="btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600">
+                        <span class="btn bg-white border-gray-200 text-gray-300">
                             {!! __('pagination.next') !!}
                         </span>
                     @endif

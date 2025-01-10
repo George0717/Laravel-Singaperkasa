@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
 
@@ -24,10 +24,10 @@
 <div class="container mx-auto px-6 py-8">
     <!-- Header Buttons -->
     <div class="flex justify-between items-center mb-6">
-        <a href="{{ route('suratJalan.index') }}" class="btn btn-secondary bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md shadow">
+        <a href="{{ route('admin.suratJalan.index') }}" class="btn btn-secondary bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md shadow">
             Kembali
         </a>
-        <a href="{{ route('suratJalan.generate', $suratJalan->id) }}" class="btn btn-primary bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow">
+        <a href="{{ route('admin.suratJalan.generate', $suratJalan->id) }}" class="btn btn-primary bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow">
             Unduh PDF
         </a>
     </div>

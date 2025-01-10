@@ -1,15 +1,15 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
 
 <div class="container mx-auto px-4">
     <h1 class="text-2xl font-semibold mb-4">Surat Jalan</h1>
-    <a href="{{ route('suratJalan.create') }}" class="btn btn-primary mb-4" onclick="konfirmasiBuat(event)">Buat Surat
+    <a href="{{ route('admin.suratJalan.create') }}" class="btn btn-primary mb-4" onclick="konfirmasiBuat(event)">Buat Surat
         Jalan Baru</a>
 
     <!-- Pencarian -->
     <div class="mb-4">
-        <form method="GET" action="{{ route('suratJalan.index') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <form method="GET" action="{{ route('admin.suratJalan.index') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
                 <label for="cari-customer" class="block text-sm font-medium text-gray-700">Nama Customer</label>
                 <input type="text" name="customer_name" id="cari-customer"

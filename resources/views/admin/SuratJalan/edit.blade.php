@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Edit Surat Jalan')
 @section('content')
 <div class="container mx-auto px-4 py-6">
@@ -12,7 +12,7 @@
     </div>
     @endif
 
-    <form action="{{ route('suratJalan.update', $suratJalan->id) }}" method="post"
+    <form action="{{ route('admin.suratJalan.update', $suratJalan->id) }}" method="post"
         class="bg-white p-8 shadow-md rounded-lg" enctype="multipart/form-data">
         @csrf
         @method('PUT')
@@ -95,7 +95,7 @@
             </button>
         </div>
 
-        <a href="{{ route('suratJalan.index') }}"
+        <a href="{{ route('admin.suratJalan.index') }}"
             class="text-blue-600 hover:text-blue-900 transition duration-300 ease-in-out">
             &lt; Kembali ke Daftar
         </a>

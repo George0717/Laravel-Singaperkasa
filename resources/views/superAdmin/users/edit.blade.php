@@ -1,23 +1,39 @@
-@extends('layouts.app')
+@extends('layouts.superAdmin')
 
 @section('content')
-    <h1>Edit User</h1>
-    <form action="{{ route('users.update', $user) }}" method="POST">
-        @csrf
-        @method('PUT')
-        <input type="text" name="name" value="{{ $user->name }}" placeholder="Name" required>
-        <input type="email" name="email" value="{{ $user->email }}" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Password (optional)">
+    <div class="container mx-auto p-6">
+        <h1 class="text-2xl font-semibold mb-4">Edit Pengguna</h1>
 
-        <label for="role">Select Role:</label>
-        <select name="role" id="role" required>
-            @foreach ($roles as $role)
-                <option value="{{ $role->name }}" {{ $user->hasRole($role->name) ? 'selected' : '' }}>
-                    {{ $role->name }}
-                </option>
-            @endforeach
-        </select>
-
-        <button type="submit">Update User</button>
-    </form>
+        <form action="{{ route('superAdmin.users.update', $user->id) }}" method="POST" class="bg-white p-6 shadow rounded-lg">
+            @csrf
+            @method('PUT')
+            <div class="mb-4">
+                <label for="name" class="block text-sm font-medium text-gray-700">Nama</label>
+                <input type="text" name="name" id="name" value="{{ $user->name }}" class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div class="mb-4">
+                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" name="email" id="email" value="{{ $user->email }}" class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div class="mb-4">
+                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" name="password" id="password" class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="mb-4">
+                <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Konfirmasi Password</label>
+                <input type="password" name="password_confirmation" id="password_confirmation" class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="mb-4">
+                <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
+                <select name="role" id="role" class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <option value="super-admin" {{ $user->role === 'super-admin' ? 'selected' : '' }}>Super Admin</option>
+                    <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option>
+                    <option value="sales" {{ $user->role === 'sales' ? 'selected' : '' }}>Sales</option>
+                </select>
+            </div>
+            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">
+                Update
+            </button>
+        </form>
+    </div>
 @endsection

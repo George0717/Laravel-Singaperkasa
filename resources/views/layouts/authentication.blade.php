@@ -28,9 +28,9 @@
             }
         </script>
     </head>
-    <body class="font-inter antialiased bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400">
+    <body class="font-inter antialiased bg-gray-100 text-gray-600">
 
-        <main class="bg-white dark:bg-gray-900">
+        <main class="bg-white">
 
             <div class="relative flex">
 

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Buat Jadwal Kirim')
 @section('content')
 <div class="container mx-auto px-4 py-6">
@@ -12,7 +12,7 @@
         </div>
     @endif
 
-    <form action="{{ route('jadwalKirim.store') }}" method="POST" class="bg-white p-8 shadow-md rounded-lg">
+    <form action="{{ route('admin.jadwalKirim.store') }}" method="POST" class="bg-white p-8 shadow-md rounded-lg">
         @csrf
 
         <!-- Pemilihan Sales Order -->
@@ -73,7 +73,7 @@
             </button>
         </div>
 
-        <a href="{{ route('JadwalKirim.index') }}" class="text-blue-600 hover:text-blue-900 transition duration-300 ease-in-out">
+        <a href="{{ route('admin.JadwalKirim.index') }}" class="text-blue-600 hover:text-blue-900 transition duration-300 ease-in-out">
             &lt; Kembali ke Daftar
         </a>
     </form>

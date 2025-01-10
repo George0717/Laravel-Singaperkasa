@@ -16,12 +16,11 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, $role)
     {
-        // Pastikan pengguna sudah login dan role-nya sesuai
-        if (Auth::check() && Auth::user()->role === $role) {
-            return $next($request);
+        if (!Auth::check() || Auth::user()->role !== $role) {
+            // Redirect jika tidak memiliki role yang sesuai
+            return redirect('/');
         }
 
-        // Jika role tidak sesuai, tampilkan error 403
-        abort(403, 'Unauthorized action.');
+        return $next($request);
     }
 }
