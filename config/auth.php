@@ -41,6 +41,12 @@ return [
             'provider' => 'users',
         ],
     ],
+    'super-admin' => [
+        'web' => [
+            'driver' => 'session',
+            'provider' => 'super-admin',
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------

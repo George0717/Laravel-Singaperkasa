@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\NotificationHelper;
 use App\Models\JadwalKirim;
 use App\Models\SalesOrder;
 use Illuminate\Http\Request;
@@ -19,28 +20,28 @@ class JadwalKirimController extends Controller
     public function create()
     {
         $salesOrders = SalesOrder::whereDoesntHave('jadwalKirim')->get();
-return view('pages.JadwalKirim.create', compact('salesOrders'));
+        return view('pages.JadwalKirim.create', compact('salesOrders'));
     }
 
     public function showSalesOrderDetails(Request $request)
     {
         $salesOrderId = $request->input('sales_order_id');
         Log::info('Fetching details for Sales Order ID: ' . $salesOrderId); // Log the request
-    
+
         // Validate that salesOrderId is a valid number
         if (!is_numeric($salesOrderId)) {
             Log::error('Invalid Sales Order ID: ' . $salesOrderId); // Log invalid ID
             return response()->json(['error' => 'Invalid Sales Order ID'], 400);
         }
-    
+
         // Fetch the SalesOrder with its details
         $salesOrder = SalesOrder::with('details')->find($salesOrderId);
-    
+
         if (!$salesOrder) {
             Log::error('Sales Order not found: ' . $salesOrderId); // Log error if not found
             return response()->json(['error' => 'Sales Order not found'], 404);
         }
-    
+
         // Return the Sales Order and its details
         return response()->json([
             'sales_order' => [
@@ -64,7 +65,7 @@ return view('pages.JadwalKirim.create', compact('salesOrders'));
             }),
         ]);
     }
-    
+
 
     public function store(Request $request)
     {
@@ -75,6 +76,8 @@ return view('pages.JadwalKirim.create', compact('salesOrders'));
             'tujuan_pengiriman' => 'nullable|string',
         ]);
         $salesOrder = SalesOrder::find($request->sales_order_id);
+
+      
 
         if (JadwalKirim::where('sales_order_id', $salesOrder->id)->exists()) {
             return redirect()->back()->withErrors(['error' => 'Jadwal Kirim untuk nomor SO ini sudah dibuat.']);
@@ -99,7 +102,7 @@ return view('pages.JadwalKirim.create', compact('salesOrders'));
             'keterangan' => 'nullable|string',
             'tujuan_pengiriman' => 'nullable|string',
         ]);
-
+       
         $jadwalKirim->update($request->all());
 
         return redirect()->route('JadwalKirim.index')->with('success', 'Jadwal Kirim berhasil diperbarui.');

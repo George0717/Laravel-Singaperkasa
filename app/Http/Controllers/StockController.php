@@ -30,8 +30,10 @@ class StockController extends Controller
 
     public function show($id)
     {
-        $salesOrders = SalesOrderDetail::findOrFail($id);
-        $histories = StockHistory::where('sales_order_detail_id', $id)->get(); // Ambil riwayat stok untuk item tertentu
-        return view('pages.StockBarangSO.show', compact('salesOrders', 'histories'));
+        // Ambil detail dari StockHistory berdasarkan ID
+        $stockHistory = StockHistory::with('salesOrder')->findOrFail($id);
+
+        // Tampilkan view dengan data StockHistory
+        return view('pages.StockBarangSO.show', compact('stock_histories'));
     }
 }

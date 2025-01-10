@@ -12,6 +12,6 @@ class Shipment extends Model
     // Relasi: Shipment dimiliki oleh SalesOrder
     public function salesOrder()
     {
-        return $this->belongsTo(SalesOrder::class, 'sales_order_id');
+        return $this->belongsTo(SalesOrder::class);
     }
 }

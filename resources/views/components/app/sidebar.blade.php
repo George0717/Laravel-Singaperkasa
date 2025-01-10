@@ -2,23 +2,10 @@
     <div class="p-4">
         <h2 class="text-xl font-bold text-white mb-5">Menu</h2>
         <nav>
-            <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
+            <a href="{{ route('SalesOrders.dashboard') }}" class="{{ request()->routeIs('SalesOrders.dashboard') ? 'active' : '' }}">Dashboard</a>
             <a href="{{ route('SalesOrders.index') }}" class="{{ request()->routeIs('SalesOrders.index') ? 'active' : '' }}">Sales Orders</a>
             <a href="{{ route('JadwalKirim.index') }}" class="{{ request()->routeIs('JadwalKirim.index') ? 'active' : '' }}">Jadwal Kirim</a>
-            <a href="{{ route('activity.log') }}" class="{{ request()->routeIs('activity.log') ? 'active' : '' }}">Riwayat Aktivitas</a>
-            <!-- Dropdown Menu for Surat Jalan & Stock Barang -->
-            <div class="relative">
-                <button id="dropdown-toggle" class="flex items-center w-full text-left hover:bg-gray-700 px-4 py-2 transition-transform duration-300 ease-in-out">
-                    <span>Surat Jalan</span>
-                    <svg class="ml-auto fill-current text-gray-300" width="16" height="16" viewBox="0 0 24 24">
-                        <path d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </button>
-                <div id="dropdown-menu" class="hidden pl-4 transition-all duration-300 ease-in-out">
-                    <a href="{{ route('suratJalan.index') }}" class="block py-2 hover:bg-gray-700 transition-colors duration-200">Surat Jalan</a>
-                    <a href="{{ route('stock.index') }}" class="block py-2 hover:bg-gray-700 transition-colors duration-200">Stock Barang</a>
-                </div>
-            </div>
+            <a href="{{ route('suratJalan.index') }}" class="{{ request()->routeIs('suratJalan.index') ? 'active' : '' }}">Surat Jalan</a>
             <a href="{{ route('invoice.index') }}" class="{{ request()->routeIs('invoice.index') ? 'active' : '' }}">Invoice</a>
         </nav>
     </div>

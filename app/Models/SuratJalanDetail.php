@@ -24,4 +24,13 @@ class SuratJalanDetail extends Model
     {
         return $this->belongsTo(SalesOrderDetail::class);
     }
+    public function stockHistories()
+    {
+        return $this->hasMany(StockHistory::class);
+    }
+
+    public function shipments()
+    {
+        return $this->hasMany(Shipment::class, 'sales_order_id');
+    }
 }

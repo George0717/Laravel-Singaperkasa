@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\InvoiceExport;
 use App\Models\Invoice;
 use App\Models\SalesOrder;
+use App\Models\SalesOrderDetail;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade as PDF;
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 
 class InvoiceController extends Controller
 {
@@ -38,31 +42,43 @@ class InvoiceController extends Controller
             'sales_order_id' => 'required|exists:sales_orders,id',
             'invoice_number' => 'required|unique:invoices',
             'subtotal' => 'required|numeric',
-            'discount' => 'nullable|numeric',
-            'down_payment' => 'nullable|numeric',
-            'vat' => 'nullable|numeric',
-            'grand_total' => 'required|numeric',
-            'payment_type' => 'required|string',
         ], [
             'sales_order_id.required' => 'Sales Order harus dipilih.',
             'invoice_number.required' => 'Nomor Invoice wajib diisi.',
             'invoice_number.unique' => 'Nomor Invoice sudah ada, silakan gunakan nomor lain.',
             'subtotal.required' => 'Subtotal harus diisi.',
-            'grand_total.required' => 'Grand Total harus diisi.',
         ]);
 
-        // Simpan data invoice
-        Invoice::create($request->all());
+        // Ambil data dari Sales Order
+        $salesOrder = SalesOrder::findOrFail($request->sales_order_id);
+
+        // Buat data untuk Invoice
+        $invoiceData = [
+            'sales_order_id' => $salesOrder->id,
+            'invoice_number' => $request->invoice_number,
+            'subtotal' => $request->subtotal,
+            'discount' => $salesOrder->discount,
+            'down_payment' => $salesOrder->down_payment,
+            'vat' => $salesOrder->vat,
+            'grand_total' => $salesOrder->grand_total,
+            'payment_type' => $salesOrder->payment_type,
+        ];
+
+        // Simpan data Invoice
+        Invoice::create($invoiceData);
 
         // Redirect ke halaman index invoice
         return redirect()->route('invoice.index')->with('success', 'Invoice berhasil dibuat.');
     }
 
 
+
     // Method untuk menampilkan detail invoice
     public function show(Invoice $invoice)
     {
-        return view('pages.Invoice.show', compact('invoice'));
+        $invoice->load('salesOrder.suratJalans.suratJalanDetails');
+        $salesOrder = $invoice->salesOrder()->with('jadwalKirim')->first();
+        return view('pages.Invoice.show', compact('invoice', 'salesOrder'));
     }
 
     // Method untuk form edit invoice
@@ -109,7 +125,7 @@ class InvoiceController extends Controller
 
     public function getSalesOrderData($id)
     {
-        $salesOrder = SalesOrder::with('details')->find($id);
+        $salesOrder = SalesOrder::with(['suratJalans.shipments', 'details'])->find($id);
 
         if (!$salesOrder) {
             return response()->json(['message' => 'Sales Order tidak ditemukan'], 404);
@@ -131,6 +147,15 @@ class InvoiceController extends Controller
             ];
         })->toArray();
 
+        $shipmentsData = $salesOrder->suratJalans->map(function ($suratJalan) {
+            return [
+                'no_surat_jalan' => $suratJalan->no_surat_jalan ?? 'N/A',
+                'tanggal_pengiriman' => $suratJalan->tanggal_pengiriman ?? 'N/A',
+                'plat_angkutan' => $suratJalan->plat_angkutan ?? 'N/A',
+                'jumlah' => $suratJalan->suratJalanDetails->sum('quantity') ?? 'N/A',
+            ];
+        });
+
         return response()->json([
             'customer_name' => $salesOrder->customer_name,
             'customer_address' => $salesOrder->customer_address,
@@ -146,7 +171,25 @@ class InvoiceController extends Controller
             'grand_total' => $grandTotal,
             'items' => $itemsStatus,
             'due_date' => $salesOrder->due_date,
+            'shipments' => $shipmentsData, // Mengambil shipment dari suratJalan
+            'items' => $itemsStatus,
         ]);
     }
 
+    public function generatePDF(Invoice $invoice)
+    {
+        $invoice->load('salesOrder.suratJalans.suratJalanDetails');
+        $salesOrder = $invoice->salesOrder()->with('jadwalKirim')->first();
+
+        // Generate PDF
+        $pdf = FacadePdf::loadView('pages.Invoice.pdf', compact('invoice', 'salesOrder'));
+
+        // Return PDF as a download
+        return $pdf->download('Invoice-' . $invoice->invoice_number . '.pdf');
+    }
+
+    public function generateXLS(Invoice $invoice)
+    {
+        return Excel::download(new InvoiceExport($invoice->id), 'Invoice-' . $invoice->invoice_number . '.xlsx');
+    }
 }

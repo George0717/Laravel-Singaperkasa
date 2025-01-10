@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('subtotal', 15, 2);
             $table->decimal('discount', 15, 2)->default(0);
             $table->decimal('down_payment', 15, 2)->default(0);
+            $table->string('payment_type');
             $table->decimal('vat', 15, 2)->default(0);
             $table->decimal('grand_total', 15, 2);
             $table->string('payment_schedule_type')->default('one_time');

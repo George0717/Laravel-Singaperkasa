@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\NotificationHelper;
 use App\Models\JadwalKirim;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderDetail;
@@ -17,6 +18,7 @@ class SalesOrderController extends Controller
     public function index()
     {
         $salesOrders = SalesOrder::with('details')->get();
+
         return view('pages.SalesOrder.index', compact('salesOrders'));
     }
 
@@ -25,6 +27,53 @@ class SalesOrderController extends Controller
         $latestOrder = SalesOrder::latest()->first();
         return view('pages.SalesOrder.create');
     }
+
+
+    public function dashboard(Request $request)
+    {
+        $totalSalesOrders = SalesOrder::count(); // Total Sales Orders
+    $year = $request->input('year', date('Y')); // Default ke tahun sekarang jika tidak dipilih
+    $month = $request->input('month'); // Null jika tidak dipilih
+
+    // Filter berdasarkan bulan dan tahun
+    if ($month) {
+        // Jika bulan dipilih, filter berdasarkan bulan dan tahun
+        $salesOrders = SalesOrder::whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->get();
+        $salesOrderCount = $salesOrders->count();
+        $labels = [\Carbon\Carbon::create()->month($month)->format('F')];
+        $data = [$salesOrderCount];
+    } else {
+        // Jika tidak ada bulan, tampilkan data untuk semua bulan dalam tahun tersebut
+        $salesOrders = SalesOrder::whereYear('created_at', $year)
+            ->get()
+            ->groupBy(function ($order) {
+                return \Carbon\Carbon::parse($order->created_at)->format('F');
+            });
+
+        $labels = [];
+        $data = [];
+        foreach ($salesOrders as $monthName => $orders) {
+            $labels[] = $monthName;
+            $data[] = count($orders);
+        }
+    }
+
+    // Data untuk kartu
+    $currentMonthSalesOrders = SalesOrder::whereYear('created_at', $year)
+        ->whereMonth('created_at', date('m'))
+        ->count();
+
+    $currentYearSalesOrders = SalesOrder::whereYear('created_at', $year)
+        ->count();
+
+    
+        return view('pages.dashboard.dashboard', compact('totalSalesOrders', 'currentMonthSalesOrders', 'currentYearSalesOrders', 'labels', 'data', 'month', 'year'));
+    }
+    
+
+
 
     public function store(Request $request)
     {
@@ -45,6 +94,7 @@ class SalesOrderController extends Controller
             'item_price.*' => 'required|numeric',
             'po_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
 
         // Generate nomor SO otomatis
         $romanMonths = [
@@ -131,15 +181,19 @@ class SalesOrderController extends Controller
 
     public function show(SalesOrder $salesOrder)
     {
+        // Memuat relasi 'details' untuk mendapatkan item terkait
         $salesOrder->load('details');
 
-        // Ensure the details are not null
-        if ($salesOrder->details === null) {
-            $salesOrder->details = collect(); // Return an empty collection instead of null
+        // Pastikan jika 'details' kosong, ubah menjadi koleksi kosong
+        if ($salesOrder->details->isEmpty()) {
+            $salesOrder->details = collect();  // Membuat koleksi kosong jika tidak ada detail
         }
 
+        // Kirim data ke tampilan
         return view('pages.SalesOrder.show', compact('salesOrder'));
     }
+
+
 
     public function edit($id)
     {

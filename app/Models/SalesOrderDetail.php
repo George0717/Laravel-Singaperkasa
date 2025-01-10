@@ -19,6 +19,7 @@ class SalesOrderDetail extends Model
         'quantity',
         'price',
         'total',
+        'delivered_quantity'
     ];
 
     // Daftar atribut yang harus di-cast ke tipe data tertentu
@@ -32,4 +33,20 @@ class SalesOrderDetail extends Model
     {
         return $this->belongsTo(SalesOrder::class, 'sales_order_id');
     }
+
+    public function details()
+    {
+        return $this->hasMany(SalesOrderDetail::class, 'sales_order_id');
+    }
+
+    public function getRemainingQuantityAttribute()
+    {
+        return $this->quantity - $this->delivered_quantity;
+    }
+
+    public function shipments()
+    {
+        return $this->hasMany(Shipment::class, 'sales_order_id');
+    }
+
 }

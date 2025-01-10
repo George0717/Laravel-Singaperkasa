@@ -67,13 +67,21 @@ class SalesOrder extends Model
     }
 
     public function shipments()
-{
-    return $this->hasMany(Shipment::class, 'sales_order_id');
-}
+    {
+        return $this->hasMany(Shipment::class, 'sales_order_id');
+    }
 
-public function jadwalKirim()
-{
-    return $this->hasOne(JadwalKirim::class);
-}
+    public function jadwalKirim()
+    {
+        return $this->hasOne(JadwalKirim::class);
+    }
+    public function suratJalans()
+    {
+        return $this->hasMany(SuratJalan::class);
+    }
 
+    public function salesOrderDetail()
+    {
+        return $this->hasMany(SalesOrderDetail::class);
+    }
 }

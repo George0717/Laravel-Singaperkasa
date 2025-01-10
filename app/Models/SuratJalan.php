@@ -23,7 +23,7 @@ class SuratJalan extends Model
 
     public function suratJalanDetails()
     {
-        return $this->hasMany(SuratJalanDetail::class);
+        return $this->hasMany(SuratJalanDetail::class, 'surat_jalan_id');
     }
 
     public function shipments()
@@ -31,6 +31,3 @@ class SuratJalan extends Model
         return $this->hasMany(Shipment::class, 'sales_order_id');
     }
 }
-
-
-

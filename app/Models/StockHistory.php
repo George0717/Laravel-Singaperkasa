@@ -10,14 +10,16 @@ class StockHistory extends Model
     use HasFactory;
 
     protected $fillable = [
-        'sales_order_detail_id',
+        'sales_order_id',
+        'item_name',
         'change_quantity',
         'reason',
         'date',
     ];
 
-    public function sales_order()
+    public function salesOrder()
     {
-        return $this->belongsTo(SalesOrderDetail::class, 'sales_order_detail_id');
+        return $this->belongsTo(SalesOrder::class);
     }
 }
+
