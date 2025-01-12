@@ -34,7 +34,7 @@ class SuratJalanController extends Controller
 
         $suratJalans = $query->paginate(10); // Adjust the number of items per page
 
-        return view('pages.SuratJalan.index', compact('suratJalans'));
+        return view('superAdmin.SuratJalan.index', compact('suratJalans'));
     }
 
 
@@ -43,7 +43,7 @@ class SuratJalanController extends Controller
     {
         $salesOrders = SalesOrder::with('details')->get();
         $nextSuratJalanNumber = $this->generateSuratJalanNumber(); // Panggil method untuk generate nomor
-        return view('pages.SuratJalan.create', compact('salesOrders', 'nextSuratJalanNumber'));
+        return view('superAdmin.SuratJalan.create', compact('salesOrders', 'nextSuratJalanNumber'));
     }
 
 
@@ -107,7 +107,7 @@ public function store(Request $request)
             return $suratJalan;
         });
 
-        return redirect()->route('suratJalan.index')->with('success', 'Surat Jalan berhasil disimpan!');
+        return redirect()->route('superAdmin.suratJalan.index')->with('success', 'Surat Jalan berhasil disimpan!');
     } catch (\Exception $e) {
         // Log error jika ada
         Log::error('Error storing Surat Jalan: ' . $e->getMessage());
@@ -120,7 +120,7 @@ public function store(Request $request)
     public function show(SuratJalan $suratJalan)
     {
         $suratJalan->load('suratJalanDetails.salesOrderDetail');
-        return view('pages.SuratJalan.show', compact('suratJalan'));
+        return view('superAdmin.SuratJalan.show', compact('suratJalan'));
     }
 
     public function edit(SuratJalan $suratJalan)
@@ -134,7 +134,7 @@ public function store(Request $request)
         // Ambil nomor surat jalan saat ini atau generate yang baru jika belum ada
         $nextSuratJalanNumber = $suratJalan->no_surat_jalan ?? $this->generateSuratJalanNumber();
 
-        return view('pages.SuratJalan.edit', compact('suratJalan', 'salesOrders', 'nextSuratJalanNumber'));
+        return view('superAdmin.SuratJalan.edit', compact('suratJalan', 'salesOrders', 'nextSuratJalanNumber'));
     }
 
     public function update(Request $request, SuratJalan $suratJalan)
@@ -173,7 +173,7 @@ public function store(Request $request)
             }
         });
 
-        return redirect()->route('suratJalan.index');
+        return redirect()->route('superAdmin.suratJalan.index');
     }
 
 
@@ -190,7 +190,7 @@ public function store(Request $request)
             $suratJalan->delete();
         });
 
-        return redirect()->route('suratJalan.index')->with('success', 'Surat Jalan berhasil dihapus dan stok dikembalikan!');
+        return redirect()->route('superAdmin.suratJalan.index')->with('success', 'Surat Jalan berhasil dihapus dan stok dikembalikan!');
     }
 
 

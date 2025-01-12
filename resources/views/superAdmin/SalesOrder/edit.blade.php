@@ -207,7 +207,7 @@
    document.addEventListener('DOMContentLoaded', function () {
     const itemOptions = {
         "Paku": 500000,
-        "Baja": 2000000,
+        "Baja": 500,
         "Besi Panjang": 2500000
     };
 

@@ -78,9 +78,9 @@ class SuperAdminSalesOrderController extends Controller
     {
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
-            'customer_address' => 'required|string',
-            'po_date' => 'required|date',
-            'po_number' => 'required|string|max:50',
+            'customer_address' => 'nullable|string',
+            'po_date' => 'nullable|date',
+            'po_number' => 'nullable|string|max:50',
             'so_number' => 'string|max:50|nullable',
             'discount' => 'nullable|numeric',
             'discount_type' => 'nullable|string|in:percent,currency',
@@ -173,7 +173,7 @@ class SuperAdminSalesOrderController extends Controller
             $itemDetail->save();
         }
 
-        return redirect()->route('SalesOrders.index')->with('success', 'Sales Order created successfully.');
+        return redirect()->route('superAdmin.SalesOrders.index')->with('success', 'Sales Order created successfully.');
     }
 
 
@@ -281,7 +281,7 @@ class SuperAdminSalesOrderController extends Controller
                 $itemDetail->save();
             }
 
-            return redirect()->route('SalesOrders.index')->with('success', 'Sales Order updated successfully.');
+            return redirect()->route('superAdmin.SalesOrders.index')->with('success', 'Sales Order updated successfully.');
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return back()->with('error', 'There was an error updating the Sales Order. Please try again.');
@@ -296,7 +296,7 @@ class SuperAdminSalesOrderController extends Controller
     public function destroy(SalesOrder $salesOrder)
     {
         $salesOrder->delete();
-        return redirect()->route('SalesOrders.index')->with('success', 'Sales Order deleted successfully.');
+        return redirect()->route('superAdmin.SalesOrders.index')->with('success', 'Sales Order deleted successfully.');
     }
 
     public function printPDF(SalesOrder $salesOrder)

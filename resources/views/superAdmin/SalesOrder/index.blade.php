@@ -3,7 +3,7 @@
 @section('content')
 <div class="container mx-auto px-4">
     <h1 class="text-2xl font-semibold mb-4">Pesanan Penjualan</h1>
-    <a href="{{ route('superAdmin.salesOrders.create') }}" class="btn btn-primary mb-4" onclick="confirmCreate(event)">Buat Pesanan
+    <a href="{{ route('superAdmin.salesOrders.create') }}" class="btn btn-primary mb-4">Buat Pesanan
         Penjualan Baru</a>
 
     <!-- Search Inputs -->
@@ -52,7 +52,7 @@
                         <ul class="dropdown-menu" aria-labelledby="actionsDropdown">
                             <li><a class="dropdown-item" href="{{ route('superAdmin.salesOrders.show', $order) }}">Lihat</a></li>
                             <li><a class="dropdown-item" href="{{ route('superAdmin.salesOrders.edit', $order) }}"
-                                    onclick="confirmEdit(event, {{ $order->id }})">Edit</a></li>
+                                    >Edit</a></li>
                             <li>
                                 <form action="{{ route('superAdmin.salesOrders.destroy', $order) }}" method="POST" class="d-inline"
                                     id="delete-form-{{ $order->id }}">
@@ -125,41 +125,41 @@
 });
 
 
-    function confirmCreate(event) {
-        event.preventDefault();
-        Swal.fire({
-            title: 'Apakah Anda Yakin?',
-            text: "Apakah Anda ingin membuat pesanan penjualan baru?",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, lanjutkan!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = "{{ route('salesOrders.create') }}";
-            }
-        });
-    }
+    // function confirmCreate(event) {
+    //     event.preventDefault();
+    //     Swal.fire({
+    //         title: 'Apakah Anda Yakin?',
+    //         text: "Apakah Anda ingin membuat pesanan penjualan baru?",
+    //         icon: 'question',
+    //         showCancelButton: true,
+    //         confirmButtonColor: '#3085d6',
+    //         cancelButtonColor: '#d33',
+    //         confirmButtonText: 'Ya, lanjutkan!',
+    //         cancelButtonText: 'Batal'
+    //     }).then((result) => {
+    //         if (result.isConfirmed) {
+    //             window.location.href = "{{ route('salesOrders.create') }}";
+    //         }
+    //     });
+    // }
 
-    function confirmEdit(event, salesOrderId) {
-        event.preventDefault();
-        Swal.fire({
-            title: 'Apakah Anda Yakin?',
-            text: "Apakah Anda ingin mengedit pesanan penjualan ini?",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, lanjutkan!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = "{{ url('sales_orders') }}/" + salesOrderId + "/edit";
-            }
-        });
-    }
+    // function confirmEdit(event, salesOrderId) {
+    //     event.preventDefault();
+    //     Swal.fire({
+    //         title: 'Apakah Anda Yakin?',
+    //         text: "Apakah Anda ingin mengedit pesanan penjualan ini?",
+    //         icon: 'question',
+    //         showCancelButton: true,
+    //         confirmButtonColor: '#3085d6',
+    //         cancelButtonColor: '#d33',
+    //         confirmButtonText: 'Ya, lanjutkan!',
+    //         cancelButtonText: 'Batal'
+    //     }).then((result) => {
+    //         if (result.isConfirmed) {
+    //             window.location.href = "{{ url('sales_orders') }}/" + salesOrderId + "/edit";
+    //         }
+    //     });
+    // }
 
     function confirmDelete(event, orderId) {
     event.preventDefault();

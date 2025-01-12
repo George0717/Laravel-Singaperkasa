@@ -107,7 +107,7 @@ public function store(Request $request)
             return $suratJalan;
         });
 
-        return redirect()->route('suratJalan.index')->with('success', 'Surat Jalan berhasil disimpan!');
+        return redirect()->route('superAdmin.suratJalan.index')->with('success', 'Surat Jalan berhasil disimpan!');
     } catch (\Exception $e) {
         // Log error jika ada
         Log::error('Error storing Surat Jalan: ' . $e->getMessage());
@@ -173,7 +173,7 @@ public function store(Request $request)
             }
         });
 
-        return redirect()->route('suratJalan.index');
+        return redirect()->route('superAdmin.suratJalan.index');
     }
 
 
@@ -190,7 +190,7 @@ public function store(Request $request)
             $suratJalan->delete();
         });
 
-        return redirect()->route('suratJalan.index')->with('success', 'Surat Jalan berhasil dihapus dan stok dikembalikan!');
+        return redirect()->route('superAdmin.suratJalan.index')->with('success', 'Surat Jalan berhasil dihapus dan stok dikembalikan!');
     }
 
 

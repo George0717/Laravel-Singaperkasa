@@ -51,7 +51,7 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $jadwalKirim->keterangan }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <a href="{{ route('jadwalKirim.show', $jadwalKirim->id) }}"
+                    <a href="{{ route('superAdmin.jadwalKirim.show', $jadwalKirim->id) }}"
                         class="text-blue-600 hover:text-blue-900 transition duration-300 ease-in-out">View</a>
                     <a href="{{ route('superAdmin.jadwalKirim.edit', $jadwalKirim->id) }}"
                         class="text-green-600 hover:text-green-900 transition duration-300 ease-in-out ml-4"
@@ -124,7 +124,7 @@
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "{{ route('jadwalKirim.create') }}";
+                window.location.href = "{{ route('superAdmin.jadwalKirim.create') }}";
             }
         });
     }

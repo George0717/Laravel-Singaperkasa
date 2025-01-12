@@ -119,8 +119,11 @@
             const itemOptions = {
                 "Paku": 500000,
                 "Baja": 2000000,
-                "Besi Panjang": 2500000
-            };
+                "Besi Panjang": 2500000,
+                "Kawat Duri": 2500000,
+            }; // ada perubahan untuk bisa menambah barang
+            // dijual per kg
+            // PPN bisa dilihat dari diskon atau sebelum diskon
 
             const itemsContainer = document.getElementById('items-container');
             const summaryDetails = document.getElementById('summary-details');

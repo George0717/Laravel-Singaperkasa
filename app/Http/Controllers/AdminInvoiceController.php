@@ -67,7 +67,7 @@ class AdminInvoiceController extends Controller
         Invoice::create($invoiceData);
 
         // Redirect ke halaman index invoice
-        return redirect()->route('invoice.index')->with('success', 'Invoice berhasil dibuat.');
+        return redirect()->route('admin.invoice.index')->with('success', 'Invoice berhasil dibuat.');
     }
 
 
@@ -112,14 +112,14 @@ class AdminInvoiceController extends Controller
         $invoice->update($request->all());
 
         // Redirect ke halaman index invoice
-        return redirect()->route('invoice.index')->with('success', 'Invoice berhasil diperbarui.');
+        return redirect()->route('admin.invoice.index')->with('success', 'Invoice berhasil diperbarui.');
     }
 
     // Method untuk menghapus invoice
     public function destroy(Invoice $invoice)
     {
         $invoice->delete();
-        return redirect()->route('invoice.index')->with('success', 'Invoice berhasil dihapus.');
+        return redirect()->route('admin.invoice.index')->with('success', 'Invoice berhasil dihapus.');
     }
 
     public function getSalesOrderData($id)

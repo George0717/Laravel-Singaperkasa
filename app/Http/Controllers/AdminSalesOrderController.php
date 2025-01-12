@@ -172,7 +172,7 @@ class AdminSalesOrderController extends Controller
             $itemDetail->save();
         }
 
-        return redirect()->route('SalesOrders.index')->with('success', 'Sales Order created successfully.');
+        return redirect()->route('admin.SalesOrders.index')->with('success', 'Sales Order created successfully.');
     }
 
 
@@ -280,7 +280,7 @@ class AdminSalesOrderController extends Controller
                 $itemDetail->save();
             }
 
-            return redirect()->route('SalesOrders.index')->with('success', 'Sales Order updated successfully.');
+            return redirect()->route('admin.SalesOrders.index')->with('success', 'Sales Order updated successfully.');
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return back()->with('error', 'There was an error updating the Sales Order. Please try again.');
@@ -295,7 +295,7 @@ class AdminSalesOrderController extends Controller
     public function destroy(SalesOrder $salesOrder)
     {
         $salesOrder->delete();
-        return redirect()->route('SalesOrders.index')->with('success', 'Sales Order deleted successfully.');
+        return redirect()->route('admin.SalesOrders.index')->with('success', 'Sales Order deleted successfully.');
     }
 
     public function printPDF(SalesOrder $salesOrder)
