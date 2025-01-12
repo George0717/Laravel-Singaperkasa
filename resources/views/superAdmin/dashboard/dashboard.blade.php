@@ -5,34 +5,55 @@
     <h1>Dashboard Sales Order</h1>
 
     <!-- Filter Form -->
-    <form method="GET" action="{{ route('SalesOrders.dashboard') }}">
-        <div class="row">
-            <div class="col-md-4">
-                <label for="month">Bulan</label>
-                <select name="month" id="month" class="form-control">
-                    <option value="">Semua Bulan</option> <!-- Tambahkan opsi untuk semua bulan -->
-                    @for($i = 1; $i <= 12; $i++)
-                        <option value="{{ $i }}" {{ $i == $month ? 'selected' : '' }}>
-                            {{ \Carbon\Carbon::create()->month($i)->format('F') }}
-                        </option>
+    <form action="{{ route('superAdmin.SalesOrders.dashboard') }}" method="GET" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <!-- Filter Tahun -->
+            <div>
+                <label for="year" class="block text-sm font-medium text-gray-700">Tahun</label>
+                <select name="year" id="year" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    @for ($i = date('Y'); $i >= date('Y') - 10; $i--)
+                        <option value="{{ $i }}" {{ request('year') == $i ? 'selected' : '' }}>{{ $i }}</option>
                     @endfor
                 </select>
             </div>
-            <div class="col-md-4">
-                <label for="year">Tahun</label>
-                <select name="year" id="year" class="form-control">
-                    @for($y = date('Y') - 5; $y <= date('Y'); $y++)
-                        <option value="{{ $y }}" {{ $y == $year ? 'selected' : '' }}>
-                            {{ $y }}
+    
+            <!-- Filter Bulan -->
+            <div>
+                <label for="month" class="block text-sm font-medium text-gray-700">Bulan</label>
+                <select name="month" id="month" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">Semua Bulan</option>
+                    @foreach (range(1, 12) as $m)
+                        <option value="{{ $m }}" {{ request('month') == $m ? 'selected' : '' }}>
+                            {{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
                         </option>
-                    @endfor
+                    @endforeach
                 </select>
             </div>
-            <div class="col-md-4 align-self-end">
-                <button type="submit" class="btn btn-primary">Filter</button>
+    
+            <!-- Tanggal Mulai -->
+            <div>
+                <label for="start_date" class="block text-sm font-medium text-gray-700">Tanggal Mulai</label>
+                <input type="date" name="start_date" id="start_date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ request('start_date') }}">
+            </div>
+    
+            <!-- Tanggal Akhir -->
+            <div>
+                <label for="end_date" class="block text-sm font-medium text-gray-700">Tanggal Akhir</label>
+                <input type="date" name="end_date" id="end_date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ request('end_date') }}">
             </div>
         </div>
+    
+        <!-- Tombol Filter dan Reset -->
+        <div class="flex space-x-4">
+            <button type="submit" class="px-4 py-2 bg-green-600 text-white font-medium text-sm rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                Filter
+            </button>
+            <a href="{{ route('superAdmin.SalesOrders.dashboard') }}" class="px-4 py-2 bg-gray-300 text-gray-700 font-medium text-sm rounded-md shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                Reset
+            </a>
+        </div>
     </form>
+    
 
     <!-- Cards -->
     <div class="row mt-4">
