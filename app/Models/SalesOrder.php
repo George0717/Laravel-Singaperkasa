@@ -18,10 +18,6 @@ class SalesOrder extends Model
     // Daftar atribut yang dapat diisi secara massal
     protected $fillable = [
         'customer_name',
-        'customer_address',
-        'po_date',
-        'po_photo',
-        'po_number',
         'discount',
         'down_payment',
         'vat',
@@ -32,11 +28,11 @@ class SalesOrder extends Model
         'created_by',
         'updated_by',
         'deleted_by',
+        'stock_barang_id',
     ];
 
     // Daftar atribut yang harus di-cast ke tipe data tertentu
     protected $casts = [
-        'po_date' => 'date',
         'due_date' => 'date',
         'discount' => 'decimal:2',
         'down_payment' => 'decimal:2',
@@ -84,4 +80,11 @@ class SalesOrder extends Model
     {
         return $this->hasMany(SalesOrderDetail::class);
     }
-}
+
+    public function stockBarangs()
+    {
+        return $this->belongsToMany(StockBarang::class, 'sales_order_items')->withPivot('jumlah');
+    }
+
+ }
+

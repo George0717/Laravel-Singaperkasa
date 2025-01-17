@@ -6,6 +6,7 @@ use App\Helpers\NotificationHelper;
 use App\Models\JadwalKirim;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderDetail;
+use App\Models\StockBarang;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -30,47 +31,77 @@ class SalesOrderController extends Controller
 
 
     public function dashboard(Request $request)
-    {
-        $totalSalesOrders = SalesOrder::count(); // Total Sales Orders
-    $year = $request->input('year', date('Y')); // Default ke tahun sekarang jika tidak dipilih
+{
+    // Default values untuk filter
+    $year = $request->input('year', date('Y')); // Tahun sekarang jika tidak dipilih
     $month = $request->input('month'); // Null jika tidak dipilih
+    $start_date = $request->input('start_date'); // Tanggal mulai filter
+    $end_date = $request->input('end_date'); // Tanggal akhir filter
 
-    // Filter berdasarkan bulan dan tahun
-    if ($month) {
-        // Jika bulan dipilih, filter berdasarkan bulan dan tahun
-        $salesOrders = SalesOrder::whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->get();
-        $salesOrderCount = $salesOrders->count();
-        $labels = [\Carbon\Carbon::create()->month($month)->format('F')];
-        $data = [$salesOrderCount];
+    // Query dasar
+    $query = SalesOrder::query();
+
+    // Filter berdasarkan rentang waktu jika ada
+    if ($start_date && $end_date) {
+        $query->whereBetween('created_at', [$start_date, $end_date]);
+    } elseif ($month) {
+        // Filter berdasarkan bulan dan tahun jika rentang waktu tidak dipilih
+        $query->whereYear('created_at', $year)
+              ->whereMonth('created_at', $month);
     } else {
-        // Jika tidak ada bulan, tampilkan data untuk semua bulan dalam tahun tersebut
-        $salesOrders = SalesOrder::whereYear('created_at', $year)
-            ->get()
-            ->groupBy(function ($order) {
-                return \Carbon\Carbon::parse($order->created_at)->format('F');
-            });
+        // Filter berdasarkan tahun jika tidak ada rentang waktu atau bulan
+        $query->whereYear('created_at', $year);
+    }
 
-        $labels = [];
-        $data = [];
-        foreach ($salesOrders as $monthName => $orders) {
-            $labels[] = $monthName;
-            $data[] = count($orders);
-        }
+    // Ambil data sesuai filter
+    $salesOrders = $query->get();
+
+    // Data untuk grafik
+    if ($start_date && $end_date) {
+        // Jika menggunakan rentang waktu, grup data berdasarkan hari
+        $groupedOrders = $salesOrders->groupBy(function ($order) {
+            return \Carbon\Carbon::parse($order->created_at)->format('d F Y');
+        });
+    } elseif ($month) {
+        // Jika menggunakan filter bulan, grup data berdasarkan tanggal
+        $groupedOrders = $salesOrders->groupBy(function ($order) {
+            return \Carbon\Carbon::parse($order->created_at)->format('d F Y');
+        });
+    } else {
+        // Jika menggunakan filter tahun, grup data berdasarkan bulan
+        $groupedOrders = $salesOrders->groupBy(function ($order) {
+            return \Carbon\Carbon::parse($order->created_at)->format('F');
+        });
+    }
+
+    $labels = [];
+    $data = [];
+
+    foreach ($groupedOrders as $key => $orders) {
+        $labels[] = $key;
+        $data[] = count($orders);
     }
 
     // Data untuk kartu
+    $totalSalesOrders = SalesOrder::count(); // Total semua Sales Orders
     $currentMonthSalesOrders = SalesOrder::whereYear('created_at', $year)
         ->whereMonth('created_at', date('m'))
         ->count();
+    $currentYearSalesOrders = SalesOrder::whereYear('created_at', $year)->count();
 
-    $currentYearSalesOrders = SalesOrder::whereYear('created_at', $year)
-        ->count();
+    return view('superAdmin.dashboard.dashboard', compact(
+        'totalSalesOrders',
+        'currentMonthSalesOrders',
+        'currentYearSalesOrders',
+        'labels',
+        'data',
+        'month',
+        'year',
+        'start_date',
+        'end_date'
+    ));
+}
 
-    
-        return view('pages.dashboard.dashboard', compact('totalSalesOrders', 'currentMonthSalesOrders', 'currentYearSalesOrders', 'labels', 'data', 'month', 'year'));
-    }
     
 
 
@@ -312,4 +343,19 @@ class SalesOrderController extends Controller
         $pdf = FacadePdf::loadView('pages.SalesOrder.pdf', compact('salesOrder'));
         return $pdf->download($fileName);
     }
+
+    public function getStockBarang(Request $request)
+    {
+        $stockBarang = StockBarang::findOrFail($request->sales_order_id);
+
+        // Buat nomor surat jalan jika belum ada
+        $suratJalanNumber = $this->generateSuratJalanNumber();
+
+        return response()->json([
+            'no_surat_jalan' => $suratJalanNumber,
+            'sales_order' => $stockBarang,
+            'details' => $stockBarang->details,
+        ]);
+    }
+
 }

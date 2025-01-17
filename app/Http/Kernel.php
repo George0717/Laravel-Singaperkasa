@@ -71,6 +71,7 @@ class Kernel extends HttpKernel
         'super-admin' => \App\Http\Middleware\SuperAdminMiddleware::class,
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
         'redirect.super-admin' => \App\Http\Middleware\RedirectIfSuperAdmin::class,
+        'role.redirect' => \App\Http\Middleware\RedirectBasedOnRole::class,
 
 
     ];

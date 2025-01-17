@@ -11,20 +11,8 @@
                     <p class="text-gray-800">{{ $salesOrder->customer_name }}</p>
                 </div>
                 <div class="text-sm">
-                    <span class="font-semibold text-gray-600">Alamat Pelanggan:</span>
-                    <p class="text-gray-800">{{ $salesOrder->customer_address }}</p>
-                </div>
-                <div class="text-sm">
-                    <span class="font-semibold text-gray-600">Tanggal PO:</span>
-                    <p class="text-gray-800">{{ $salesOrder->po_date->translatedFormat('j F Y') }}</p>
-                </div>
-                <div class="text-sm">
                     <span class="font-semibold text-gray-600">Jatuh Tempo:</span>
                     <p class="text-gray-800">{{ $salesOrder->due_date->translatedFormat('j F Y') }}</p>
-                </div>
-                <div class="text-sm">
-                    <span class="font-semibold text-gray-600">Nomor PO:</span>
-                    <p class="text-gray-800">{{ $salesOrder->po_number }}</p>
                 </div>
                 <div class="text-sm">
                     <span class="font-semibold text-gray-600">Nomor SO:</span>
@@ -76,7 +64,7 @@
                 <thead>
                     <tr class="bg-gray-200 text-left">
                         <th class="px-4 py-2 text-gray-700">Nama Item</th>
-                        <th class="px-4 py-2 text-gray-700">Jumlah</th>
+                        <th class="px-4 py-2 text-gray-700">Per</th>
                         <th class="px-4 py-2 text-gray-700">Harga</th>
                         <th class="px-4 py-2 text-gray-700">Total</th>
                     </tr>
@@ -86,7 +74,7 @@
                         <tr class="border-b hover:bg-gray-50">
                             <td class="px-4 py-2 text-gray-800">{{ $detail->item_name }}</td>
                             <td class="px-4 py-2 text-gray-800">{{ $detail->quantity }}</td>
-                            <td class="px-4 py-2 text-gray-800">{{ 'Rp ' . number_format($detail->price, 0, ',', '.') }}</td>
+                            <td class="px-4 py-2 text-gray-800">{{ 'Rp ' . number_format($detail->price, 0, ',', '.') }}/{{ $detail->per }}</td>
                             <td class="px-4 py-2 text-gray-800">{{ 'Rp ' . number_format($detail->quantity * $detail->price, 0, ',', '.') }}</td>
                         </tr>
                     @endforeach

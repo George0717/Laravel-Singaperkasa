@@ -21,26 +21,22 @@
                     Pelanggan</th>
                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor SO
                 </th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor PO
+
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu Pemesanan
                 </th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Grand Total
-                </th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal PO
-                </th>
+
                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
             </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200" id="sales-orders-table">
+            {{-- @dd($salesOrders); --}}
             @foreach ($salesOrders as $order)
             <tr>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center"
                     data-name="{{ $order->customer_name }}">{{ $order->customer_name }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $order->so_number }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $order->po_number }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ 'Rp ' .
-                    number_format($order->grand_total, 0, ',', '.') }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center"
-                    data-date="{{ $order->po_date->format('Y-m-d') }}">{{ $order->po_date->translatedFormat('j F Y') }}
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                    {{ \Carbon\Carbon::parse($order->created_at)->translatedFormat('d F Y H:i') }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <!-- Dropdown button -->
@@ -50,12 +46,13 @@
                             Aksi
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="actionsDropdown">
-                            <li><a class="dropdown-item" href="{{ route('superAdmin.salesOrders.show', $order) }}">Lihat</a></li>
-                            <li><a class="dropdown-item" href="{{ route('superAdmin.salesOrders.edit', $order) }}"
-                                    >Edit</a></li>
+                            <li><a class="dropdown-item"
+                                    href="{{ route('superAdmin.salesOrders.show', $order) }}">Lihat</a></li>
+                            <li><a class="dropdown-item"
+                                    href="{{ route('superAdmin.salesOrders.edit', $order) }}">Edit</a></li>
                             <li>
-                                <form action="{{ route('superAdmin.salesOrders.destroy', $order) }}" method="POST" class="d-inline"
-                                    id="delete-form-{{ $order->id }}">
+                                <form action="{{ route('superAdmin.salesOrders.destroy', $order) }}" method="POST"
+                                    class="d-inline" id="delete-form-{{ $order->id }}">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="dropdown-item text-danger"
@@ -124,42 +121,6 @@
     });
 });
 
-
-    // function confirmCreate(event) {
-    //     event.preventDefault();
-    //     Swal.fire({
-    //         title: 'Apakah Anda Yakin?',
-    //         text: "Apakah Anda ingin membuat pesanan penjualan baru?",
-    //         icon: 'question',
-    //         showCancelButton: true,
-    //         confirmButtonColor: '#3085d6',
-    //         cancelButtonColor: '#d33',
-    //         confirmButtonText: 'Ya, lanjutkan!',
-    //         cancelButtonText: 'Batal'
-    //     }).then((result) => {
-    //         if (result.isConfirmed) {
-    //             window.location.href = "{{ route('salesOrders.create') }}";
-    //         }
-    //     });
-    // }
-
-    // function confirmEdit(event, salesOrderId) {
-    //     event.preventDefault();
-    //     Swal.fire({
-    //         title: 'Apakah Anda Yakin?',
-    //         text: "Apakah Anda ingin mengedit pesanan penjualan ini?",
-    //         icon: 'question',
-    //         showCancelButton: true,
-    //         confirmButtonColor: '#3085d6',
-    //         cancelButtonColor: '#d33',
-    //         confirmButtonText: 'Ya, lanjutkan!',
-    //         cancelButtonText: 'Batal'
-    //     }).then((result) => {
-    //         if (result.isConfirmed) {
-    //             window.location.href = "{{ url('sales_orders') }}/" + salesOrderId + "/edit";
-    //         }
-    //     });
-    // }
 
     function confirmDelete(event, orderId) {
     event.preventDefault();

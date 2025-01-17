@@ -3,6 +3,7 @@
         <h2 class="text-xl font-bold text-white mb-5">Menu</h2>
         <nav>
             <a href="{{ route('superAdmin.SalesOrders.dashboard') }}" class="{{ request()->routeIs('superAdmin.SalesOrders.dashboard') ? 'active' : '' }}">Dashboard</a>
+            <a href="{{ route('superAdmin.stockBarang.index') }}" class="{{ request()->routeIs('superAdmin.stockBarang.index') ? 'active' : '' }}">Stok Barang</a>
             <a href="{{ route('superAdmin.SalesOrders.index') }}" class="{{ request()->routeIs('superAdmin.SalesOrders.index') ? 'active' : '' }}">Sales Orders</a>
             <a href="{{ route('superAdmin.JadwalKirim.index') }}" class="{{ request()->routeIs('superAdmin.JadwalKirim.index') ? 'active' : '' }}">Jadwal Kirim</a>
             <a href="{{ route('superAdmin.suratJalan.index') }}" class="{{ request()->routeIs('superAdmin.suratJalan.index') ? 'active' : '' }}">Surat Jalan</a>

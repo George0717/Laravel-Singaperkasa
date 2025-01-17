@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\JadwalKirim;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderDetail;
+use App\Models\StockBarang;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 
@@ -16,116 +18,121 @@ class SuperAdminSalesOrderController extends Controller
 {
     public function index()
     {
-        $salesOrders = SalesOrder::with('details')->get();
+        $salesOrders = SalesOrder::all();
 
         return view('superAdmin.SalesOrder.index', compact('salesOrders'));
     }
 
-    public function create()
-    {
-        $latestOrder = SalesOrder::latest()->first();
-        return view('superAdmin.SalesOrder.create');
-    }
 
 
     public function dashboard(Request $request)
-{
-    // Default values untuk filter
-    $year = $request->input('year', date('Y')); // Tahun sekarang jika tidak dipilih
-    $month = $request->input('month'); // Null jika tidak dipilih
-    $start_date = $request->input('start_date'); // Tanggal mulai filter
-    $end_date = $request->input('end_date'); // Tanggal akhir filter
+    {
+        // Default values untuk filter
+        $year = $request->input('year', date('Y')); // Tahun sekarang jika tidak dipilih
+        $month = $request->input('month'); // Null jika tidak dipilih
+        $start_date = $request->input('start_date'); // Tanggal mulai filter
+        $end_date = $request->input('end_date'); // Tanggal akhir filter
 
-    // Query dasar
-    $query = SalesOrder::query();
+        // Query dasar
+        $query = SalesOrder::query();
 
-    // Filter berdasarkan rentang waktu jika ada
-    if ($start_date && $end_date) {
-        $query->whereBetween('created_at', [$start_date, $end_date]);
-    } elseif ($month) {
-        // Filter berdasarkan bulan dan tahun jika rentang waktu tidak dipilih
-        $query->whereYear('created_at', $year)
-              ->whereMonth('created_at', $month);
-    } else {
-        // Filter berdasarkan tahun jika tidak ada rentang waktu atau bulan
-        $query->whereYear('created_at', $year);
+        // Filter berdasarkan rentang waktu jika ada
+        if ($start_date && $end_date) {
+            $query->whereBetween('created_at', [$start_date, $end_date]);
+        } elseif ($month) {
+            // Filter berdasarkan bulan dan tahun jika rentang waktu tidak dipilih
+            $query->whereYear('created_at', $year)
+                ->whereMonth('created_at', $month);
+        } else {
+            // Filter berdasarkan tahun jika tidak ada rentang waktu atau bulan
+            $query->whereYear('created_at', $year);
+        }
+
+        // Ambil data sesuai filter
+        $salesOrders = $query->get();
+
+        // Data untuk grafik
+        if ($start_date && $end_date) {
+            // Jika menggunakan rentang waktu, grup data berdasarkan hari
+            $groupedOrders = $salesOrders->groupBy(function ($order) {
+                return \Carbon\Carbon::parse($order->created_at)->format('d F Y');
+            });
+        } elseif ($month) {
+            // Jika menggunakan filter bulan, grup data berdasarkan tanggal
+            $groupedOrders = $salesOrders->groupBy(function ($order) {
+                return \Carbon\Carbon::parse($order->created_at)->format('d F Y');
+            });
+        } else {
+            // Jika menggunakan filter tahun, grup data berdasarkan bulan
+            $groupedOrders = $salesOrders->groupBy(function ($order) {
+                return \Carbon\Carbon::parse($order->created_at)->format('F');
+            });
+        }
+
+        $labels = [];
+        $data = [];
+
+        foreach ($groupedOrders as $key => $orders) {
+            $labels[] = $key;
+            $data[] = count($orders);
+        }
+
+
+
+        // Data untuk kartu
+        $totalSalesOrders = SalesOrder::count(); // Total semua Sales Orders
+        $currentMonthSalesOrders = SalesOrder::whereYear('created_at', $year)
+            ->whereMonth('created_at', date('m'))
+            ->count();
+        $currentYearSalesOrders = SalesOrder::whereYear('created_at', $year)->count();
+
+        return view('superAdmin.dashboard.dashboard', compact(
+            'totalSalesOrders',
+            'currentMonthSalesOrders',
+            'currentYearSalesOrders',
+            'labels',
+            'data',
+            'month',
+            'year',
+            'start_date',
+            'end_date'
+        ));
     }
 
-    // Ambil data sesuai filter
-    $salesOrders = $query->get();
+    public function create()
+    {
+        $stockBarangs = StockBarang::all(['id', 'nama_barang', 'jumlah_barang', 'tipe_barang']);
 
-    // Data untuk grafik
-    if ($start_date && $end_date) {
-        // Jika menggunakan rentang waktu, grup data berdasarkan hari
-        $groupedOrders = $salesOrders->groupBy(function ($order) {
-            return \Carbon\Carbon::parse($order->created_at)->format('d F Y');
-        });
-    } elseif ($month) {
-        // Jika menggunakan filter bulan, grup data berdasarkan tanggal
-        $groupedOrders = $salesOrders->groupBy(function ($order) {
-            return \Carbon\Carbon::parse($order->created_at)->format('d F Y');
-        });
-    } else {
-        // Jika menggunakan filter tahun, grup data berdasarkan bulan
-        $groupedOrders = $salesOrders->groupBy(function ($order) {
-            return \Carbon\Carbon::parse($order->created_at)->format('F');
-        });
+        return view('superAdmin.SalesOrder.create', compact('stockBarangs'));
     }
-
-    $labels = [];
-    $data = [];
-
-    foreach ($groupedOrders as $key => $orders) {
-        $labels[] = $key;
-        $data[] = count($orders);
-    }
-
-    // Data untuk kartu
-    $totalSalesOrders = SalesOrder::count(); // Total semua Sales Orders
-    $currentMonthSalesOrders = SalesOrder::whereYear('created_at', $year)
-        ->whereMonth('created_at', date('m'))
-        ->count();
-    $currentYearSalesOrders = SalesOrder::whereYear('created_at', $year)->count();
-
-    return view('superAdmin.dashboard.dashboard', compact(
-        'totalSalesOrders',
-        'currentMonthSalesOrders',
-        'currentYearSalesOrders',
-        'labels',
-        'data',
-        'month',
-        'year',
-        'start_date',
-        'end_date'
-    ));
-}
-
-
-
-
 
     public function store(Request $request)
     {
+        // dd($request);
+
+
+
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
-            'customer_address' => 'nullable|string',
-            'po_date' => 'nullable|date',
-            'po_number' => 'nullable|string|max:50',
-            'so_number' => 'string|max:50|nullable',
+            'po_photo' => 'nullable|image',
+            'so_number' => 'nullable|string|max:255',
             'discount' => 'nullable|numeric',
-            'discount_type' => 'nullable|string|in:percent,currency',
-            'vat' => 'nullable|numeric',
-            'down_payment' => 'nullable|numeric',
+            'discount_type' => 'required|string',
             'payment_type' => 'required|string',
-            'due_date' => 'nullable|date',
-            'item_name.*' => 'required|string',
-            'item_qty.*' => 'required|numeric',
-            'item_price.*' => 'required|numeric',
-            'po_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'down_payment' => 'nullable|numeric',
+            'vat' => 'nullable|numeric',
+            'grand_total' => 'required|numeric',
+            'payment_schedule_type' => 'nullable|string',
+            'due_date' => 'required|date',
+            'items' => 'required|array',
+            'items.*.stock_barang_id' => 'required|exists:stock_barang,id',
+            'items.*.jumlah_barang' => 'required|integer|min:1',
+            'items.*.price' => 'required|numeric|min:0',
+            'items.*.total' => 'required|numeric|min:0',
+            'items.*.per' => 'required|string',
         ]);
 
 
-        // Generate nomor SO otomatis
         $romanMonths = [
             1 => 'I',
             2 => 'II',
@@ -158,54 +165,58 @@ class SuperAdminSalesOrderController extends Controller
             $soNumber = sprintf('%02d/%s/%s/%s', $newNumber, strtoupper($companyName), $romanMonth, $currentYear);
         }
 
-        $salesOrder = new SalesOrder();
-        $salesOrder->customer_name = $validated['customer_name'];
-        $salesOrder->customer_address = $validated['customer_address'];
-        $salesOrder->po_date = $validated['po_date'];
-        $salesOrder->po_number = $validated['po_number'];
-        $salesOrder->so_number = $soNumber;
-        $salesOrder->discount = $validated['discount'];
-        $salesOrder->discount_type = $validated['discount_type'];
-        $salesOrder->vat = $validated['vat'];
-        $salesOrder->down_payment = $validated['down_payment'];
-        $salesOrder->payment_type = $validated['payment_type'];
-        $salesOrder->due_date = $validated['due_date'];
-        JadwalKirim::where('sales_order_id', $salesOrder->id)->delete();
 
-        if ($request->hasFile('po_photo')) {
-            $path = $request->file('po_photo')->store('po_photos', 'public');
-            $salesOrder->po_photo = $path;
+
+
+        $items = $request->input('items');
+        // $firstitems = head($items);
+        // $stockBarangId = $firstitems['stock_barang_id'];
+        // dd($stockBarangId);
+
+        // Process each sales order detail
+        foreach ($items as $item) {
+            $stockBarang = StockBarang::find($item['stock_barang_id']);
+
+            $stockBarangId = $item['stock_barang_id'];
+
+            // Check stock availability
+            if ($stockBarang->jumlah_barang < $item['jumlah_barang']) {
+                throw new \Exception("Stock for {$stockBarang->nama_barang} is insufficient.");
+            }
+            // Deduct stock
+            $stockBarang->decrement('jumlah_barang', $item['jumlah_barang']);
+
+
+            $salesOrder = new SalesOrder();
+            $salesOrder->customer_name = $validated['customer_name'];
+            $salesOrder->so_number = $soNumber;
+            $salesOrder->discount = $validated['discount'];
+            $salesOrder->discount_type = $validated['discount_type'];
+            $salesOrder->vat = $validated['vat'];
+            $salesOrder->down_payment = $validated['down_payment'];
+            $salesOrder->payment_type = $validated['payment_type'];
+            $salesOrder->due_date = $validated['due_date'];
+            $salesOrder->stock_barang_id = $stockBarangId;
+            JadwalKirim::where('sales_order_id', $salesOrder->id)->delete();
+            $salesOrder->save();
+
+            // Create sales order detail
+            SalesOrderDetail::create([
+                'sales_order_id' => $salesOrder->id,
+                'stock_barang_id' => $stockBarangId,
+                'item_name' => $stockBarang->nama_barang,
+                'quantity' => $item['jumlah_barang'],
+                'price' => $item['price'],
+                'per' => $item['per'],
+                'total' => $item['jumlah_barang'] * $item['price'],
+            ]);
+
+
+
+
+            return redirect()->route('superAdmin.SalesOrders.index')->with('success', 'Sales Order created successfully.');
         }
-
-        $subTotal = 0;
-        foreach ($request->item_qty as $index => $qty) {
-            $subTotal += $qty * $request->item_price[$index];
-        }
-
-        $discountAmount = $validated['discount_type'] == 'percent'
-            ? ($subTotal * $validated['discount']) / 100
-            : $validated['discount'];
-
-        $vatAmount = ($subTotal * $validated['vat']) / 100;
-        $grandTotal = ($subTotal + $vatAmount) - $discountAmount - $validated['down_payment'];
-
-        // Save the calculated grand total to the salesOrder object
-        $salesOrder->grand_total = $grandTotal;
-
-        $salesOrder->save();
-
-        foreach ($validated['item_name'] as $index => $itemName) {
-            $itemDetail = new SalesOrderDetail();
-            $itemDetail->sales_order_id = $salesOrder->id;
-            $itemDetail->item_name = $itemName;
-            $itemDetail->quantity = $validated['item_qty'][$index];
-            $itemDetail->price = $validated['item_price'][$index];
-            $itemDetail->save();
-        }
-
-        return redirect()->route('superAdmin.SalesOrders.index')->with('success', 'Sales Order created successfully.');
     }
-
 
 
     public function show(SalesOrder $salesOrder)
@@ -276,6 +287,19 @@ class SuperAdminSalesOrderController extends Controller
                 'payment_type' => $validated['payment_type'],
             ]);
 
+            Log::create([
+                'jenis' => 'Edit Data',
+                'deskripsi' => 'Sales Order baru dibuat dengan ID: ' . $salesOrder->id,
+                'user_id' => auth()->id(),
+            ]);
+            $notifications = [
+                [
+                    'title' => 'Pembuatan Sales Order',
+                    'message' => 'Sales Order baru telah dibuat dengan ID: ' . $salesOrder->id,
+                    'date' => now()->format('d M Y H:i'),
+                ]
+            ];
+
             // Handle file upload for PO photo if provided
             if ($request->hasFile('po_photo')) {
                 $path = $request->file('po_photo')->store('po_photos', 'public');
@@ -311,7 +335,7 @@ class SuperAdminSalesOrderController extends Controller
                 $itemDetail->save();
             }
 
-            return redirect()->route('superAdmin.SalesOrders.index')->with('success', 'Sales Order updated successfully.');
+            return redirect()->route('superAdmin.SalesOrders.index')->with('success', 'Sales Order updated successfully.')->compact('notifications');
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return back()->with('error', 'There was an error updating the Sales Order. Please try again.');
@@ -325,9 +349,25 @@ class SuperAdminSalesOrderController extends Controller
 
     public function destroy(SalesOrder $salesOrder)
     {
+        // Temukan pesanan berdasarkan ID
+      DB::transaction(function () use ($salesOrder){
+        foreach ($salesOrder->details as $detail) {
+            $stockBarang = StockBarang::find($detail->stock_barang_id);
+            $stockBarang->jumlah_barang += $detail->jumlah_barang; // Tambahkan jumlah barang ke stok
+            $stockBarang->save();
+        }
+
+        // Hapus pesanan
         $salesOrder->delete();
-        return redirect()->route('superAdmin.SalesOrders.index')->with('success', 'Sales Order deleted successfully.');
+
+      });
+
+        // Kembalikan stok barang terkait
+       
+        return redirect()->route('superAdmin.SalesOrders.index')
+            ->with('success', 'Pesanan berhasil dihapus, dan stok barang dikembalikan.');
     }
+
 
     public function printPDF(SalesOrder $salesOrder)
     {

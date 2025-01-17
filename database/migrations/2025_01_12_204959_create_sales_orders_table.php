@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('sales_orders', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('stock_barang_id');
+            $table->foreign('stock_barang_id')->references('id')->on('stock_barang');
             $table->string('customer_name');
-            $table->string('customer_address');
-            $table->date('po_date');
             $table->string('po_photo')->nullable();
-            $table->string('po_number');
             $table->string('so_number')->nullable();
             $table->decimal('discount', 15, 2)->default(0);
             $table->string('discount_type');
@@ -41,8 +40,10 @@ return new class extends Migration
 
         Schema::create('sales_order_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sales_order_id')->constrained()->onDelete('cascade');
+            $table->foreignId('sales_order_id')->constrained('sales_orders')->onDelete('cascade');
+            $table->foreignId('stock_barang_id')->constrained('stock_barang')->onDelete('cascade');
             $table->string('item_name');
+            $table->string('per');
             $table->integer('quantity')->default(0);
             $table->decimal('price', 15, 2)->default(0);
             $table->decimal('total', 15, 2)->default(0);

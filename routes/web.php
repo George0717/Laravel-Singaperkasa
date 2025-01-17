@@ -11,6 +11,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\JadwalKirimController;
 use App\Http\Controllers\SalesOrderController;
+use App\Http\Controllers\StockBarangController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\SuperAdminInvoiceController;
@@ -33,8 +34,14 @@ use App\Http\Controllers\UserManagementController;
 */
 
 Route::get('/', function () {
-    return view('auth.login');
-});
+    return response()
+        ->view(['auth.login'])
+        ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        ->header('Pragma', 'no-cache')
+        ->header('Expires', '0');
+})->middleware('guest', 'role.redirect');
+
+session(['last_page' => url()->previous()]);
 
 Route::get('/dashboard', function () {
     return view('pages.dashboard.dashboard');
@@ -55,7 +62,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard/fintech', [DashboardController::class, 'fintech'])->name('fintech');
 
     // Rute untuk super-admin (mengelola semua pengguna)
-    Route::middleware(['auth', 'super-admin'])->prefix('super-admin')->group(function () {
+    Route::middleware(['auth', 'role:super-admin'])->prefix('super-admin')->group(function () {
         Route::get('/superAdmin/dashboard', [SuperAdminController::class, 'index'])->name('superAdmin.dashboard');
         Route::get('/superAdmin/users', [SuperAdminController::class, 'users'])->name('superAdmin.users');
         Route::get('/superAdmin/users/create', [SuperAdminController::class, 'create'])->name('superAdmin.users.create');
@@ -115,9 +122,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('superAdmin/users/{id}/edit', [UserManagementController::class, 'edit'])->name('superAdmin.users.edit');
         Route::put('superAdmin/users/{id}', [UserManagementController::class, 'update'])->name('superAdmin.users.update');
         Route::delete('superAdmin/users/{id}', [UserManagementController::class, 'destroy'])->name('superAdmin.users.destroy');
+
+        Route::get('superAdmin/stockBarang', [StockBarangController::class, 'index'])->name('superAdmin.stockBarang.index');
+        Route::get('superAdmin/stockBarang/create', [StockBarangController::class, 'create'])->name('superAdmin.stockBarang.create');
+        Route::post('superAdmin/stockBarang/store', [StockBarangController::class, 'store'])->name('superAdmin.stockBarang.store');
+        Route::get('superAdmin/stockBarang/{id}/edit', [StockBarangController::class, 'edit'])->name('superAdmin.stockBarang.edit');
+        Route::put('superAdmin/stockBarang/{id}', [StockBarangController::class, 'update'])->name('superAdmin.stockBarang.update');
+        Route::delete('superAdmin/stockBarang/{id}', [StockBarangController::class, 'destroy'])->name('superAdmin.stockBarang.destroy');
     });
 
-    Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
         Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
         Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
         Route::get('/admin/users/create', [AdminController::class, 'create'])->name('admin.users.create');
@@ -178,7 +192,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('admin/users/{id}', [UserManagementAdminController::class, 'update'])->name('admin.users.update');
         Route::delete('admin/users/{id}', [UserManagementAdminController::class, 'destroy'])->name('admin.users.destroy');
     });
-    
+
 
     // Sales Order Routes
     Route::get('/sales_orders', [SalesOrderController::class, 'index'])->name('SalesOrders.index');

@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('surat_jalans', function (Blueprint $table) {
-            $table->string('status')->nullable(); // Atau tipe data yang sesuai
+        Schema::create('stock_barang', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama_barang');
+            $table->string('tipe_barang');
+            $table->integer('jumlah_barang')->default(0);
+            $table->timestamps();
         });
     }
 
@@ -21,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('surat_jalans', function (Blueprint $table) {
-            $table->dropColumn('status');
-        });
+        Schema::dropIfExists('stock_barang');
     }
 };

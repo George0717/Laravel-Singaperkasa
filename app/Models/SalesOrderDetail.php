@@ -18,8 +18,10 @@ class SalesOrderDetail extends Model
         'item_name',
         'quantity',
         'price',
+        'per',
         'total',
-        'delivered_quantity'
+        'delivered_quantity',
+        'stock_barang_id',
     ];
 
     // Daftar atribut yang harus di-cast ke tipe data tertentu
@@ -49,4 +51,8 @@ class SalesOrderDetail extends Model
         return $this->hasMany(Shipment::class, 'sales_order_id');
     }
 
+    public function stockBarang()
+    {
+        return $this->belongsTo(StockBarang::class);
+    }
 }

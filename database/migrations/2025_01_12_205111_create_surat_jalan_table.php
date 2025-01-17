@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('surat_jalans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sales_order_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('sales_order_id');
+            $table->foreign('sales_order_id')->references('id')->on('sales_orders');
             $table->string('plat_angkutan');
             $table->date('tanggal_pengiriman');
             $table->string('no_surat_jalan')->unique(); // Unique serial number
@@ -22,7 +23,8 @@ return new class extends Migration
 
         Schema::create('surat_jalan_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('surat_jalan_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('sales_order_id');
+            $table->foreign('sales_order_id')->references('id')->on('sales_orders');
             $table->foreignId('sales_order_detail_id')->constrained()->onDelete('cascade');
             $table->integer('quantity');
             $table->timestamps();
