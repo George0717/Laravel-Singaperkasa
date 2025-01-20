@@ -30,6 +30,14 @@ class StockBarangController extends Controller
         $existingItem = StockBarang::where('nama_barang', $validated['nama_barang'])->first();
         $existingItem = StockBarang::where('jumlah_barang', $validated['jumlah_barang'])->first();
 
+        $existingItem = StockBarang::where('tipe_barang', $validated['tipe_barang'])
+            ->where('id', '!=', 'tipe_barang')
+            ->first();
+
+        if ($existingItem) {
+            return redirect()->back()->withErrors('Tipe barang sudah digunakan.');
+        }
+
         if ($existingItem) {
             // Jika barang sudah ada, tambahkan jumlah stok
             $existingItem->jumlah_barang += $validated['jumlah_barang'];
@@ -47,8 +55,9 @@ class StockBarangController extends Controller
     }
 
 
-    public function edit(StockBarang $stockBarang)
+    public function edit($id)
     {
+        $stockBarang = StockBarang::findOrFail($id);
         return view('superAdmin.stockBarang.edit', compact('stockBarang'));
     }
 
@@ -59,17 +68,8 @@ class StockBarangController extends Controller
             'jumlah_barang' => 'required|integer|min:1',
             'tipe_barang' => 'required|string',
         ]);
-
+        // dd($validated);
         $stockBarang = StockBarang::findOrFail($id);
-
-        // Cek jika nama barang sudah digunakan oleh barang lain
-        $existingItem = StockBarang::where('nama_barang', $validated['nama_barang'])
-            ->where('id', '!=', $id)
-            ->first();
-
-        if ($existingItem) {
-            return redirect()->back()->withErrors('Nama barang sudah digunakan oleh item lain.');
-        }
 
         // Perbarui data barang
         $stockBarang->update($validated);

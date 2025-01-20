@@ -11,11 +11,8 @@
         <div class="mb-4">
             <h3 class="text-xl font-semibold text-gray-700">Sales Order</h3>
             <p class="text-sm text-gray-600">Pelanggan: {{ $invoice->salesOrder->customer_name }}</p>
-            <p class="text-sm text-gray-600">Alamat: {{ $invoice->salesOrder->customer_address }}</p>
             <p class="text-sm text-gray-600">Tipe Pembayaran: {{ $invoice->salesOrder->payment_type }}</p>
-            <p class="text-sm text-gray-600">Tanggal PO: {{ \Carbon\Carbon::parse($invoice->salesOrder->po_date)->locale('id')->isoFormat('D MMMM YYYY') }}</p>
             <p class="text-sm text-gray-600">Jadwal Kirim: {{ \Carbon\Carbon::parse($salesOrder->jadwalKirim->delivery_date ?? 'N/A')->locale('id')->isoFormat('D MMMM YYYY') }}</p>
-            <p class="text-sm text-gray-600">Nomor PO: {{ $invoice->salesOrder->po_number }}</p>
         </div>
         
         <table class="w-full table-auto border-collapse">
@@ -43,10 +40,6 @@
                             {{ number_format($invoice->vat, 2, ',', '.') }}%
                         @endif
                     </td>
-                </tr>
-                <tr class="border-b border-gray-300">
-                    <th class="text-left py-2 px-4 text-sm font-medium text-gray-600">Total Keseluruhan</th>
-                    <td class="py-2 px-4 text-sm text-green-600 font-semibold">Rp. {{ number_format($invoice->grand_total, 2, ',', '.') }}</td>
                 </tr>
             </tbody>
         </table>

@@ -42,6 +42,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('sales_order_id')->constrained('sales_orders')->onDelete('cascade');
             $table->foreignId('stock_barang_id')->constrained('stock_barang')->onDelete('cascade');
+            $table->softDeletes();
             $table->string('item_name');
             $table->string('per');
             $table->integer('quantity')->default(0);

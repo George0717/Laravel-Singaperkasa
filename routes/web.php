@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminInvoiceController;
 use App\Http\Controllers\AdminJadwalKirimController;
@@ -21,6 +22,8 @@ use App\Http\Controllers\SuperAdminSuratJalanController;
 use App\Http\Controllers\SuratJalanController;
 use App\Http\Controllers\UserManagementAdminController;
 use App\Http\Controllers\UserManagementController;
+use App\Mail\SendEmail;
+use Illuminate\Support\Facades\Mail;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +64,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard/analytics', [DashboardController::class, 'analytics'])->name('analytics');
     Route::get('/dashboard/fintech', [DashboardController::class, 'fintech'])->name('fintech');
 
+    
+
     // Rute untuk super-admin (mengelola semua pengguna)
     Route::middleware(['auth', 'role:super-admin'])->prefix('super-admin')->group(function () {
         Route::get('/superAdmin/dashboard', [SuperAdminController::class, 'index'])->name('superAdmin.dashboard');
@@ -81,6 +86,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/superAdmin/sales_orders/{salesOrder}', [SuperAdminSalesOrderController::class, 'destroy'])->name('superAdmin.salesOrders.destroy');
         Route::get('/superAdmin/sales_orders/{salesOrder}/print-pdf', [SuperAdminSalesOrderController::class, 'printPDF'])->name('superAdmin.SalesOrders.printPDF');
         Route::get('/superAdmin/dashboard', [SuperAdminSalesOrderController::class, 'dashboard'])->name('superAdmin.SalesOrders.dashboard');
+        Route::post('/superAdmin/sales_order/{id}/restore', [SuperAdminSalesOrderController::class, 'restore'])->name('superAdmin.salesOrders.restore');
+
 
         // Jadwal Kirim
         Route::get('/superAdmin/jadwalKirim', [SuperAdminJadwalKirimController::class, 'index'])->name('superAdmin.JadwalKirim.index');
@@ -129,6 +136,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('superAdmin/stockBarang/{id}/edit', [StockBarangController::class, 'edit'])->name('superAdmin.stockBarang.edit');
         Route::put('superAdmin/stockBarang/{id}', [StockBarangController::class, 'update'])->name('superAdmin.stockBarang.update');
         Route::delete('superAdmin/stockBarang/{id}', [StockBarangController::class, 'destroy'])->name('superAdmin.stockBarang.destroy');
+
+        Route::get('/superAdmin/riwayat', [ActivityLogController::class, 'index'])->name('superAdmin.riwayat.index');
+        Route::get('/superAdmin/riwayat/{id}', [ActivityLogController::class, 'show'])->name('superAdmin.riwayat.show');
+
+
     });
 
     Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {

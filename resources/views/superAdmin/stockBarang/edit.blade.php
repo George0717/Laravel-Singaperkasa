@@ -12,6 +12,10 @@
             <input type="text" id="nama_barang" name="nama_barang" value="{{ $stockBarang->nama_barang }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
         </div>
         <div class="mb-4">
+            <label for="tipe_barang" class="block text-sm font-medium text-gray-700">Ukuran Barang</label>
+            <input type="text" id="tipe_barang" name="tipe_barang" value="{{ $stockBarang->tipe_barang }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+        </div>
+        <div class="mb-4">
             <label for="jumlah_barang" class="block text-sm font-medium text-gray-700">Jumlah Barang</label>
             <input type="number" id="jumlah_barang" name="jumlah_barang" value="{{ $stockBarang->jumlah_barang }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
         </div>

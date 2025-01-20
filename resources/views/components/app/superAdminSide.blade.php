@@ -8,6 +8,7 @@
             <a href="{{ route('superAdmin.JadwalKirim.index') }}" class="{{ request()->routeIs('superAdmin.JadwalKirim.index') ? 'active' : '' }}">Jadwal Kirim</a>
             <a href="{{ route('superAdmin.suratJalan.index') }}" class="{{ request()->routeIs('superAdmin.suratJalan.index') ? 'active' : '' }}">Surat Jalan</a>
             <a href="{{ route('superAdmin.invoice.index') }}" class="{{ request()->routeIs('superAdmin.invoice.index') ? 'active' : '' }}">Invoice</a>
+            <a href="{{ route('superAdmin.riwayat.index') }}" class="{{ request()->routeIs('superAdmin.riwayat.index') ? 'active' : '' }}">Riwayat</a>
             <a href="{{ route('superAdmin.users.index') }}" class="{{ request()->routeIs('superAdmin.users.index') ? 'active' : '' }}">User</a>
         </nav>
     </div>

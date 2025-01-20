@@ -1,320 +1,271 @@
 @extends('layouts.superAdmin')
-@section('title', 'Edit Slaes Order')
+@section('title', 'Edit Sales Order')
 @section('content')
-<div class="container mx-auto p-4">
+<div class="container mx-auto px-4">
     <h1 class="text-2xl font-semibold mb-4">Edit Sales Order</h1>
-    <div class="flex flex-wrap -mx-4">
-        <!-- Form Column -->
-        <div class="w-full lg:w-2/3 px-4">
-            <form action="{{ route('superAdmin.salesOrders.update', $salesOrder->id) }}" method="POST" enctype="multipart/form-data"> @csrf
-                @method('put')
+    <a href="{{ route('superAdmin.SalesOrders.index') }}" class="inline-block mb-4 text-blue-600 hover:text-blue-800">
+        <button class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md shadow-sm">
+            &larr; Back to Sales Orders
+        </button>
+    </a>
 
-                <div class="mb-4">
-                    <label for="customer_name" class="block text-sm font-medium text-gray-700">Nama Customer</label>
-                    <input type="text" id="customer_name" name="customer_name"
-                        value="{{ old('customer_name', $salesOrder->customer_name) }}"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-                </div>
+    <form action="{{ route('superAdmin.salesOrders.update', $salesOrder->id) }}" method="POST" id="sales-order-form"
+        enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
 
-                <div class="mb-4">
-                    <label for="customer_address" class="block text-sm font-medium text-gray-700">Alamat Customer</label>
-                    <textarea id="customer_address" name="customer_address"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                        required>{{ old('customer_address', $salesOrder->customer_address) }}</textarea>
-                </div>
+        <!-- Customer Name -->
+        <div class="mb-4">
+            <label for="customer_name" class="block text-sm font-medium text-gray-700">Nama Customer</label>
+            <input type="text" id="customer_name" name="customer_name" value="{{ old('customer_name', $salesOrder->customer_name) }}"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
+                required>
+            @error('customer_name')
+            <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
 
-                <div class="mb-4">
-                    <label for="po_date" class="block text-sm font-medium text-gray-700">Tanggal PO</label>
-                    <input type="date" id="po_date" name="po_date"
-                        value="{{ old('po_date', $salesOrder->po_date->format('Y-m-d')) }}"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-                </div>
+        <!-- File Upload -->
+        <div class="mb-4">
+            <label for="po_photo" class="block text-sm font-medium text-gray-700">Photo PO</label>
+            <input type="file" id="po_photo" name="po_photo"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+            @error('po_photo')
+            <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
 
-                <div class="mb-4">
-                    <label for="po_number" class="block text-sm font-medium text-gray-700">Nomor PO</label>
-                    <input type="text" id="po_number" name="po_number"
-                        value="{{ old('po_number', $salesOrder->po_number) }}"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-                </div>
-
-                <div class="mb-4">
-                    <label for="so_number" class="block text-sm font-medium text-gray-700">Nomor SO</label>
-                    <input type="text" id="so_number" name="so_number"
-                        value="{{ old('so_number', $salesOrder->so_number) }}"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-                </div>
-
-                <div class="mb-4">
-                    <label for="discount" class="block text-sm font-medium text-gray-700">Diskon</label>
-                    <input type="text" id="discount" name="discount"
-                        value="{{ old('discount', $salesOrder->discount) }}"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                </div>
-
-                <div class="mb-4">
-                    <label for="discount_type" class="block text-sm font-medium text-gray-700">Tipe Diskon</label>
-                    <select id="discount_type" name="discount_type"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                        <option value="percent" {{ old('discount_type', $salesOrder->discount_type) == 'percent' ?
-                            'selected' : '' }}>Percent</option>
-                        <option value="amount" {{ old('discount_type', $salesOrder->discount_type) == 'amount' ?
-                            'selected' : '' }}>Amount</option>
-                    </select>
-                </div>
-
-                <div class="mb-4">
-                    <label for="vat" class="block text-sm font-medium text-gray-700">PPN</label>
-                    <input type="text" id="vat" name="vat" value="{{ old('vat', $salesOrder->vat) }}"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                </div>
-
-                <div class="mb-4">
-                    <label for="down_payment" class="block text-sm font-medium text-gray-700">DP</label>
-                    <input type="text" id="down_payment" name="down_payment"
-                        value="{{ old('down_payment', $salesOrder->down_payment) }}"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                </div>
-
-
-                <!-- Item Details -->
-                <div class="mb-4">
-                    <h2 class="text-xl font-semibold mb-2">Detail</h2>
-                    <div id="items-container">
-                        @foreach($salesOrder->details as $detail)
-                        <div class="item-row mb-4 flex items-center gap-4">
+        <!-- Item Details -->
+        <div class="mb-4">
+            <h2 class="text-xl font-semibold mb-2">Item Details</h2>
+            <div id="items-container">
+                @foreach($salesOrder->details as $key => $item)
+                <div class="item-row mb-4">
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="flex items-center space-x-4">
                             <div class="flex-1">
-                                <label class="block text-sm font-medium text-gray-700">Nama Barang</label>
-                                <select name="item_name[]"
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm item-name">
-                                    <option value="">Select an item</option>
-                                    @foreach($itemOptions as $item => $price)
-                                    <option value="{{ $item }}" data-price="{{ $price }}" {{ $item==$detail->item_name ?
-                                        'selected' : '' }}>{{ $item }}</option>
+                                <label for="item_name_{{ $key }}" class="block text-sm font-medium text-gray-700">Nama Barang</label>
+                                <select id="item_name_{{ $key }}" name="items[{{ $key }}][stock_barang_id]" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm item-name">
+                                    <option value="">Pilih Barang</option>
+                                    @foreach($stockBarangs as $barang)
+                                    <option value="{{ $barang->id }}" {{ $item->stock_barang_id == $barang->id ? 'selected' : '' }} data-stock="{{ $barang->jumlah_barang }}" data-harga="{{ $barang->harga }}">{{ $barang->nama_barang }} ({{ $barang->tipe_barang ?? 'tidak ada tipe' }})</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="flex-1">
-                                <label class="block text-sm font-medium text-gray-700">Jumlah</label>
-                                <input type="number" name="item_qty[]"
-                                    class="item-qty mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                                    value="{{ $detail->quantity }}" required>
+                            <div class="w-16">
+                                <label for="item_qty_{{ $key }}" class="block text-sm font-medium text-gray-700">Quantity</label>
+                                <input type="number" id="item_qty_{{ $key }}" name="items[{{ $key }}][jumlah_barang]" value="{{ old('items.'.$key.'.jumlah_barang', $item->quantity) }}"
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm item-qty" step="1">
                             </div>
                             <div class="flex-1">
-                                <label class="block text-sm font-medium text-gray-700">Harga</label>
-                                <input type="number" name="item_price[]"
-                                    class="item-price mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                                    value="{{ $detail->price }}" required>
+                                <label for="item_price_{{ $key }}" class="block text-sm font-medium text-gray-700">Harga</label>
+                                <input type="number" id="item_price_{{ $key }}" name="items[{{ $key }}][price]" value="{{ old('items.'.$key.'.price', $item->price) }}"
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm item-price" step="1" required>
+                            </div>
+                            <div class="w-16">
+                                <label for="item_per_{{ $key }}" class="block text-sm font-medium text-gray-700">Per</label>
+                                <input type="text" id="item_per_{{ $key }}" name="items[{{ $key }}][per]" value="Kg"
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm item-price text-center" maxlength="2" readonly>
                             </div>
                             <div class="flex-1">
-                                <label class="block text-sm font-medium text-gray-700">Total</label>
-                                <input type="text"
-                                    class="item-total mt-1 block w-full border-gray-300 rounded-md shadow-sm" readonly>
+                                <label for="item_total_{{ $key }}" class="block text-sm font-medium text-gray-700">Total</label>
+                                <input type="text" id="item_total_{{ $key }}" name="items[{{ $key }}][total]" value="{{ old('items.'.$key.'.total', $item->total) }}"
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm item-total" readonly>
                             </div>
-                            <button type="button" class="btn btn-danger remove-item">Remove</button>
                         </div>
-                        @endforeach
-                    </div>
-                    <button type="button" id="add-item"
-                        class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">Tambah Item</button>
-                </div>
-                <div class="mb-4">
-                    <h2 class="text-xl font-semibold mb-2">Detail Harga</h2>
-                    <div id="summary-details" class="p-4 bg-white rounded-lg shadow-md">
-                        <!-- Summary details will be populated by JavaScript -->
                     </div>
                 </div>
-                <div class="mb-4">
-                    <label for="payment_type" class="block text-sm font-medium text-gray-700">Jenis Pembayaran</label>
-                    <select id="payment_type" name="payment_type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                        <option value="{{ old('payment_type', $salesOrder->payment_type) }}">Select Payment Type</option>
-                        <option value="{{ old('payment_type', $salesOrder->payment_type) }}">Cash</option>
-                        <option value="{{ old('payment_type', $salesOrder->payment_type) }}">Credit</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label for="po_photo" class="block text-sm font-medium text-gray-700">Foto PO</label>
-                    <input type="file" id="po_photo" name="po_photo"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                     @if($salesOrder->po_photo)
-                        <img src="{{ asset('storage/' . $salesOrder->po_photo) }}" alt="PO Photo" class="max-w-xs rounded-lg shadow-md">
-                    @else
-                        <span>No photo available</span>
-                    @endif
-                </div>
-
-                    <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Update
-                        Sales Order</button>
-            </form>
+                @endforeach
+            </div>
+            <button type="button" id="add-item" class="bg-blue-600 text-white py-2 px-4 rounded-md">Tambah Barang</button>
         </div>
 
-        <!-- Minimap Column -->
-        <div class="w-full lg:w-1/3 px-5">
-            <div
-                class="sticky top-0 bg-white p-6 rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Data Sebelumnya</h2>
-                <table class="table-auto w-full border-collapse">
-                    <tbody>
-                        <tr class="hover:bg-gray-100 transition-colors duration-300">
-                            <td class="px-4 py-2 text-gray-700 border-b"><strong>Nama Customer:</strong></td>
-                            <td class="px-4 py-2 text-gray-800 border-b">{{ $salesOrder->customer_name }}</td>
-                        </tr>
-                        <tr class="hover:bg-gray-100 transition-colors duration-300">
-                            <td class="px-4 py-2 text-gray-700 border-b"><strong>Alamat Customer:</strong></td>
-                            <td class="px-4 py-2 text-gray-800 border-b">{{ $salesOrder->customer_address }}</td>
-                        </tr>
-                        <tr class="hover:bg-gray-100 transition-colors duration-300">
-                            <td class="px-4 py-2 text-gray-700 border-b"><strong>Tanggal PO:</strong></td>
-                            <td class="px-4 py-2 text-gray-800 border-b">{{ $salesOrder->po_date->format('d M Y') }}
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-100 transition-colors duration-300">
-                            <td class="px-4 py-2 text-gray-700 border-b"><strong>Nomor PO:</strong></td>
-                            <td class="px-4 py-2 text-gray-800 border-b">{{ $salesOrder->po_number }}</td>
-                        </tr>
-                        <tr class="hover:bg-gray-100 transition-colors duration-300">
-                            <td class="px-4 py-2 text-gray-700 border-b"><strong>Nomor SO:</strong></td>
-                            <td class="px-4 py-2 text-gray-800 border-b">{{ $salesOrder->so_number }}</td>
-                        </tr>
-                        <tr class="hover:bg-gray-100 transition-colors duration-300">
-                            <td class="px-4 py-2 text-gray-700 border-b"><strong>Diskon:</strong></td>
-                            <td class="px-4 py-2 text-gray-800 border-b">{{ $salesOrder->discount }}</td>
-                        </tr>
-                        <tr class="hover:bg-gray-100 transition-colors duration-300">
-                            <td class="px-4 py-2 text-gray-700 border-b"><strong>Tipe Diskon:</strong></td>
-                            <td class="px-4 py-2 text-gray-800 border-b">{{ $salesOrder->discount_type }}</td>
-                        </tr>
-                        <tr class="hover:bg-gray-100 transition-colors duration-300">
-                            <td class="px-4 py-2 text-gray-700 border-b"><strong>PPN:</strong></td>
-                            <td class="px-4 py-2 text-gray-800 border-b">{{ $salesOrder->vat }}</td>
-                        </tr>
-                        <tr class="hover:bg-gray-100 transition-colors duration-300">
-                            <td class="px-4 py-2 text-gray-700 border-b"><strong>DP:</strong></td>
-                            <td class="px-4 py-2 text-gray-800 border-b">{{ $salesOrder->down_payment }}</td>
-                        </tr>
-                        <tr class="hover:bg-gray-100 transition-colors duration-300">
-                            <td class="px-4 py-2 text-gray-700 border-b"><strong>Grand Total:</strong></td>
-                            <td class="px-4 py-2 text-gray-800 border-b">{{ 'Rp ' . number_format($salesOrder->grand_total, 0, ',', '.') }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+        <!-- Additional Fields -->
+        <div class="mb-4">
+            <label for="discount" class="block text-sm font-medium text-gray-700">Diskon</label>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <input type="number" id="discount" name="discount" value="{{ old('discount', $salesOrder->discount) }}"
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" step="0.01">
+                </div>
+                <div>
+                    <select id="discount_type" name="discount_type"
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                        <option value="percent" {{ $salesOrder->discount_type == 'percent' ? 'selected' : '' }}>%</option>
+                        <option value="currency" {{ $salesOrder->discount_type == 'currency' ? 'selected' : '' }}>IDR</option>
+                    </select>
+                </div>
             </div>
         </div>
-    </div>
+
+        <div class="mb-4">
+            <label for="vat" class="block text-sm font-medium text-gray-700">Pajak (%)</label>
+            <input type="number" id="vat" name="vat" value="{{ old('vat', $salesOrder->vat) }}"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" step="0.01">
+        </div>
+
+        <div class="mb-4">
+            <label for="down_payment" class="block text-sm font-medium text-gray-700">Uang Muka</label>
+            <input type="number" id="down_payment" name="down_payment" value="{{ old('down_payment', $salesOrder->down_payment) }}"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" step="0.01">
+        </div>
+
+        <!-- Calculations Card -->
+        <div class="mb-4">
+            <div class="card p-4 border rounded-md shadow-sm">
+                <h3 class="text-lg font-semibold mb-2">Summary</h3>
+                <div id="summary-details">
+                    <!-- Summary will be dynamically filled -->
+                </div>
+                <input type="hidden" id="grand_total_hidden" name="grand_total" value="{{ old('grand_total', $salesOrder->grand_total) }}">
+            </div>
+        </div>
+
+        <!-- Payment Details -->
+        <div class="mb-4">
+            <label for="payment_type" class="block text-sm font-medium text-gray-700">Jenis Pembayaran</label>
+            <select id="payment_type" name="payment_type"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                <option value="">Select Payment Type</option>
+                <option value="Cash" {{ $salesOrder->payment_type == 'Cash' ? 'selected' : '' }}>Cash</option>
+                <option value="Credit" {{ $salesOrder->payment_type == 'Credit' ? 'selected' : '' }}>Credit</option>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label for="due_date" class="block text-sm font-medium text-gray-700">Jatuh Tempo Pembayaran</label>
+            <input type="date" id="due_date" name="due_date" value="{{ old('due_date', $salesOrder->due_date) }}"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+        </div>
+
+        @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+        <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-md">Update Sales Order</button>
+    </form>
 </div>
 
-<!-- JavaScript -->
 <script>
-   document.addEventListener('DOMContentLoaded', function () {
-    const itemOptions = {
-        "Paku": 500000,
-        "Baja": 500,
-        "Besi Panjang": 2500000
-    };
+    document.addEventListener('DOMContentLoaded', function () {
+        const stockBarangs = @json($stockBarangs); // Mengambil data barang dari controller
+        const itemsContainer = document.getElementById('items-container');
+        const summaryDetails = document.getElementById('summary-details');
+        const discountInput = document.getElementById('discount');
+        const discountTypeSelect = document.getElementById('discount_type');
+        const vatInput = document.getElementById('vat');
+        const downPaymentInput = document.getElementById('down_payment');
 
-    let itemCount = {{ count($salesOrder->details) }};
-
-    const itemsContainer = document.getElementById('items-container');
-    const discountInput = document.getElementById('discount');
-    const discountTypeSelect = document.getElementById('discount_type');
-    const vatInput = document.getElementById('vat');
-    const downPaymentInput = document.getElementById('down_payment');
-    const summaryDetails = document.getElementById('summary-details');
-
-    function formatCurrency(value) {
-        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value);
-    }
-
-    function updateTotal() {
-        const rows = document.querySelectorAll('#items-container .item-row');
-        let subTotal = 0;
-
-        rows.forEach(row => {
-            const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
-            const price = parseFloat(row.querySelector('.item-price').value) || 0;
-            const total = qty * price;
-            row.querySelector('.item-total').value = formatCurrency(total);
-            subTotal += total;
-        });
-
-        const discount = parseFloat(discountInput.value) || 0;
-        const discountType = discountTypeSelect.value;
-        const vat = parseFloat(vatInput.value) || 0;
-        const downPayment = parseFloat(downPaymentInput.value) || 0;
-
-        let discountAmount = 0;
-        if (discountType === 'percent') {
-            discountAmount = (subTotal * discount) / 100;
-        } else if (discountType === 'amount') {
-            discountAmount = discount;
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
         }
 
-        const vatAmount = (subTotal * vat) / 100;
-        const grandTotal = (subTotal + vatAmount) - discountAmount - downPayment;
+        function updateSummary() {
+            let subTotal = 0;
+            const itemRows = itemsContainer.querySelectorAll('.item-row');
+            itemRows.forEach(row => {
+                const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+                const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                const total = qty * price;
+                row.querySelector('.item-total').value = total;  // Hanya kirim angka
+                subTotal += total;
+            });
 
-        summaryDetails.innerHTML = `
-            <p>Sub Total: <span id="sub_total">${formatCurrency(subTotal)}</span></p>
-            <p>Discount: <span id="discount_amount">${formatCurrency(discountAmount)}</span></p>
-            <p>VAT: <span id="vat_amount">${formatCurrency(vatAmount)}</span></p>
-            <p>Down Payment: <span id="down_payment_amount">${formatCurrency(downPayment)}</span></p>
-            <p class="font-semibold">Grand Total: <span id="grand_total">${formatCurrency(grandTotal)}</span></p>
-        `;
-    }
+            const discount = parseFloat(discountInput.value) || 0;
+            const discountType = discountTypeSelect.value;
+            const vat = parseFloat(vatInput.value) || 0;
+            const downPayment = parseFloat(downPaymentInput.value) || 0;
 
-    function handleItemChange(event) {
-        const select = event.target;
-        const priceInput = select.closest('.item-row').querySelector('.item-price');
-        const selectedOption = select.options[select.selectedIndex];
-        priceInput.value = selectedOption.dataset.price || 0;
-        updateTotal();
-    }
+            let discountAmount = 0;
+            if (discountType === 'percent') {
+                discountAmount = (subTotal * discount) / 100;
+            } else {
+                discountAmount = discount;
+            }
 
-    document.getElementById('add-item').addEventListener('click', function () {
-        itemCount++;
-        const container = document.getElementById('items-container');
-        const newItem = `
-            <div class="item-row mb-4 flex items-center gap-4">
-                <div class="flex-1">
-                    <label class="block text-sm font-medium text-gray-700">Item Name</label>
-                    <select name="item_name[]" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm item-name" onchange="handleItemChange(event)">
-                        <option value="">Select an item</option>
-                        ${Object.keys(itemOptions).map(item => `<option value="${item}" data-price="${itemOptions[item]}">${item}</option>`).join('')}
-                    </select>
+            const grandTotal = subTotal - discountAmount + (subTotal * vat) / 100 - downPayment;
+
+            // Update UI
+            summaryDetails.innerHTML = `
+                <div class="flex justify-between">
+                    <span class="font-medium">Subtotal</span>
+                    <span>${formatCurrency(subTotal)}</span>
                 </div>
-                <div class="flex-1">
-                    <label class="block text-sm font-medium text-gray-700">Quantity</label>
-                    <input type="number" name="item_qty[]" class="item-qty mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                <div class="flex justify-between">
+                    <span class="font-medium">Diskon</span>
+                    <span>- ${formatCurrency(discountAmount)}</span>
                 </div>
-                <div class="flex-1">
-                    <label class="block text-sm font-medium text-gray-700">Price</label>
-                    <input type="number" name="item_price[]" class="item-price mt-1 block w-full border-gray-300 rounded-md shadow-sm" readonly>
+                <div class="flex justify-between">
+                    <span class="font-medium">Pajak (VAT)</span>
+                    <span>${formatCurrency((subTotal * vat) / 100)}</span>
                 </div>
-                <div class="flex-1">
-                    <label class="block text-sm font-medium text-gray-700">Total</label>
-                    <input type="text" class="item-total mt-1 block w-full border-gray-300 rounded-md shadow-sm" readonly>
+                <div class="flex justify-between">
+                    <span class="font-medium">Uang Muka</span>
+                    <span>- ${formatCurrency(downPayment)}</span>
                 </div>
-                <button type="button" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 remove-item">Remove</button>
-            </div>`;
-        container.insertAdjacentHTML('beforeend', newItem);
-        container.querySelectorAll('.item-qty').forEach(input => input.addEventListener('input', updateTotal));
-        container.querySelectorAll('.item-price').forEach(input => input.addEventListener('input', updateTotal));
-        container.querySelectorAll('.item-name').forEach(select => select.addEventListener('change', handleItemChange));
-        updateTotal();
+                <div class="flex justify-between font-semibold">
+                    <span class="font-medium">Grand Total</span>
+                    <span>${formatCurrency(grandTotal)}</span>
+                </div>
+            `;
+            document.getElementById('grand_total_hidden').value = grandTotal;
+        }
+
+        // Event listeners for recalculating
+        itemsContainer.addEventListener('input', updateSummary);
+        discountInput.addEventListener('input', updateSummary);
+        discountTypeSelect.addEventListener('change', updateSummary);
+        vatInput.addEventListener('input', updateSummary);
+        downPaymentInput.addEventListener('input', updateSummary);
+
+        // Add new item row
+        document.getElementById('add-item').addEventListener('click', function () {
+            const itemIndex = itemsContainer.children.length;
+
+            const newItem = document.createElement('div');
+            newItem.classList.add('item-row', 'mb-4');
+            newItem.innerHTML = `
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-1">
+                            <label for="item_name_${itemIndex}" class="block text-sm font-medium text-gray-700">Nama Barang</label>
+                            <select id="item_name_${itemIndex}" name="items[${itemIndex}][stock_barang_id]" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm item-name">
+                                <option value="">Pilih Barang</option>
+                                @foreach($stockBarangs as $barang)
+                                <option value="{{ $barang->id }}" data-stock="{{ $barang->jumlah_barang }}" data-harga="{{ $barang->harga }}">{{ $barang->nama_barang }} ({{ $barang->tipe_barang ?? 'tidak ada tipe' }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="w-16">
+                            <label for="item_qty_${itemIndex}" class="block text-sm font-medium text-gray-700">Quantity</label>
+                            <input type="number" id="item_qty_${itemIndex}" name="items[${itemIndex}][jumlah_barang]" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm item-qty" step="1">
+                        </div>
+                        <div class="flex-1">
+                            <label for="item_price_${itemIndex}" class="block text-sm font-medium text-gray-700">Harga</label>
+                            <input type="number" id="item_price_${itemIndex}" name="items[${itemIndex}][price]" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm item-price" step="1" required>
+                        </div>
+                        <div class="w-16">
+                            <label for="item_per_${itemIndex}" class="block text-sm font-medium text-gray-700">Per</label>
+                            <input type="text" id="item_per_${itemIndex}" name="items[${itemIndex}][per]" value="Kg" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm item-price text-center" maxlength="2" readonly>
+                        </div>
+                        <div class="flex-1">
+                            <label for="item_total_${itemIndex}" class="block text-sm font-medium text-gray-700">Total</label>
+                            <input type="text" id="item_total_${itemIndex}" name="items[${itemIndex}][total]" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm item-total" readonly>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            itemsContainer.appendChild(newItem);
+            updateSummary();
+        });
+
+        updateSummary(); // Initialize calculation
     });
-
-    document.querySelectorAll('.item-qty').forEach(input => input.addEventListener('input', updateTotal));
-    document.querySelectorAll('.item-price').forEach(input => input.addEventListener('input', updateTotal));
-    document.querySelectorAll('.item-name').forEach(select => select.addEventListener('change', handleItemChange));
-    discountInput.addEventListener('input', updateTotal);
-    discountTypeSelect.addEventListener('change', updateTotal);
-    vatInput.addEventListener('input', updateTotal);
-    downPaymentInput.addEventListener('input', updateTotal);
-
-    // Initial update
-    updateTotal();
-});
-
-
-
-
 </script>
 @endsection

@@ -85,6 +85,10 @@ class SalesOrder extends Model
     {
         return $this->belongsToMany(StockBarang::class, 'sales_order_items')->withPivot('jumlah');
     }
+    public function invoice()
+    {
+        return $this->belongsToMany(Invoice::class);
+    }
 
  }
 

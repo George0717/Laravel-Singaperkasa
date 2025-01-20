@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('sales_order_id')->constrained()->onDelete('cascade');
             $table->string('invoice_number')->unique();
-            $table->decimal('subtotal', 15, 2);
             $table->decimal('discount', 15, 2)->default(0);
             $table->decimal('down_payment', 15, 2)->default(0);
             $table->string('payment_type');

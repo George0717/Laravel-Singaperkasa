@@ -154,9 +154,9 @@
 
                 summaryDetails.innerHTML = `
                     <p>Sub Total: <span id="sub_total">${formatCurrency(subTotal)}</span></p>
-                    <p>Discount: <span id="discount_amount">${formatCurrency(discountAmount)}</span></p>
-                    <p>VAT: <span id="vat_amount">${formatCurrency(vatAmount)}</span></p>
-                    <p>Down Payment: <span id="down_payment_amount">${formatCurrency(downPayment)}</span></p>
+                    <p>Diskon: <span id="discount_amount">${formatCurrency(discountAmount)}</span></p>
+                    <p>PPN: <span id="vat_amount">${formatCurrency(vatAmount)}</span></p>
+                    <p>DP: <span id="down_payment_amount">${formatCurrency(downPayment)}</span></p>
                     <p class="font-semibold">Grand Total: <span id="grand_total" name="grand_total">${formatCurrency(grandTotal)}</span></p>
                 `;
                 document.getElementById('grand_total_hidden').value = grandTotal;

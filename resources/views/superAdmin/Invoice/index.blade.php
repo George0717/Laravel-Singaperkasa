@@ -25,10 +25,9 @@
             <table class="min-w-full table-auto">
                 <thead class="bg-gray-800 text-white">
                     <tr>
-                        <th class="px-6 py-3 text-center">Invoice Number</th>
-                        <th class="px-6 py-3 text-center">Customer</th>
-                        <th class="px-6 py-3 text-center">Grand Total</th>
-                        <th class="px-6 py-3 text-center">Actions</th>
+                        <th class="px-6 py-3 text-center">Nomor Invoice</th>
+                        <th class="px-6 py-3 text-center">Nama Customer</th>
+                        <th class="px-6 py-3 text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
@@ -39,21 +38,30 @@
                     @else
                     @foreach($invoices as $invoice)
                     <tr class="hover:bg-gray-100">
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900 text-center">{{ $invoice->invoice_number }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-600 text-center">{{ $invoice->salesOrder->customer_name }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-600 text-center">Rp {{ number_format($invoice->grand_total, 2, ',',
-                            '.') }}</td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900 text-center">{{ $invoice->invoice_number
+                            }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600 text-center">{{ $invoice->salesOrder->customer_name
+                            }}</td>
                         <td class="px-6 py-4">
                             <div class="flex space-x-2 justify-center">
-                                <button onclick="showActionAlert('View', '{{ $invoice->invoice_number }}', '{{ $invoice->id }}')"
-                                    class="text-white py-2 px-4 rounded bg-blue-500 hover:bg-blue-600 transition">
+                                <a href="{{ route('superAdmin.invoice.show', ['invoice' => $invoice->id]) }}"
+                                    class="text-white py-2 px-4 rounded bg-blue-500 hover:bg-blue-600 transition inline-block">
                                     View
-                                </button>
+                                </a>
+
                                 <!-- Tombol Delete -->
                                 <button onclick="confirmDelete('{{ $invoice->id }}', '{{ $invoice->invoice_number }}')"
                                     class="text-white py-2 px-4 rounded bg-red-500 hover:bg-red-600 transition">
                                     Delete
                                 </button>
+
+                                <!-- Form Delete -->
+                                <form id="delete-form-{{ $invoice->id }}"
+                                    action="{{ route('superAdmin.invoice.destroy', $invoice->id) }}" method="POST"
+                                    class="hidden">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -102,20 +110,6 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     // Show a SweetAlert for View and Edit actions
-    function showActionAlert(action, invoiceNumber, invoiceId) {
-    Swal.fire({
-        title: `${action} Invoice`,
-        text: `You are about to ${action.toLowerCase()} the invoice with number: ${invoiceNumber}`,
-        icon: action === 'View' ? 'info' : 'warning',
-        confirmButtonText: 'OK',
-        confirmButtonColor: '#158843'
-    }).then((result) => {
-        if (result.isConfirmed && action === 'View') {
-            // Redirect to the show page for this invoice
-            window.location.href = `superAdmin/invoice/${invoiceId}`;
-        }
-    });
-}
 
     // Confirm deletion with SweetAlert
     function confirmDelete(id, invoiceNumber) {
@@ -135,24 +129,6 @@
             }
         });
     }
-
-    function confirmEdit(id, invoiceNumber) {
-    Swal.fire({
-        title: `Edit Invoice ${invoiceNumber}`,
-        text: "Are you sure you want to edit this invoice?",
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#158843',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, edit it!',
-        cancelButtonText: 'Cancel'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Redirect to the edit page
-            window.location.href = `superAdmin/invoice/${id}/edit`;
-        }
-    });
-}
 
     // Alert for Create action
     document.getElementById('create-button').addEventListener('click', function () {

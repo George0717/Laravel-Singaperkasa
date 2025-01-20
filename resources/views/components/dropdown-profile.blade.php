@@ -29,15 +29,12 @@
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
         x-cloak                    
-    >
+    >  
         <div class="pt-0.5 pb-2 px-3 mb-1 border-b border-gray-200">
             <div class="font-medium text-gray-800">{{ Auth::user()->name }}</div>
-            <div class="text-xs text-gray-500 italic">Administrator</div>
+            <div class="text-xs text-gray-500 italic">{{ ucfirst(Auth::user()->role) }}</div>
         </div>
         <ul>
-            <li>
-                <a class="font-medium text-sm text-violet-500 hover:text-violet-600 flex items-center py-1 px-3" href="{{ route('profile.show') }}" @click="open = false" @focus="open = true" @focusout="open = false">Settings</a>
-            </li>
             <li>
                 <form method="POST" action="{{ route('logout') }}" x-data>
                     @csrf

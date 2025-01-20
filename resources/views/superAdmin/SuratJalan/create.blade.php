@@ -89,7 +89,6 @@
                             <div class="bg-white shadow-lg rounded-lg p-6 border border-gray-200 mb-4 transform transition-transform duration-500 animate-slide-in-left">
                                 <h2 class="text-xl font-semibold mb-2">Detail Surat Jalan</h2>
                                 <p class="text-gray-700"><strong>Nama Pelanggan:</strong> ${data.sales_order.customer_name}</p>
-                                <p class="text-gray-700"><strong>Alamat Pelanggan:</strong> ${data.sales_order.customer_address}</p>
                                 <p class="text-gray-700"><strong>Dikirim Oleh:</strong> PT. Singa Perkasa Abadi</p>
                             </div>
                         `;
@@ -100,7 +99,7 @@
                                 <div class="bg-white shadow-lg rounded-lg p-6 border border-gray-200 mb-4 transform transition-transform duration-500 animate-slide-in-left">
                                     <h2 class="text-lg font-semibold mb-2">${detail.item_name}</h2>
                                     <p class="text-gray-700">Jumlah: <input type="number" name="items[${detail.id}][quantity]" value="1" min="0" max="${detail.quantity}" class="form-input w-full" /></p>
-                                    <input type="hidden" name="items[${detail.id}][id]" value="${detail.id}" />
+                                    <input type="hidden" name="items[${detail.id}][sales_order_details_id]" value="${detail.id}" />
                                     <p class="text-gray-700">Total: Rp ${parseFloat(detail.quantity * detail.price).toLocaleString()}</p>
                                 </div>
                             `;

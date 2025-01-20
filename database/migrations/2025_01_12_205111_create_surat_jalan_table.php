@@ -23,9 +23,9 @@ return new class extends Migration
 
         Schema::create('surat_jalan_details', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('sales_order_id');
-            $table->foreign('sales_order_id')->references('id')->on('sales_orders');
-            $table->foreignId('sales_order_detail_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('surat_jalan_id');
+            $table->foreign('surat_jalan_id')->references('id')->on('surat_jalans')->onDelete('cascade');
+            $table->foreignId('sales_order_details_id')->constrained()->onDelete('cascade');
             $table->integer('quantity');
             $table->timestamps();
         });

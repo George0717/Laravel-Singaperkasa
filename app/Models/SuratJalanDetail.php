@@ -17,7 +17,7 @@ class SuratJalanDetail extends Model
 
     public function suratJalan()
     {
-        return $this->belongsTo(SuratJalan::class);
+        return $this->belongsTo(SuratJalan::class, 'surat_jalan_id');
     }
 
     public function salesOrderDetail()
@@ -33,4 +33,6 @@ class SuratJalanDetail extends Model
     {
         return $this->hasMany(Shipment::class, 'sales_order_id');
     }
+
+    
 }

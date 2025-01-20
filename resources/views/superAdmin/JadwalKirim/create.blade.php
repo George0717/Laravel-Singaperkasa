@@ -102,8 +102,6 @@
                                 <div class="bg-white shadow-lg rounded-lg p-6 border border-gray-200 mb-4 transform transition-transform duration-500 animate-slide-in-left">
                                     <h2 class="text-xl font-semibold mb-2">Detail Sales Order</h2>
                                     <p class="text-gray-700"><strong>Nama Pelanggan:</strong> ${data.sales_order.customer_name}</p>
-                                    <p class="text-gray-700"><strong>Alamat Pelanggan:</strong> ${data.sales_order.customer_address}</p>
-                                    <p class="text-gray-700"><strong>Nomor PO:</strong> ${data.sales_order.po_number}</p>
                                     <p class="text-gray-700"><strong>Nomor SO:</strong> ${data.sales_order.so_number}</p>
                                     <p class="text-gray-700"><strong>Diskon:</strong> ${parseFloat(data.sales_order.discount).toLocaleString()} ${data.sales_order.discount_type}</p>
                                     <p class="text-gray-700"><strong>DP:</strong> Rp ${parseFloat(data.sales_order.down_payment).toLocaleString()}</p>

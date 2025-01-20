@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\DueDateReminder;
+use App\Mail\SendEmail;
 use App\Models\JadwalKirim;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderDetail;
@@ -12,7 +14,8 @@ use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-
+use Illuminate\Support\Facades\Mail;
+use Symfony\Component\Mailer\Messenger\SendEmailMessage;
 
 class SuperAdminSalesOrderController extends Controller
 {
@@ -110,8 +113,6 @@ class SuperAdminSalesOrderController extends Controller
     {
         // dd($request);
 
-
-
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
             'po_photo' => 'nullable|image',
@@ -165,9 +166,6 @@ class SuperAdminSalesOrderController extends Controller
             $soNumber = sprintf('%02d/%s/%s/%s', $newNumber, strtoupper($companyName), $romanMonth, $currentYear);
         }
 
-
-
-
         $items = $request->input('items');
         // $firstitems = head($items);
         // $stockBarangId = $firstitems['stock_barang_id'];
@@ -194,6 +192,7 @@ class SuperAdminSalesOrderController extends Controller
             $salesOrder->discount_type = $validated['discount_type'];
             $salesOrder->vat = $validated['vat'];
             $salesOrder->down_payment = $validated['down_payment'];
+            $salesOrder->grand_total = $validated['grand_total'];
             $salesOrder->payment_type = $validated['payment_type'];
             $salesOrder->due_date = $validated['due_date'];
             $salesOrder->stock_barang_id = $stockBarangId;
@@ -212,8 +211,10 @@ class SuperAdminSalesOrderController extends Controller
             ]);
 
 
-
-
+            // if (Carbon::now()->greaterThanOrEqualTo(Carbon::parse($salesOrder->due_date))) {
+            //     Mail::to('radengeorge@mhs.mdp.ac.id')->send(new SendEmail($salesOrder));
+            // }
+            $this->logActivity('created', SalesOrder::class, $salesOrder->id, 'Sales Order created.');
             return redirect()->route('superAdmin.SalesOrders.index')->with('success', 'Sales Order created successfully.');
         }
     }
@@ -238,6 +239,7 @@ class SuperAdminSalesOrderController extends Controller
     public function edit($id)
     {
         $salesOrder = SalesOrder::findOrFail($id);
+        $stockBarangs = StockBarang::all();
 
         // Mendefinisikan item options, ini bisa diambil dari database atau sumber lain
         $itemOptions = [
@@ -249,121 +251,124 @@ class SuperAdminSalesOrderController extends Controller
         return view('superAdmin.SalesOrder.edit', [
             'salesOrder' => $salesOrder,
             'itemOptions' => $itemOptions, // Pastikan itemOptions diteruskan ke view
-        ]);
+        ], compact('stockBarangs'));
     }
 
 
-    public function update(Request $request, SalesOrder $salesOrder)
+    public function update(Request $request, $id)
     {
-        Log::info($request->all()); // Log request data for debugging
+        $validated = $request->validate([
+            'customer_name' => 'required|string|max:255',
+            'po_photo' => 'nullable|image',
+            'so_number' => 'nullable|string|max:255',
+            'discount' => 'nullable|numeric',
+            'discount_type' => 'required|string',
+            'payment_type' => 'required|string',
+            'down_payment' => 'nullable|numeric',
+            'vat' => 'nullable|numeric',
+            'grand_total' => 'required|numeric',
+            'payment_schedule_type' => 'nullable|string',
+            'due_date' => 'required|date',
+            'items' => 'required|array',
+            'items.*.stock_barang_id' => 'required|exists:stock_barang,id',
+            'items.*.jumlah_barang' => 'required|integer|min:1',
+            'items.*.price' => 'required|numeric|min:0',
+            'items.*.total' => 'required|numeric|min:0',
+            'items.*.per' => 'required|string',
+        ]);
 
-        try {
-            $validated = $request->validate([
-                'customer_name' => 'required|string|max:255',
-                'customer_address' => 'required|string',
-                'po_date' => 'required|date',
-                'po_number' => 'required|string|max:50',
-                'discount' => 'nullable|numeric',
-                'discount_type' => 'nullable|string|in:percent,currency',
-                'vat' => 'nullable|numeric',
-                'down_payment' => 'nullable|numeric',
-                'payment_type' => 'required|string',
-                'item_name.*' => 'required|string',
-                'item_qty.*' => 'required|numeric',
-                'item_price.*' => 'required|numeric',
-                'po_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif',
-            ]);
+        $salesOrder = SalesOrder::findOrFail($id);
+        $oldData = $salesOrder->toArray();
 
-            // Update the existing SalesOrder instance
-            $salesOrder->update([
-                'customer_name' => $validated['customer_name'],
-                'customer_address' => $validated['customer_address'],
-                'po_date' => $validated['po_date'],
-                'po_number' => $validated['po_number'],
-                'discount' => $validated['discount'],
-                'discount_type' => $validated['discount_type'],
-                'vat' => $validated['vat'],
-                'down_payment' => $validated['down_payment'],
-                'payment_type' => $validated['payment_type'],
-            ]);
+        // Update Sales Order fields
+        $salesOrder->customer_name = $validated['customer_name'];
+        $salesOrder->discount = $validated['discount'];
+        $salesOrder->discount_type = $validated['discount_type'];
+        $salesOrder->vat = $validated['vat'];
+        $salesOrder->down_payment = $validated['down_payment'];
+        $salesOrder->payment_type = $validated['payment_type'];
+        $salesOrder->due_date = $validated['due_date'];
 
-            Log::create([
-                'jenis' => 'Edit Data',
-                'deskripsi' => 'Sales Order baru dibuat dengan ID: ' . $salesOrder->id,
-                'user_id' => auth()->id(),
-            ]);
-            $notifications = [
-                [
-                    'title' => 'Pembuatan Sales Order',
-                    'message' => 'Sales Order baru telah dibuat dengan ID: ' . $salesOrder->id,
-                    'date' => now()->format('d M Y H:i'),
-                ]
-            ];
-
-            // Handle file upload for PO photo if provided
-            if ($request->hasFile('po_photo')) {
-                $path = $request->file('po_photo')->store('po_photos', 'public');
-                $salesOrder->po_photo = $path;
-            }
-
-            // Calculate subtotal, discount, VAT, and grand total
-            $subTotal = 0;
-            foreach ($request->item_qty as $index => $qty) {
-                $subTotal += $qty * $request->item_price[$index];
-            }
-
-            $discountAmount = $validated['discount_type'] == 'percent'
-                ? ($subTotal * $validated['discount']) / 100
-                : $validated['discount'];
-
-            $vatAmount = ($subTotal * $validated['vat']) / 100;
-            $grandTotal = ($subTotal + $vatAmount) - $discountAmount - $validated['down_payment'];
-
-            // Update the calculated grand total in the SalesOrder object
-            $salesOrder->grand_total = $grandTotal;
-            $salesOrder->save();
-
-            // Update associated SalesOrderDetail records
-            $salesOrder->details()->delete(); // Optionally delete all existing details first
-
-            foreach ($validated['item_name'] as $index => $itemName) {
-                $itemDetail = new SalesOrderDetail();
-                $itemDetail->sales_order_id = $salesOrder->id;
-                $itemDetail->item_name = $itemName;
-                $itemDetail->quantity = $validated['item_qty'][$index];
-                $itemDetail->price = $validated['item_price'][$index];
-                $itemDetail->save();
-            }
-
-            return redirect()->route('superAdmin.SalesOrders.index')->with('success', 'Sales Order updated successfully.')->compact('notifications');
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            return back()->with('error', 'There was an error updating the Sales Order. Please try again.');
+        if ($request->hasFile('po_photo')) {
+            $poPhoto = $request->file('po_photo')->store('po_photos', 'public');
+            $salesOrder->po_photo = $poPhoto;
         }
+
+        $salesOrder->save();
+
+        // Handle items (details)
+        $newItems = collect($validated['items']);
+        $existingItems = $salesOrder->details->keyBy('stock_barang_id');
+        $salesOrder->details()->delete();
+
+
+        // Update or create items
+        foreach ($newItems as $item) {
+            $stockBarang = StockBarang::find($item['stock_barang_id']);
+
+            if (!$stockBarang || $stockBarang->jumlah_barang < $item['jumlah_barang']) {
+                throw new \Exception("Stock for {$stockBarang->nama_barang} is insufficient.");
+            }
+
+            if ($existingItems->has($item['stock_barang_id'])) {
+                // Update existing item
+                $detail = $existingItems[$item['stock_barang_id']];
+                $detail->update([
+                    'quantity' => $item['jumlah_barang'],
+                    'price' => $item['price'],
+                    'per' => $item['per'],
+                    'total' => $item['jumlah_barang'] * $item['price'],
+                ]);
+            } else {
+                // Create new item
+                SalesOrderDetail::create([
+                    'sales_order_id' => $salesOrder->id,
+                    'stock_barang_id' => $item['stock_barang_id'],
+                    'item_name' => $stockBarang->nama_barang,
+                    'quantity' => $item['jumlah_barang'],
+                    'price' => $item['price'],
+                    'per' => $item['per'],
+                    'total' => $item['jumlah_barang'] * $item['price'],
+                ]);
+
+                // Deduct stock for new items
+                $stockBarang->decrement('jumlah_barang', $item['jumlah_barang']);
+            }
+        }
+
+        // Delete removed items
+        $removedItems = $existingItems->keys()->diff($newItems->pluck('stock_barang_id'));
+        foreach ($removedItems as $removedItemId) {
+            $detail = $existingItems[$removedItemId];
+            StockBarang::find($removedItemId)->increment('jumlah_barang', $detail->quantity);
+            $detail->delete();
+        }
+
+        // Log changes
+        $this->logActivity('updated', SalesOrder::class, $salesOrder->id, 'Sales Order updated.', $oldData, $salesOrder->toArray());
+
+        return redirect()->route('superAdmin.SalesOrders.index')->with('success', 'Sales Order updated successfully.');
     }
-
-
-
 
 
 
     public function destroy(SalesOrder $salesOrder)
     {
         // Temukan pesanan berdasarkan ID
-      DB::transaction(function () use ($salesOrder){
-        foreach ($salesOrder->details as $detail) {
-            $stockBarang = StockBarang::find($detail->stock_barang_id);
-            $stockBarang->jumlah_barang += $detail->jumlah_barang; // Tambahkan jumlah barang ke stok
-            $stockBarang->save();
-        }
+        DB::transaction(function () use ($salesOrder) {
+            foreach ($salesOrder->details as $detail) {
+                $stockBarang = StockBarang::find($detail->stock_barang_id);
+                $stockBarang->jumlah_barang += $detail->jumlah_barang; // Tambahkan jumlah barang ke stok
+                $stockBarang->save();
+            }
 
-        // Hapus pesanan
-        $salesOrder->delete();
-
-      });
+            // Hapus pesanan
+            $this->logActivity('deleted', SalesOrder::class, $salesOrder->id, 'Sales Order deleted.');
+            $salesOrder->delete();
+        });
 
         // Kembalikan stok barang terkait
-       
+
         return redirect()->route('superAdmin.SalesOrders.index')
             ->with('success', 'Pesanan berhasil dihapus, dan stok barang dikembalikan.');
     }
@@ -380,5 +385,34 @@ class SuperAdminSalesOrderController extends Controller
         // Membuat file PDF dan mendownloadnya
         $pdf = FacadePdf::loadView('superAdmin.SalesOrder.pdf', compact('salesOrder'));
         return $pdf->download($fileName);
+    }
+
+    protected function logActivity($action, $modelType, $modelId, $description = null)
+    {
+        \App\Models\ActivityLog::create([
+            'action' => $action,
+            'model_type' => $modelType,
+            'model_id' => $modelId,
+            'user_id' => auth()->id(),
+            'description' => $details['description'] ?? null,
+            'old_data' => json_encode($details['old_data'] ?? null),
+            'new_data' => json_encode($details['new_data'] ?? null),
+        ]);
+    }
+
+    public function restore($id)
+    {
+        $salesOrder = SalesOrder::withTrashed()->findOrFail($id);
+        $salesOrder->restore();
+
+        // Restore details
+        foreach ($salesOrder->details()->withTrashed()->get() as $detail) {
+            $detail->restore();
+        }
+
+        $this->logActivity('restored', SalesOrder::class, $salesOrder->id, 'Sales Order restored.');
+
+        return redirect()->route('superAdmin.SalesOrders.index')
+            ->with('success', 'Sales Order restored successfully.');
     }
 }
