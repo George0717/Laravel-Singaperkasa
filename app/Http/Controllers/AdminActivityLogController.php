@@ -8,7 +8,7 @@ use Spatie\Activitylog\Models\Activity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class ActivityLogController extends Controller
+class AdminActivityLogController extends Controller
 {
     public function index()
     {
@@ -29,13 +29,15 @@ class ActivityLogController extends Controller
                 ];
             });
 
-        return view('superAdmin.riwayat.index', compact('logs', 'notifications'));
+        return view('admin.riwayat.index', compact('logs', 'notifications'));
     }
 
 
     public function show($id)
     {
         $log = ActivityLog::findOrFail($id);
+
+        // Debugging: cek apakah data ada dalam kolom 'changes'
 
         // Ambil model berdasarkan model_type dan model_id
         $modelClass = $log->model_type;
@@ -93,14 +95,18 @@ class ActivityLogController extends Controller
             fn($key) => in_array($key, $allowedColumns[$log->model_type] ?? []),
             ARRAY_FILTER_USE_KEY
         ) : null;
+        $changes = [
+            'old' => $model->getOriginal(),
+            'new' => $model->getAttributes(),
+        ];        // Return ke view dengan data yang difilter
 
-        // Return ke view dengan data yang difilter
-        return view('superAdmin.riwayat.show', [
+        return view('admin.riwayat.show', [
             'log' => $log,
             'model' => $model,
             'dataLama' => $filteredDataLama,
             'dataBaru' => $filteredDataBaru,
             'action' => $log->action,
+            'changes' => $changes,
         ]);
     }
 
@@ -109,6 +115,7 @@ class ActivityLogController extends Controller
     {
         $log = ActivityLog::findOrFail($id);
 
+        // Periksa apakah action adalah 'deleted'
         if ($log->action === 'deleted') {
             $modelClass = $log->model_type;
 
@@ -116,11 +123,21 @@ class ActivityLogController extends Controller
                 $model = $modelClass::withTrashed()->find($log->model_id);
 
                 if ($model && $model->trashed()) {
+                    // Cek apakah model sudah dipulihkan sebelumnya
+                    if ($model->restored_at) {
+                        return redirect()->route('admin.riwayat.index')->with('error', 'Data sudah dipulihkan sebelumnya.');
+                    }
+
                     $model->restore(); // Mengembalikan data yang dihapus
-                    return redirect()->route('superAdmin.riwayat.index')->with('success', 'Data berhasil dikembalikan.');
+                    $model->restored_at = now(); // Tandai waktu pemulihan
+                    $model->save(); // Simpan waktu pemulihan
+                    return redirect()->route('admin.riwayat.index')->with('success', 'Data berhasil dikembalikan.');
                 }
             }
-        } elseif ($log->action === 'updated') {
+        }
+
+        // Logika untuk 'updated' action
+        elseif ($log->action === 'updated') {
             $modelClass = $log->model_type;
 
             if (class_exists($modelClass)) {
@@ -133,12 +150,12 @@ class ActivityLogController extends Controller
                         ->where('id', $model->id)
                         ->update($oldData);
 
-                    return redirect()->route('superAdmin.riwayat.index')->with('success', 'Data berhasil dikembalikan ke versi lama.');
+                    return redirect()->route('admin.riwayat.index')->with('success', 'Data berhasil dikembalikan ke versi lama.');
                 }
             }
         }
 
-        return redirect()->route('superAdmin.riwayat.index')->with('error', 'Restore data gagal.');
+        return redirect()->route('admin.riwayat.index')->with('error', 'Restore data gagal.');
     }
 
 

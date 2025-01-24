@@ -37,6 +37,10 @@ class AuthenticatedSessionController extends Controller
        else if (Auth::user()->role === 'admin') {
             return redirect()->route('admin.SalesOrders.dashboard');
         }
+        else 
+        {
+            return redirect()->route('SalesOrders.dashboard');
+        }
        
 
         // Jika bukan super-admin, arahkan ke halaman default yang ditentukan

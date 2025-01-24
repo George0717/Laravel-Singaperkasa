@@ -28,7 +28,7 @@
                             <td class="py-3 px-6">
                                 @if ($user->role !== 'super-admin')
                                     <!-- Edit Button for non-super-admin users -->
-                                    <a href="{{ route('superAdmin.users.edit', $user->id) }}" class="text-yellow-500 hover:text-yellow-600 mr-3 transition duration-300" onclick="konfirmasiEdit(event, {{ $user->id }})">Edit</a>
+                                    <a href="{{ route('superAdmin.users.edit', $user) }}" class="text-yellow-500 hover:text-yellow-600 mr-3 transition duration-300" onclick="konfirmasiEdit(event, {{ $user->id }})">Edit</a>
                                     
                                     <!-- Delete Button for non-super-admin users -->
                                     <form id="form-hapus-{{ $user->id }}" action="{{ route('superAdmin.users.destroy', $user->id) }}" method="POST" style="display: inline;">
@@ -72,23 +72,6 @@
             }
 
             // SweetAlert for edit confirmation
-            function konfirmasiEdit(event, userId) {
-                event.preventDefault();
-                Swal.fire({
-                    title: 'Apakah Anda yakin?',
-                    text: "Apakah Anda ingin mengedit pengguna ini?",
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Ya, lanjutkan!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = "{{ url('superAdmin/users') }}/" + userId + "/edit";
-                    }
-                });
-            }
 
             // SweetAlert for delete confirmation
             function konfirmasiHapus(userId) {

@@ -21,6 +21,15 @@
             <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
             @enderror
         </div>
+        <div class="mb-4">
+            <label for="nama_sales" class="block text-sm font-medium text-gray-700">Nama Sales</label>
+            <input type="text" id="nama_sales" name="nama_sales" value="{{ old('nama_sales') }}"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
+                required>
+            @error('nama_sales')
+            <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
 
         <!-- File Upload -->
         <div class="mb-4">
@@ -90,7 +99,6 @@
                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                 <option value="">Select Payment Type</option>
                 <option value="Cash">Cash</option>
-                <option value="Credit">Credit</option>
             </select>
         </div>
 

@@ -28,7 +28,7 @@
                 <!-- Search Button with Modal -->
 
                 <!-- Notifications button -->
-                <x-dropdown-notifications  align="right" />
+                <x-dropdown-notifications  align="right"  :notifications="$notifications"/>
 
                 <!-- Info button -->
 

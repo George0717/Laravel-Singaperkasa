@@ -180,7 +180,7 @@
             x-ref="contentarea">
 
             <!-- Header component -->
-            <x-app.header :variant="$attributes['headerVariant'] ?? 'default'" />
+            <x-app.header :variant="$attributes['headerVariant'] ?? 'default'" :notifications="$notifications" />
 
             <div class="container mx-auto px-4 py-6">
                 @yield('content')

@@ -15,7 +15,7 @@ class LoginController extends Controller
         return redirect()->route('admin.SalesOrders.dashboard');
     }
     else {
-        return redirect()->route('dashboard'); // Redirect to default dashboard for other roles
+        return redirect()->route('SalesOrders.dashboard'); // Redirect to default dashboard for other roles
     }
 
     // Default redirect for other users

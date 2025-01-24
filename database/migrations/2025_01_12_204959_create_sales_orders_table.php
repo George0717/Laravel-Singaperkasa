@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('stock_barang_id');
             $table->foreign('stock_barang_id')->references('id')->on('stock_barang');
             $table->string('customer_name');
+            $table->string('nama_sales');
             $table->string('po_photo')->nullable();
             $table->string('so_number')->nullable();
             $table->decimal('discount', 15, 2)->default(0);

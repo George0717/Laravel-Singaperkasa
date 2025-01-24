@@ -33,7 +33,7 @@ class UserManagementController extends Controller
     /**
      * Menyimpan pengguna baru ke dalam database.
      */
-    public function store(Request $request)
+    public function store(Request $request, User $user)
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -48,7 +48,6 @@ class UserManagementController extends Controller
             'password' => Hash::make($request->password),
             'role' => $request->role,
         ]);
-
         return redirect()->route('superAdmin.users.index')->with('success', 'User created successfully!');
     }
 
@@ -98,4 +97,6 @@ class UserManagementController extends Controller
         // Redirect ke daftar pengguna dengan pesan sukses
         return redirect()->route('superAdmin.users.index')->with('success', 'User deleted successfully!');
     }
+
+    
 }

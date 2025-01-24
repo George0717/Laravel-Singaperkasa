@@ -11,6 +11,10 @@
                     <p class="text-gray-800">{{ $salesOrder->customer_name }}</p>
                 </div>
                 <div class="text-sm">
+                    <span class="font-semibold text-gray-600">Nama Sales:</span>
+                    <p class="text-gray-800">{{ $salesOrder->nama_sales }}</p>
+                </div>
+                <div class="text-sm">
                     <span class="font-semibold text-gray-600">Jatuh Tempo:</span>
                     <p class="text-gray-800">{{ $salesOrder->due_date->translatedFormat('j F Y') }}</p>
                 </div>

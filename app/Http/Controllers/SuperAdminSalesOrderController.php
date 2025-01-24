@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\DueDateReminder;
-use App\Mail\SendEmail;
 use App\Models\JadwalKirim;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderDetail;
@@ -13,9 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Symfony\Component\Mailer\Messenger\SendEmailMessage;
 
 class SuperAdminSalesOrderController extends Controller
 {
@@ -25,8 +20,6 @@ class SuperAdminSalesOrderController extends Controller
 
         return view('superAdmin.SalesOrder.index', compact('salesOrders'));
     }
-
-
 
     public function dashboard(Request $request)
     {
@@ -115,6 +108,7 @@ class SuperAdminSalesOrderController extends Controller
 
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
+            'nama_sales' => 'nullable|string|max:255',
             'po_photo' => 'nullable|image',
             'so_number' => 'nullable|string|max:255',
             'discount' => 'nullable|numeric',
@@ -132,7 +126,6 @@ class SuperAdminSalesOrderController extends Controller
             'items.*.total' => 'required|numeric|min:0',
             'items.*.per' => 'required|string',
         ]);
-
 
         $romanMonths = [
             1 => 'I',
@@ -187,6 +180,7 @@ class SuperAdminSalesOrderController extends Controller
 
             $salesOrder = new SalesOrder();
             $salesOrder->customer_name = $validated['customer_name'];
+            $salesOrder->nama_sales = $validated['nama_sales'];
             $salesOrder->so_number = $soNumber;
             $salesOrder->discount = $validated['discount'];
             $salesOrder->discount_type = $validated['discount_type'];
@@ -214,7 +208,7 @@ class SuperAdminSalesOrderController extends Controller
             // if (Carbon::now()->greaterThanOrEqualTo(Carbon::parse($salesOrder->due_date))) {
             //     Mail::to('radengeorge@mhs.mdp.ac.id')->send(new SendEmail($salesOrder));
             // }
-            $this->logActivity('created', SalesOrder::class, $salesOrder->id, 'Sales Order created.');
+            $this->logActivity('created',SalesOrder::class, $salesOrder->id, "Berhasil membuat Sales Order dengan nomor {$salesOrder->so_number}.",null, $salesOrder->toArray());
             return redirect()->route('superAdmin.SalesOrders.index')->with('success', 'Sales Order created successfully.');
         }
     }
@@ -400,19 +394,4 @@ class SuperAdminSalesOrderController extends Controller
         ]);
     }
 
-    public function restore($id)
-    {
-        $salesOrder = SalesOrder::withTrashed()->findOrFail($id);
-        $salesOrder->restore();
-
-        // Restore details
-        foreach ($salesOrder->details()->withTrashed()->get() as $detail) {
-            $detail->restore();
-        }
-
-        $this->logActivity('restored', SalesOrder::class, $salesOrder->id, 'Sales Order restored.');
-
-        return redirect()->route('superAdmin.SalesOrders.index')
-            ->with('success', 'Sales Order restored successfully.');
-    }
 }

@@ -31,6 +31,8 @@ class SalesOrder extends Model
         'stock_barang_id',
     ];
 
+
+    
     // Daftar atribut yang harus di-cast ke tipe data tertentu
     protected $casts = [
         'due_date' => 'date',
@@ -41,9 +43,26 @@ class SalesOrder extends Model
     ];
 
     // Relasi: SalesOrder memiliki banyak SalesOrderDetail
+
+
+
+    // Kolom yang ingin ditampilkan di tampilan show
+    public static $showableColumns = [
+        'customer_name',
+        'nama_sales',
+        'so_number',
+        'discount',
+        'discount_type',
+        'payment_type',
+        'grand_total',
+        'deleted_at',
+    ];
+
+
+
     public function details()
     {
-        return $this->hasMany(SalesOrderDetail::class, 'sales_order_id');
+        return $this->hasMany(SalesOrderDetail::class, 'sales_order_id', 'id');
     }
 
     // Relasi: SalesOrder dimiliki oleh User

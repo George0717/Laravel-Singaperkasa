@@ -27,7 +27,7 @@ class UserController extends Controller
         return view('users.create');
     }
 
-    public function store(Request $request)
+    public function store(Request $request, User $user)
     {
         $request->validate([
             'name' => 'required',
@@ -41,6 +41,7 @@ class UserController extends Controller
             'password' => bcrypt($request->password),
             'role' => $request->role,
         ]);
+        $this->logActivity('Created', User::class, $user->id, 'User Dibuat.');
 
         return redirect()->route('users.index');
     }
@@ -75,6 +76,36 @@ class UserController extends Controller
         }
 
         $user->delete();
+        $this->logActivity('Deleted', User::class, $user->id, 'User Dihapus.', $user->toArray());
         return redirect()->route('users.index');
+    }
+
+    protected function logActivity($action, $modelType, $modelId, $description = null)
+    {
+        \App\Models\ActivityLog::create([
+            'action' => $action,
+            'model_type' => $modelType,
+            'model_id' => $modelId,
+            'user_id' => auth()->id(),
+            'description' => $details['description'] ?? null,
+            'old_data' => json_encode($details['old_data'] ?? null),
+            'new_data' => json_encode($details['new_data'] ?? null),
+        ]);
+    }
+
+    public function restore($id)
+    {
+        $user = User::withTrashed()->findOrFail($id);
+        $user->restore();
+
+        // Restore details
+        foreach ($user->details()->withTrashed()->get() as $detail) {
+            $detail->restore();
+        }
+
+        $this->logActivity('restored', User::class, $user->id, 'Sales Order restored.');
+
+        return redirect()->route('superAdmin.SalesOrders.index')
+            ->with('success', 'Sales Order restored successfully.');
     }
 }

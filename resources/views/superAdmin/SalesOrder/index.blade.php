@@ -38,7 +38,7 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $order->so_number }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center"
                     data-date="{{ \Carbon\Carbon::parse($order->created_at)->format('Y-m-d') }}">
-                    {{ \Carbon\Carbon::parse($order->created_at)->translatedFormat('d F Y H:i') }}
+                    {{ \Carbon\Carbon::parse($order->created_at)->setTimezone('Asia/Jakarta')->translatedFormat('d F Y H:i') }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <!-- Dropdown button -->

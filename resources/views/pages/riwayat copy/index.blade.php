@@ -1,5 +1,5 @@
-@extends('layouts.superAdmin')
-@section('title', 'Riwayat')
+@extends('layouts.app')
+
 @section('content')
 <div class="container mx-auto p-6">
     <h1 class="text-2xl font-bold mb-4">Log Aktivitas</h1>
@@ -20,7 +20,7 @@
                     <td class="px-4 py-2">{{ $index + 1 }}</td>
                     <td class="px-4 py-2">{{ $log->action }}</td>
                     <td class="px-4 py-2">{{ $log->user->name ?? 'Sistem' }}</td>
-                    <td class="px-4 py-2">{{ \Carbon\Carbon::parse($log->created_at)->setTimezone('Asia/Jakarta')->translatedFormat('d F Y H:i') }}</td>
+                    <td class="px-4 py-2">{{ $log->created_at->format('d M Y H:i') }}</td>
                     <td class="px-4 py-2">
                         <a href="{{ route('superAdmin.riwayat.show', $log->id) }}" class="text-blue-500 hover:underline">Lihat Detail</a>
                     </td>

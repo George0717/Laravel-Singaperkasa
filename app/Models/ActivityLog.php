@@ -14,7 +14,12 @@ class ActivityLog extends Model
         'model_type',
         'model_id',
         'user_id',
-        'description'
+        'description',
+        'changes'
+    ];
+
+    protected $casts = [
+        'changes' => 'array', // Kolom 'changes' akan secara otomatis menjadi array
     ];
 
     public function user()

@@ -3,7 +3,7 @@
 @section('content')
 <div class="container mx-auto px-4">
     <h1 class="text-2xl font-semibold mb-4">Pesanan Penjualan</h1>
-    <a href="{{ route('salesOrders.create') }}" class="btn btn-primary mb-4" onclick="confirmCreate(event)">Buat Pesanan
+    <a href="{{ route('salesOrders.create') }}" class="btn btn-primary mb-4">Buat Pesanan
         Penjualan Baru</a>
 
     <!-- Search Inputs -->
@@ -21,26 +21,24 @@
                     Pelanggan</th>
                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor SO
                 </th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor PO
+
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu
+                    Pemesanan
                 </th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Grand Total
-                </th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal PO
-                </th>
+
                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
             </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200" id="sales-orders-table">
+            {{-- @dd($salesOrders); --}}
             @foreach ($salesOrders as $order)
             <tr>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center"
                     data-name="{{ $order->customer_name }}">{{ $order->customer_name }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $order->so_number }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $order->po_number }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ 'Rp ' .
-                    number_format($order->grand_total, 0, ',', '.') }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center"
-                    data-date="{{ $order->po_date->format('Y-m-d') }}">{{ $order->po_date->translatedFormat('j F Y') }}
+                    data-date="{{ \Carbon\Carbon::parse($order->created_at)->format('Y-m-d') }}">
+                    {{ \Carbon\Carbon::parse($order->created_at)->setTimezone('Asia/Jakarta')->translatedFormat('d F Y H:i') }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <!-- Dropdown button -->
@@ -50,12 +48,13 @@
                             Aksi
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="actionsDropdown">
-                            <li><a class="dropdown-item" href="{{ route('salesOrders.show', $order) }}">Lihat</a></li>
-                            <li><a class="dropdown-item" href="{{ route('salesOrders.edit', $order) }}"
-                                    onclick="confirmEdit(event, {{ $order->id }})">Edit</a></li>
+                            <li><a class="dropdown-item"
+                                    href="{{ route('salesOrders.show', $order) }}">Lihat</a></li>
+                            <li><a class="dropdown-item"
+                                    href="{{ route('salesOrders.edit', $order) }}">Edit</a></li>
                             <li>
-                                <form action="{{ route('salesOrders.destroy', $order) }}" method="POST" class="d-inline"
-                                    id="delete-form-{{ $order->id }}">
+                                <form action="{{ route('salesOrders.destroy', $order) }}" method="POST"
+                                    class="d-inline" id="delete-form-{{ $order->id }}">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="dropdown-item text-danger"
@@ -77,89 +76,66 @@
 
 <script>
     $(document).ready(function() {
-        $('#search-name, #search-date').on('keyup', function() {
-            var nameQuery = $('#search-name').val().toLowerCase();
-            var dateQuery = $('#search-date').val().toLowerCase();
-
-            $('#sales-orders-table tr').each(function() {
-                var name = $(this).find('td[data-name]').text().toLowerCase();
-                var date = $(this).find('td[data-date]').text().toLowerCase();
-
-                var nameMatch = name.indexOf(nameQuery) > -1;
-                var dateMatch = date.indexOf(dateQuery) > -1;
-
-                $(this).toggle(nameMatch && dateMatch);
-            });
-        });
-    });
-
-    $(document).ready(function() {
     function filterSalesOrders() {
         var nameQuery = $('#search-name').val().toLowerCase();
-        var dateQuery = $('#search-date').val(); // Directly use the date format
+        var dateQuery = $('#search-date').val(); // Ambil tanggal dari input
 
         $('#sales-orders-table tr').each(function() {
             var name = $(this).find('td[data-name]').text().toLowerCase();
-            var date = $(this).find('td[data-date]').attr('data-date'); // Get the actual date attribute
+            var date = $(this).find('td[data-date]').attr('data-date'); // Ambil nilai data-date yang sudah diformat
 
             var nameMatch = name.indexOf(nameQuery) > -1;
-            var dateMatch = date === dateQuery; // Exact match for date
+            var dateMatch = true;
 
+            // Jika ada input tanggal, lakukan perbandingan dengan data tanggal
+            if (dateQuery) {
+                dateMatch = (date === dateQuery); // Bandingkan tanggal yang dipilih dengan data-date
+            }
+
+            // Tampilkan atau sembunyikan baris berdasarkan kecocokan nama dan tanggal
             $(this).toggle(nameMatch && dateMatch);
         });
     }
 
-    $('#filter-button').on('click', function() {
+    // Event pencarian berdasarkan nama dan tanggal
+    $('#search-name, #search-date').on('keyup change', function() {
         filterSalesOrders();
     });
 
+    // Reset pencarian
     $('#reset-button').on('click', function() {
         $('#search-name').val('');
         $('#search-date').val('');
         $('#sales-orders-table tr').show();
     });
-
-    $('#search-name, #search-date').on('keyup change', function() {
-        filterSalesOrders();
-    });
 });
 
+$('.mark-complete-btn').on('click', function() {
+            var orderId = $(this).data('order-id');
+            Swal.fire({
+                title: 'Konfirmasi Selesai',
+                text: "Apakah Anda yakin ingin menandai pesanan ini sebagai selesai?",
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Selesai',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#action-buttons-' + orderId + ' .edit-btn, #delete-form-' + orderId + ' button').prop('disabled', true);
+                    $('#action-buttons-' + orderId + ' .edit-btn, #delete-form-' + orderId + ' button').addClass('disabled');
+                    $(this).prop('disabled', true).text('Selesai');
 
-    function confirmCreate(event) {
-        event.preventDefault();
-        Swal.fire({
-            title: 'Apakah Anda Yakin?',
-            text: "Apakah Anda ingin membuat pesanan penjualan baru?",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, lanjutkan!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = "{{ route('salesOrders.create') }}";
-            }
+                    Swal.fire(
+                        'Berhasil!',
+                        'Pesanan telah ditandai sebagai selesai.',
+                        'success'
+                    );
+                }
+            });
         });
-    }
 
-    function confirmEdit(event, salesOrderId) {
-        event.preventDefault();
-        Swal.fire({
-            title: 'Apakah Anda Yakin?',
-            text: "Apakah Anda ingin mengedit pesanan penjualan ini?",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, lanjutkan!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = "{{ url('sales_orders') }}/" + salesOrderId + "/edit";
-            }
-        });
-    }
 
     function confirmDelete(event, orderId) {
     event.preventDefault();

@@ -1,4 +1,4 @@
-@extends('layouts.superAdmin')
+@extends('layouts.admin')
 
 @section('content')
 <div class="container mx-auto p-6 bg-white shadow-md rounded-lg">
@@ -313,7 +313,7 @@
         <p><strong>Dihapus Oleh:</strong> {{ $log->user ? $log->user->name : 'Tidak diketahui' }}</p>
     </div>
 
-    <form action="{{ route('activityLog.restore', $log->id) }}" method="POST" class="mt-4">
+    <form action="{{ route('adminActivityLog.restore', $log->id) }}" method="POST" class="mt-4">
         @csrf
         @method('PUT')
 
@@ -343,7 +343,7 @@
     <p class="text-red-500">Aksi tidak dikenali atau data tidak tersedia.</p>
     @endswitch
 
-    <a href="{{ route('superAdmin.riwayat.index') }}" class="block mt-6 text-blue-500 hover:underline">
+    <a href="{{ route('admin.riwayat.index') }}" class="block mt-6 text-blue-500 hover:underline">
         Kembali ke Daftar Riwayat
     </a>
 </div>
