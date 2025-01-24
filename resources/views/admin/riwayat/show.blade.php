@@ -27,35 +27,78 @@
             </thead>
             <tbody>
                 @if ($log->model_type === 'App\Models\SalesOrder')
-                @foreach(Arr::only($model->toArray(), [
-                'customer_name', 'nama_sales', 'so_number', 'discount', 'discount_type','vat',
-                'payment_type', 'grand_total', 'created_at']) as $key => $value)
-                <tr class="border-t">
-                    <td class="px-4 py-2 font-medium text-gray-700">
-                        @switch($key)
-                        @case('customer_name') Nama Customer @break
-                        @case('nama_sales') Nama Sales @break
-                        @case('so_number') Nomor SO @break
-                        @case('discount') Diskon @break
-                        @case('discount_type') Tipe Diskon @break
-                        @case('vat') PPN @break
-                        @case('payment_type') Tipe Pembayaran @break
-                        @case('grand_total') Total Grand @break
-                        @case('created_at') Tanggal Dibuat @break
-                        @default {{ ucwords(str_replace('_', ' ', $key)) }}
-                        @endswitch
-                    </td>
-                    <td class="px-4 py-2 text-gray-700">
-                        {{ is_null($value) ? 'Tidak Tersedia' :
-                        ($key === 'created_at'
-                        ? \Carbon\Carbon::parse($value)->timezone('Asia/Jakarta')->translatedFormat('d F Y H:i:s')
-                        : ($key === 'discount' || $key === 'vat' || $key === 'grand_total'
-                        ? 'Rp. ' . number_format($value, 0, ',', '.')
-                        : $value))
-                        }}
-                    </td>
-                </tr>
-                @endforeach
+                {{-- Tabel untuk data utama SalesOrder --}}
+                <table class="w-full border-collapse border border-gray-300 text-left">
+                    <thead>
+                        <tr>
+                            <th class="border border-gray-300 px-4 py-2 font-bold text-gray-700 bg-gray-100">Atribut</th>
+                            <th class="border border-gray-300 px-4 py-2 font-bold text-gray-700 bg-gray-100">Nilai</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{-- Baris untuk data utama SalesOrder --}}
+                        @foreach(Arr::only($model->toArray(), [
+                            'customer_name', 'nama_sales', 'so_number', 'discount', 'discount_type','vat',
+                            'payment_type', 'grand_total', 'deleted_at']) as $key => $value)
+                            <tr class="border-t">
+                                <td class="border border-gray-300 px-4 py-2 font-medium text-gray-700">
+                                    @switch($key)
+                                    @case('customer_name') Nama Customer @break
+                                    @case('nama_sales') Nama Sales @break
+                                    @case('so_number') Nomor SO @break
+                                    @case('discount') Diskon @break
+                                    @case('discount_type') Tipe Diskon @break
+                                    @case('vat') PPN @break
+                                    @case('payment_type') Tipe Pembayaran @break
+                                    @case('grand_total') Total Grand @break
+                                    @case('deleted_at') Tanggal Dihapus @break
+                                    @default {{ ucwords(str_replace('_', ' ', $key)) }}
+                                    @endswitch
+                                </td>
+                                <td class="border border-gray-300 px-4 py-2 text-gray-700">
+                                    {{ is_null($value) ? 'Tidak Tersedia' :
+                                    ($key === 'deleted_at'
+                                    ? \Carbon\Carbon::parse($value)->timezone('Asia/Jakarta')->translatedFormat('d F Y H:i:s')
+                                    : ($key === 'discount' || $key === 'vat' || $key === 'grand_total'
+                                    ? 'Rp. ' . number_format($value, 0, ',', '.')
+                                    : $value))
+                                    }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            
+                {{-- Tabel untuk data detail dari SalesOrderDetail --}}
+                <h2 class="mt-6 font-bold text-lg text-gray-700">Detail Item</h2>
+                <table class="w-full border-collapse border border-gray-300 text-left mt-2">
+                    <thead>
+                        <tr>
+                            <th class="border border-gray-300 px-4 py-2 font-bold text-gray-700 bg-gray-100">No</th>
+                            <th class="border border-gray-300 px-4 py-2 font-bold text-gray-700 bg-gray-100">Nama Item</th>
+                            <th class="border border-gray-300 px-4 py-2 font-bold text-gray-700 bg-gray-100">Quantity</th>
+                            <th class="border border-gray-300 px-4 py-2 font-bold text-gray-700 bg-gray-100">Harga</th>
+                            <th class="border border-gray-300 px-4 py-2 font-bold text-gray-700 bg-gray-100">Total</th>
+                            <th class="border border-gray-300 px-4 py-2 font-bold text-gray-700 bg-gray-100">Sisa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($model->details as $index => $detail)
+                            <tr class="border-t">
+                                <td class="border border-gray-300 px-4 py-2 text-gray-700">{{ $index + 1 }}</td>
+                                <td class="border border-gray-300 px-4 py-2 text-gray-700">{{ $detail->item_name }}</td>
+                                <td class="border border-gray-300 px-4 py-2 text-gray-700">{{ $detail->quantity }}</td>
+                                <td class="border border-gray-300 px-4 py-2 text-gray-700">Rp. {{ number_format($detail->price, 0, ',', '.') }}</td>
+                                <td class="border border-gray-300 px-4 py-2 text-gray-700">Rp. {{ number_format($detail->total, 0, ',', '.') }}</td>
+                                <td class="border border-gray-300 px-4 py-2 text-gray-700">{{ $detail->remaining_quantity }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="border border-gray-300 px-4 py-2 text-gray-700 text-center">Tidak ada data detail.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>            
                 @elseif ($log->model_type === 'App\Models\JadwalKirim')
                 @foreach(Arr::only($model->toArray(), ['delivery_date', 'keterangan', 'tujuan_pengiriman']) as $key =>
                 $value)
@@ -186,9 +229,11 @@
         </table>
     </div>
     @else
-    <p class="text-red-500">Data perubahan tidak tersedia.</p>
+    <p class="text-red-500">Data perubahan tidak tersedia. Pastikan log perubahan memiliki informasi data lama dan data
+        baru.</p>
     @endif
     @break
+
 
     {{-- Tampilkan Data untuk Aksi Deleted --}}
     @case('deleted')
@@ -204,6 +249,7 @@
             </thead>
             <tbody>
                 @if ($log->model_type === 'App\Models\SalesOrder')
+                {{-- Menampilkan data utama SalesOrder --}}
                 @foreach(Arr::only($model->toArray(), [
                 'customer_name', 'nama_sales', 'so_number', 'discount', 'discount_type','vat',
                 'payment_type', 'grand_total', 'deleted_at']) as $key => $value)
@@ -233,6 +279,23 @@
                     </td>
                 </tr>
                 @endforeach
+
+                {{-- Menampilkan data detail dari SalesOrderDetail --}}
+                @foreach($model->details as $detail)
+                <tr class="border-t">
+                    <td class="px-4 py-2 font-medium text-gray-700">
+                        Detail Item
+                    </td>
+                    <td class="px-4 py-2 text-gray-700">
+                        <strong>Nama Item:</strong> {{ $detail->item_name }} <br>
+                        <strong>Quantity:</strong> {{ $detail->quantity }} <br>
+                        <strong>Harga:</strong> Rp. {{ number_format($detail->price, 0, ',', '.') }} <br>
+                        <strong>Total:</strong> Rp. {{ number_format($detail->total, 0, ',', '.') }} <br>
+                        <strong>Sisa:</strong> {{ $detail->remaining_quantity }}
+                    </td>
+                </tr>
+                @endforeach
+
                 @elseif ($log->model_type === 'App\Models\JadwalKirim')
                 @foreach(Arr::only($model->toArray(), ['delivery_date', 'keterangan', 'tujuan_pengiriman']) as $key =>
                 $value)

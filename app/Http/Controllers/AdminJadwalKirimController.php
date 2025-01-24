@@ -76,14 +76,14 @@ class AdminJadwalKirimController extends Controller
         ]);
         $salesOrder = SalesOrder::find($request->sales_order_id);
 
-      
+
 
         if (JadwalKirim::where('sales_order_id', $salesOrder->id)->exists()) {
             return redirect()->back()->withErrors(['error' => 'Jadwal Kirim untuk nomor SO ini sudah dibuat.']);
         }
 
         JadwalKirim::create($request->all());
-
+        $this->logActivity('created', JadwalKirim::class, $salesOrder->id, 'Jadwal Kirim Terbuat.');
         return redirect()->route('admin.JadwalKirim.index')->with('success', 'Jadwal Kirim berhasil ditambahkan.');
     }
 
@@ -101,9 +101,9 @@ class AdminJadwalKirimController extends Controller
             'keterangan' => 'nullable|string',
             'tujuan_pengiriman' => 'nullable|string',
         ]);
-       
-        $jadwalKirim->update($request->all());
 
+        $jadwalKirim->update($request->all());
+        $this->logActivity('created', JadwalKirim::class, $jadwalKirim->id, 'Jadwal Kirim Terganti.');
         return redirect()->route('admin.JadwalKirim.index')->with('success', 'Jadwal Kirim berhasil diperbarui.');
     }
 
@@ -115,7 +115,7 @@ class AdminJadwalKirimController extends Controller
     public function destroy(JadwalKirim $jadwalKirim)
     {
         $jadwalKirim->delete();
-
+        $this->logActivity('created', JadwalKirim::class, $jadwalKirim->id, 'Jadwal Kirim Terhapus.');
         return redirect()->route('admin.JadwalKirim.index')->with('success', 'Jadwal Kirim berhasil dihapus.');
     }
 
@@ -124,5 +124,34 @@ class AdminJadwalKirimController extends Controller
         $jadwalKirim->load('salesOrder', 'salesOrder.details'); // Load related models if needed
         $pdf = FacadePdf::loadView('admin.JadwalKirim.pdf', compact('jadwalKirim'));
         return $pdf->download('JadwalKirim_' . $jadwalKirim->id . '.pdf');
+    }
+
+    protected function logActivity($action, $modelType, $modelId, $description = null)
+    {
+        \App\Models\ActivityLog::create([
+            'action' => $action,
+            'model_type' => $modelType,
+            'model_id' => $modelId,
+            'user_id' => auth()->id(),
+            'description' => $details['description'] ?? null,
+            'old_data' => json_encode($details['old_data'] ?? null),
+            'new_data' => json_encode($details['new_data'] ?? null),
+        ]);
+    }
+
+    public function restore($id)
+    {
+        $jadwalKirim = JadwalKirim::withTrashed()->findOrFail($id);
+        $jadwalKirim->restore();
+
+        // Restore details
+        foreach ($jadwalKirim->details()->withTrashed()->get() as $detail) {
+            $detail->restore();
+        }
+
+        $this->logActivity('restored', JadwalKirim::class, $jadwalKirim->id, 'Sales Order restored.');
+
+        return redirect()->route('admin.SalesOrders.index')
+            ->with('success', 'Sales Order restored successfully.');
     }
 }

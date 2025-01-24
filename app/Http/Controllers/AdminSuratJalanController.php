@@ -48,86 +48,92 @@ class AdminSuratJalanController extends Controller
     }
 
 
-public function store(Request $request)
-{
-    try {
-        $validatedData = $request->validate([
-            'sales_order_id' => 'required|exists:sales_orders,id',
-            'plat_angkutan' => 'required|string|max:255',
-            'tanggal_pengiriman' => 'required|date',
-            'items' => 'required|array',
-            'items.*.id' => 'required|exists:sales_order_details,id',
-            'items.*.quantity' => 'required|integer|min:1',
-        ]);
+    public function store(Request $request)
+    {
+        // dd($request);
 
-        // Cek jadwal kirim
-        $salesOrder = SalesOrder::findOrFail($validatedData['sales_order_id']);
-        $jadwalKirim = $salesOrder->jadwalKirim;
-
-        if ($validatedData['tanggal_pengiriman'] > $jadwalKirim->delivery_date) {
-            return back()->withErrors([
-                'tanggal_pengiriman' => 'Tanggal pengiriman tidak boleh melebihi jadwal kirim (' . $jadwalKirim->delivery_date . ').'
-            ]);
-        }
-
-        // Convert tanggal_pengiriman to Carbon instance
-        $tanggalPengiriman = Carbon::parse($validatedData['tanggal_pengiriman']);
-
-        // Mulai transaction untuk memastikan perubahan stok hanya saat Surat Jalan dibuat
-        $suratJalan = DB::transaction(function () use ($validatedData, $tanggalPengiriman, $salesOrder) {
-            // Buat Surat Jalan
-            $suratJalan = SuratJalan::create([
-                'sales_order_id' => $validatedData['sales_order_id'],
-                'plat_angkutan' => $validatedData['plat_angkutan'],
-                'tanggal_pengiriman' => $tanggalPengiriman->format('Y-m-d'),
-                'no_surat_jalan' => $this->generateSuratJalanNumber(),
+        try {
+            $validatedData = $request->validate([
+                'sales_order_id' => 'required|exists:sales_orders,id',
+                'plat_angkutan' => 'required|string|max:255',
+                'tanggal_pengiriman' => 'required|date',
+                'items' => 'required|array',
+                'items.*.sales_order_details_id' => 'required|exists:sales_order_details,id', // Ubah dari `sales_order_details_id` ke `id`
+                'items.*.quantity' => 'required|integer|min:1',
             ]);
 
-            // Periksa dan kurangi stok hanya jika barang tersedia
-            foreach ($validatedData['items'] as $item) {
-                $salesOrderDetail = SalesOrderDetail::find($item['id']);
+            // Cek jadwal kirim
+            $salesOrder = SalesOrder::findOrFail($validatedData['sales_order_id']);
+            $jadwalKirim = $salesOrder->jadwalKirim;
+            // dd($salesOrder->id);
 
-                // Pastikan stok cukup untuk pengiriman
-                if ($salesOrderDetail->quantity < $item['quantity']) {
-                    throw new \Exception('Stok barang ' . $salesOrderDetail->item_name . ' tidak cukup untuk pengiriman.');
-                }
-
-                // Membuat Surat Jalan Detail
-                SuratJalanDetail::create([
-                    'surat_jalan_id' => $suratJalan->id,
-                    'sales_order_detail_id' => $item['id'],
-                    'quantity' => $item['quantity'],
-                    'item_name' => $item['item_name']
+            // Cek apakah tanggal pengiriman melebihi jadwal kirim
+            if ($validatedData['tanggal_pengiriman'] > $jadwalKirim->delivery_date) {
+                return back()->withErrors([
+                    'tanggal_pengiriman' => 'Tanggal pengiriman tidak boleh melebihi jadwal kirim (' . $jadwalKirim->delivery_date . ').'
                 ]);
-
-                // Kurangi stok yang dikirim
-                $salesOrderDetail->quantity -= $item['quantity'];
-                $salesOrderDetail->save();  // Simpan perubahan stok
             }
 
-            return $suratJalan;
-        });
+            $normalizedItems = array_values($request->input('items', []));
+            $request->merge(['items' => $normalizedItems]);
+            // Convert tanggal_pengiriman to Carbon instance
+            $tanggalPengiriman = Carbon::parse($validatedData['tanggal_pengiriman']);
 
-        return redirect()->route('admin.suratJalan.index')->with('success', 'Surat Jalan berhasil disimpan!');
-    } catch (\Exception $e) {
-        // Log error jika ada
-        Log::error('Error storing Surat Jalan: ' . $e->getMessage());
+            // Mulai transaction untuk memastikan perubahan stok hanya saat Surat Jalan dibuat
+            $suratJalan = DB::transaction(function () use ($validatedData, $tanggalPengiriman, $salesOrder) {
+                // Buat Surat Jalan secara manual
+                $suratJalan = new SuratJalan();
+                $suratJalan->sales_order_id = $salesOrder->id;
+                $suratJalan->plat_angkutan = $validatedData['plat_angkutan'];
+                $suratJalan->tanggal_pengiriman = $tanggalPengiriman->format('Y-m-d');
+                $suratJalan->no_surat_jalan = $this->generateSuratJalanNumber();
+                $suratJalan->save(); // Simpan Surat Jalan
 
-        // Redirect back with error message
-        return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan Surat Jalan: ' . $e->getMessage());
+                // Periksa dan kurangi stok hanya jika barang tersedia
+                foreach ($validatedData['items'] as $item) {
+                    $salesOrderDetail = SalesOrderDetail::find($item['sales_order_details_id']);
+
+                    // Pastikan stok cukup untuk pengiriman
+                    if ($salesOrderDetail->quantity < $item['quantity']) {
+                        throw new \Exception('Stok barang ' . $salesOrderDetail->item_name . ' tidak cukup untuk pengiriman.');
+                    }
+
+                    // Membuat Surat Jalan Detail
+                    $suratJalanDetail = new SuratJalanDetail();
+                    $suratJalanDetail->surat_jalan_id = $suratJalan->id;
+                    $suratJalanDetail->sales_order_details_id = $item['sales_order_details_id'];
+                    $suratJalanDetail->quantity = $item['quantity'];
+                    $suratJalanDetail->save(); // Simpan Surat Jalan Detail
+
+                    // Kurangi stok yang dikirim
+                    $salesOrderDetail->quantity -= $item['quantity'];
+                    $salesOrderDetail->save();  // Simpan perubahan stok
+                }
+
+                return $suratJalan;
+            });
+            $this->logActivity('created', SuratJalan::class, $suratJalan->id, 'Surat Jalan Terbuat.');
+            return redirect()->route('admin.suratJalan.index')->with('success', 'Surat Jalan berhasil disimpan!');
+        } catch (\Exception $e) {
+            // Log error jika ada
+            Log::error('Error storing Surat Jalan: ' . $e->getMessage());
+
+            // Redirect back with error message
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan Surat Jalan: ' . $e->getMessage());
+        }
     }
-}
+
 
     public function show(SuratJalan $suratJalan)
     {
-        $suratJalan->load('admin.suratJalanDetails.salesOrderDetail');
+        $suratJalan->load('suratJalanDetails.salesOrderDetail');
         return view('admin.SuratJalan.show', compact('suratJalan'));
     }
 
     public function edit(SuratJalan $suratJalan)
     {
         // Muat relasi salesOrderDetails ke dalam suratJalan
-        $suratJalan->load('admin.suratJalanDetails.salesOrderDetail');
+        $suratJalan->load('suratJalanDetails.salesOrderDetail');
 
         // Ambil daftar sales orders untuk dropdown
         $salesOrders = SalesOrder::all();
@@ -174,6 +180,8 @@ public function store(Request $request)
             }
         });
 
+
+            $this->logActivity('created', SuratJalan::class, $suratJalan->id, 'Surat Jalan Terbuat.');
         return redirect()->route('admin.suratJalan.index');
     }
 
@@ -190,7 +198,7 @@ public function store(Request $request)
 
             $suratJalan->delete();
         });
-
+        $this->logActivity('created', SuratJalan::class, $suratJalan->id, 'Surat Jalan Terhapus.');
         return redirect()->route('admin.suratJalan.index')->with('success', 'Surat Jalan berhasil dihapus dan stok dikembalikan!');
     }
 
@@ -198,7 +206,7 @@ public function store(Request $request)
 
     public function generatePDF(SuratJalan $suratJalan)
     {
-        $suratJalan->load('admin.suratJalanDetails.salesOrderDetail');
+        $suratJalan->load('suratJalanDetails.salesOrderDetail');
         $pdf = FacadePdf::loadView('admin.suratJalan.pdf', compact('suratJalan'));
         return $pdf->download('surat_jalan_' . $suratJalan->no_surat_jalan . '.pdf');
     }
@@ -224,9 +232,32 @@ public function store(Request $request)
         ]);
     }
 
-    public function showStockHistory()
+    protected function logActivity($action, $modelType, $modelId, $description = null)
     {
-        $histories = StockHistory::with('salesOrder')->get();
-        return view('admin.StockBarangSO.show', compact('histories'));
+        \App\Models\ActivityLog::create([
+            'action' => $action,
+            'model_type' => $modelType,
+            'model_id' => $modelId,
+            'user_id' => auth()->id(),
+            'description' => $details['description'] ?? null,
+            'old_data' => json_encode($details['old_data'] ?? null),
+            'new_data' => json_encode($details['new_data'] ?? null),
+        ]);
+    }
+
+    public function restore($id)
+    {
+        $suratJalan = SuratJalan::withTrashed()->findOrFail($id);
+        $suratJalan->restore();
+
+        // Restore details
+        foreach ($suratJalan->details()->withTrashed()->get() as $detail) {
+            $detail->restore();
+        }
+
+        $this->logActivity('restored', SuratJalan::class, $suratJalan->id, 'Sales Order restored.');
+
+        return redirect()->route('admin.SalesOrders.index')
+            ->with('success', 'Sales Order restored successfully.');
     }
 }

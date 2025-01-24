@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-
+@section('title', 'Surat Jalan')
 @section('content')
 
 <div class="container mx-auto px-4">
@@ -54,12 +54,12 @@
                         \Carbon\Carbon::parse($suratJalan->tanggal_pengiriman)->translatedFormat('d F Y') }}</td>
 
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <a href="{{ route('suratJalan.show', $suratJalan) }}"
+                        <a href="{{ route('admin.suratJalan.show', $suratJalan) }}"
                             class="text-blue-600 hover:text-blue-900 transition duration-300 ease-in-out">Lihat</a>
-                        <a href="{{ route('suratJalan.edit', $suratJalan) }}"
+                        <a href="{{ route('admin.suratJalan.edit', $suratJalan) }}"
                             class="text-green-600 hover:text-green-900 transition duration-300 ease-in-out ml-4"
                             onclick="konfirmasiEdit(event, {{ $suratJalan->id }})">Edit</a>
-                        <form action="{{ route('suratJalan.destroy', $suratJalan) }}" method="POST" class="inline"
+                        <form action="{{ route('admin.suratJalan.destroy', $suratJalan) }}" method="POST" class="inline"
                             id="form-hapus-{{ $suratJalan->id }}">
                             @csrf
                             @method('DELETE')

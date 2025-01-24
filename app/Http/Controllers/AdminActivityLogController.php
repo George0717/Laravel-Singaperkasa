@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
+use App\Models\SalesOrder;
 use App\Models\User;
 use Spatie\Activitylog\Models\Activity;
 use Illuminate\Http\Request;
@@ -83,6 +84,8 @@ class AdminActivityLogController extends Controller
         $dataLama = $log->changes['old'] ?? null;
         $dataBaru = $log->changes['new'] ?? null;
 
+        
+
         // Filter data sesuai kolom yang diizinkan
         $filteredDataLama = $dataLama ? array_filter(
             $dataLama,
@@ -114,50 +117,61 @@ class AdminActivityLogController extends Controller
     public function restore($id)
     {
         $log = ActivityLog::findOrFail($id);
-
+    
         // Periksa apakah action adalah 'deleted'
         if ($log->action === 'deleted') {
             $modelClass = $log->model_type;
-
+    
             if (class_exists($modelClass)) {
                 $model = $modelClass::withTrashed()->find($log->model_id);
-
+    
                 if ($model && $model->trashed()) {
                     // Cek apakah model sudah dipulihkan sebelumnya
                     if ($model->restored_at) {
                         return redirect()->route('admin.riwayat.index')->with('error', 'Data sudah dipulihkan sebelumnya.');
                     }
-
-                    $model->restore(); // Mengembalikan data yang dihapus
+    
+                    // Pulihkan model utama
+                    $model->restore();
                     $model->restored_at = now(); // Tandai waktu pemulihan
-                    $model->save(); // Simpan waktu pemulihan
-                    return redirect()->route('admin.riwayat.index')->with('success', 'Data berhasil dikembalikan.');
+                    $model->save();
+    
+                    // Pulihkan relasi terkait jika ada
+                    if ($model instanceof SalesOrder) {
+                        // Pulihkan detail terkait SalesOrder
+                        $model->details()->withTrashed()->restore();
+                    }
+    
+                    // Tambahkan log aktivitas pemulihan
+                    $this->logActivity('restored', $modelClass, $model->id, "Data berhasil dipulihkan beserta detailnya.");
+    
+                    return redirect()->route('admin.riwayat.index')->with('success', 'Data berhasil dikembalikan beserta detailnya.');
                 }
             }
         }
-
+    
         // Logika untuk 'updated' action
         elseif ($log->action === 'updated') {
             $modelClass = $log->model_type;
-
+    
             if (class_exists($modelClass)) {
                 $model = $modelClass::find($log->model_id);
-
+    
                 if ($model) {
                     // Kembalikan ke data lama
                     $oldData = $log->changes['old'] ?? [];
                     DB::table($model->getTable())
                         ->where('id', $model->id)
                         ->update($oldData);
-
+    
                     return redirect()->route('admin.riwayat.index')->with('success', 'Data berhasil dikembalikan ke versi lama.');
                 }
             }
         }
-
+    
         return redirect()->route('admin.riwayat.index')->with('error', 'Restore data gagal.');
     }
-
+    
 
 
 

@@ -22,40 +22,41 @@ class AdminInvoiceController extends Controller
 
     public function create()
     {
-        $salesOrders = SalesOrder::all();
+        $salesOrders = SalesOrder::all(); // Ambil semua data Sales Orders
         $latestInvoice = Invoice::orderBy('created_at', 'desc')->first();
         $invoiceNumber = 'INVOICE00001';
 
+        // Tentukan nomor invoice berdasarkan yang terakhir dibuat
         if ($latestInvoice) {
             $lastNumber = (int) substr($latestInvoice->invoice_number, 7);
             $invoiceNumber = 'INVOICE' . str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
         }
 
+        // Kirim data Sales Orders dan nomor invoice ke view
         return view('admin.Invoice.create', compact('salesOrders', 'invoiceNumber'));
     }
 
+
     public function store(Request $request)
     {
+        
         // Validasi input
         $request->validate([
             'sales_order_id' => 'required|exists:sales_orders,id',
             'invoice_number' => 'required|unique:invoices',
-            'subtotal' => 'required|numeric',
         ], [
             'sales_order_id.required' => 'Sales Order harus dipilih.',
             'invoice_number.required' => 'Nomor Invoice wajib diisi.',
             'invoice_number.unique' => 'Nomor Invoice sudah ada, silakan gunakan nomor lain.',
-            'subtotal.required' => 'Subtotal harus diisi.',
         ]);
 
         // Ambil data dari Sales Order
         $salesOrder = SalesOrder::findOrFail($request->sales_order_id);
-
+        // dd($salesOrder);
         // Buat data untuk Invoice
         $invoiceData = [
             'sales_order_id' => $salesOrder->id,
             'invoice_number' => $request->invoice_number,
-            'subtotal' => $request->subtotal,
             'discount' => $salesOrder->discount,
             'down_payment' => $salesOrder->down_payment,
             'vat' => $salesOrder->vat,
@@ -69,8 +70,6 @@ class AdminInvoiceController extends Controller
         // Redirect ke halaman index invoice
         return redirect()->route('admin.invoice.index')->with('success', 'Invoice berhasil dibuat.');
     }
-
-
 
     // Method untuk menampilkan detail invoice
     public function show(Invoice $invoice)
@@ -157,10 +156,7 @@ class AdminInvoiceController extends Controller
 
         return response()->json([
             'customer_name' => $salesOrder->customer_name,
-            'customer_address' => $salesOrder->customer_address,
             'payment_type' => $salesOrder->payment_type,
-            'po_date' => $salesOrder->po_date,
-            'po_number' => $salesOrder->po_number,
             'address' => $salesOrder->address,
             'phone' => $salesOrder->phone,
             'subtotal' => $subtotal,

@@ -25,8 +25,6 @@
             <h2 class="text-xl font-semibold border-b pb-2 mb-4">Detail Sales Order</h2>
             <dl class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
                 <div><dt class="font-medium">Nama Pelanggan:</dt> <dd>{{ $jadwalKirim->salesOrder->customer_name }}</dd></div>
-                <div><dt class="font-medium">Alamat Pelanggan:</dt> <dd>{{ $jadwalKirim->salesOrder->customer_address ?? 'Tidak tersedia' }}</dd></div>
-                <div><dt class="font-medium">Nomor PO:</dt> <dd>{{ $jadwalKirim->salesOrder->po_number ?? 'Tidak tersedia' }}</dd></div>
                 <div><dt class="font-medium">Nomor SO:</dt> <dd>{{ $jadwalKirim->salesOrder->so_number }}</dd></div>
                 <div><dt class="font-medium">Diskon:</dt> <dd>{{ number_format($jadwalKirim->salesOrder->discount, 0, ',', '.') }} {{ $jadwalKirim->salesOrder->discount_type }}</dd></div>
                 <div><dt class="font-medium">DP:</dt> <dd>Rp {{ number_format($jadwalKirim->salesOrder->down_payment, 0, ',', '.') }}</dd></div>

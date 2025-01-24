@@ -21,7 +21,7 @@ class ActivityLog extends Model
     protected $casts = [
         'changes' => 'array', // Kolom 'changes' akan secara otomatis menjadi array
     ];
-
+    
     public function user()
     {
         return $this->belongsTo(User::class);

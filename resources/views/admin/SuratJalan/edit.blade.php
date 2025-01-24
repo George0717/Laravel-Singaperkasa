@@ -95,7 +95,7 @@
             </button>
         </div>
 
-        <a href="{{ route('admin.suratJalan.index') }}"
+        <a href="{{ route('suratJalan.index') }}"
             class="text-blue-600 hover:text-blue-900 transition duration-300 ease-in-out">
             &lt; Kembali ke Daftar
         </a>
